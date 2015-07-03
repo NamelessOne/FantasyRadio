@@ -50,6 +50,8 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     private static final int activeBitrateColor = Color.parseColor("#0C648C");
     private static final int activeBitrateTextColor = Color.parseColor("#EBECEC");
     private static final int defaultBitrateTextColor = Color.parseColor("#424242");
+    private static String widgetTitle = "";
+    private static String widgetAuthor = "";
 
     @Override
     public void onEnabled(Context context) {
@@ -347,6 +349,44 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
 
     private void DoMeta() {
         //TODO написать
+        String meta = (String) BASS.BASS_ChannelGetTags(BASSUtil.getChan(),
+                BASS.BASS_TAG_META);
+        if (meta != null) { // got Shoutcast metadata
+            int ti = meta.indexOf("StreamTitle='");
+            if (ti >= 0) {
+                String title = "No title";
+                try {
+                    title = meta.substring(ti + 13, meta.indexOf("'", ti + 13));
+                    title = new String(title.getBytes("cp-1252"), "cp-1251");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+
+                }
+            } else {
+                String[] ogg = (String[]) BASS.BASS_ChannelGetTags(
+                        BASSUtil.getChan(), BASS.BASS_TAG_OGG);
+                if (ogg != null) { // got Icecast/OGG tags
+                    String artist = null, title = null;
+                    for (String s : ogg) {
+                        if (s.regionMatches(true, 0, "artist=", 0, 7)) {
+                            artist = s.substring(7);
+                        } else if (s.regionMatches(true, 0, "title=", 0, 6)) {
+                            title = s.substring(6);
+                        }
+                    }
+                    if (title != null) {
+                        widgetTitle = title;
+                    }
+                    if (artist != null)
+                        widgetAuthor = artist;
+
+                }
+            }
+        } else {
+            widgetAuthor = "";
+            widgetTitle = "";
+        }
     }
 
     /**
