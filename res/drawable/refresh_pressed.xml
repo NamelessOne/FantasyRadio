@@ -1,0 +1,19 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:left="@dimen/tab_space"
+        android:right="@dimen/tab_space">
+        <shape android:shape="rectangle" >
+            <gradient
+                android:angle="90"
+                android:endColor="@color/refresh_background_active"
+                android:startColor="@color/refresh_background_active" />
+
+            <stroke
+                android:width="1dp"
+                android:color="@color/refresh_border_active" >
+            </stroke>
+        </shape>
+    </item>
+
+</layer-list>

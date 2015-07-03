@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/widget_play"
+        android:layout_width="54dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/widget_play_states"
+        android:visibility="visible" />
+
+    <Button
+        android:id="@+id/widget_stop"
+        android:layout_width="54dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/widget_pause_states"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:textColor="@color/widget_author" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:textColor="@color/widget_text" />
+
+        <!-- Здесь будет линия-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/widget_divider_line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="66dp"
+                android:layout_height="wrap_content"
+                android:text="@string/quality"
+                android:textColor="@color/widget_text" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/toggleQuality16"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/widget_quality_active_background"
+                    android:gravity="center_horizontal"
+                    android:tag="widget_16"
+                    android:text="@string/widget_AAC16"
+                    android:textColor="@color/widget_text" />
+
+                <TextView
+                    android:id="@+id/toggleQuality32"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:tag="widget_32"
+                    android:text="@string/widget_MP332"
+                    android:textColor="@color/widget_text" />
+
+                <TextView
+                    android:id="@+id/toggleQuality64"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:tag="widget_64"
+                    android:text="@string/widget_MP364"
+                    android:textColor="@color/widget_text" />
+
+                <TextView
+                    android:id="@+id/toggleQuality96"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:tag="widget_96"
+                    android:text="@string/widget_MP396"
+                    android:textColor="@color/widget_text" />
+
+                <TextView
+                    android:id="@+id/toggleQuality112"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:tag="widget_112"
+                    android:text="@string/widget_AAC112"
+                    android:textColor="@color/widget_text" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

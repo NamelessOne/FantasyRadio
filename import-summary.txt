@@ -1,0 +1,243 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* .idea\
+* .idea\.name
+* .idea\compiler.xml
+* .idea\copyright\
+* .idea\copyright\profiles_settings.xml
+* .idea\misc.xml
+* .idea\modules.xml
+* .idea\vcs.xml
+* .idea\workspace.xml
+* FantasyRadio\
+* FantasyRadio\build.gradle
+* FantasyRadio\libs\
+* FantasyRadio\libs\acra-4.2.3.jar
+* FantasyRadio\libs\jsoup-1.6.3.jar
+* FantasyRadio\libs\universal-image-loader-1.8.6-with-sources.jar
+* FantasyRadio\src\
+* FantasyRadio\src\main\
+* FantasyRadio\src\main\AndroidManifest.xml
+* FantasyRadio\src\main\java\
+* FantasyRadio\src\main\java\com\
+* FantasyRadio\src\main\java\com\lamerman\
+* FantasyRadio\src\main\java\com\lamerman\FileDialog.java
+* FantasyRadio\src\main\java\com\lamerman\FileDialogOptions.java
+* FantasyRadio\src\main\java\com\un4seen\
+* FantasyRadio\src\main\java\com\un4seen\bass\
+* FantasyRadio\src\main\java\com\un4seen\bass\BASS.java
+* FantasyRadio\src\main\java\com\un4seen\bass\BASS_AAC.java
+* FantasyRadio\src\main\java\ru\
+* FantasyRadio\src\main\java\ru\sigil\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\About.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\AbstractListActivity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\Gratitude.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\MainActivity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\MyApp.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\RadioEntity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\TabHoster.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\archieve\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\archieve\ArchieveActivity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\archieve\ArchieveEntity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\archieve\ArchieveEntityesCollection.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\archieve\ArchieveListAdapter.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\archieve\ArchieveParser.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\controls\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\controls\SquareButton.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\exceptions\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\exceptions\WrongLoginOrPasswordException.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\gcm\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\gcm\GcmBroadcastReceiver.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\gcm\GcmIntentService.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\saved\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\saved\CurrentControls.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\saved\MP3ArrayAdapter.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\saved\MP3Collection.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\saved\MP3Entity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\saved\MP3Saver.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\saved\SavedActivity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\schedule\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\schedule\ScheduleActivity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\schedule\ScheduleEntity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\schedule\ScheduleEntityesCollection.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\schedule\ScheduleListAdapter.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\schedule\ScheduleParser.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\schedule\ScheduleReminderReceiver.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\settings\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\settings\Settings.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\settings\SettingsActivity.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\utils\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\utils\AlarmReceiever.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\utils\BASSUtil.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\utils\DownladedEntityes.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\utils\DownloadThread.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\utils\FileDownloader.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\utils\PlayerState.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\utils\ProgramNotification.java
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\widget\
+* FantasyRadio\src\main\java\ru\sigil\fantasyradio\widget\FantasyRadioWidgetProvider.java
+* FantasyRadio\src\main\java\ru\sigil\log\
+* FantasyRadio\src\main\java\ru\sigil\log\DefaultLogger.java
+* FantasyRadio\src\main\java\ru\sigil\log\ICustomLogger.java
+* FantasyRadio\src\main\java\ru\sigil\log\LogManager.java
+* FantasyRadio\src\main\jniLibs\
+* FantasyRadio\src\main\jniLibs\armeabi-v7a\
+* FantasyRadio\src\main\jniLibs\armeabi-v7a\libbass.so
+* FantasyRadio\src\main\jniLibs\armeabi-v7a\libbass_aac.so
+* FantasyRadio\src\main\jniLibs\armeabi\
+* FantasyRadio\src\main\jniLibs\armeabi\libbass.so
+* FantasyRadio\src\main\jniLibs\armeabi\libbass_aac.so
+* FantasyRadio\src\main\res\
+* FantasyRadio\src\main\res\drawable\
+* FantasyRadio\src\main\res\drawable\archive.png
+* FantasyRadio\src\main\res\drawable\bell.xml
+* FantasyRadio\src\main\res\drawable\bell_off.png
+* FantasyRadio\src\main\res\drawable\bell_on.png
+* FantasyRadio\src\main\res\drawable\clocks.png
+* FantasyRadio\src\main\res\drawable\delete.png
+* FantasyRadio\src\main\res\drawable\delete_pressed.png
+* FantasyRadio\src\main\res\drawable\delete_states.xml
+* FantasyRadio\src\main\res\drawable\document.png
+* FantasyRadio\src\main\res\drawable\download.png
+* FantasyRadio\src\main\res\drawable\download_pressed.png
+* FantasyRadio\src\main\res\drawable\download_states.xml
+* FantasyRadio\src\main\res\drawable\downloadm.png
+* FantasyRadio\src\main\res\drawable\ephir.png
+* FantasyRadio\src\main\res\drawable\floppy.png
+* FantasyRadio\src\main\res\drawable\folder_horizontal.png
+* FantasyRadio\src\main\res\drawable\full_progress_drawable.xml
+* FantasyRadio\src\main\res\drawable\ic_action_search.png
+* FantasyRadio\src\main\res\drawable\icon.png
+* FantasyRadio\src\main\res\drawable\notification_icon.png
+* FantasyRadio\src\main\res\drawable\pause.png
+* FantasyRadio\src\main\res\drawable\pause_pressed.png
+* FantasyRadio\src\main\res\drawable\pause_states.xml
+* FantasyRadio\src\main\res\drawable\play.png
+* FantasyRadio\src\main\res\drawable\play_pressed.png
+* FantasyRadio\src\main\res\drawable\play_states.xml
+* FantasyRadio\src\main\res\drawable\progress_control.png
+* FantasyRadio\src\main\res\drawable\progress_drawable.xml
+* FantasyRadio\src\main\res\drawable\rec.png
+* FantasyRadio\src\main\res\drawable\rec_active.png
+* FantasyRadio\src\main\res\drawable\refresh.xml
+* FantasyRadio\src\main\res\drawable\refresh_pressed.xml
+* FantasyRadio\src\main\res\drawable\refresh_states.xml
+* FantasyRadio\src\main\res\drawable\sb_progress.xml
+* FantasyRadio\src\main\res\drawable\shortcut_overlay.png
+* FantasyRadio\src\main\res\drawable\sound.png
+* FantasyRadio\src\main\res\drawable\tab_focus.xml
+* FantasyRadio\src\main\res\drawable\tab_indicator.xml
+* FantasyRadio\src\main\res\drawable\tab_press.xml
+* FantasyRadio\src\main\res\drawable\tab_selected.xml
+* FantasyRadio\src\main\res\drawable\tab_unselected.xml
+* FantasyRadio\src\main\res\drawable\widget_background.xml
+* FantasyRadio\src\main\res\drawable\widget_divider_line.xml
+* FantasyRadio\src\main\res\drawable\widget_pause.png
+* FantasyRadio\src\main\res\drawable\widget_pause_hover.png
+* FantasyRadio\src\main\res\drawable\widget_pause_states.xml
+* FantasyRadio\src\main\res\drawable\widget_play.png
+* FantasyRadio\src\main\res\drawable\widget_play_hover.png
+* FantasyRadio\src\main\res\drawable\widget_play_states.xml
+* FantasyRadio\src\main\res\layout\
+* FantasyRadio\src\main\res\layout\about.xml
+* FantasyRadio\src\main\res\layout\activity_main.xml
+* FantasyRadio\src\main\res\layout\app_notification.xml
+* FantasyRadio\src\main\res\layout\archieve_layout.xml
+* FantasyRadio\src\main\res\layout\archieve_list_item.xml
+* FantasyRadio\src\main\res\layout\fantasyradio_widget.xml
+* FantasyRadio\src\main\res\layout\file_dialog_main.xml
+* FantasyRadio\src\main\res\layout\file_dialog_row.xml
+* FantasyRadio\src\main\res\layout\group_view.xml
+* FantasyRadio\src\main\res\layout\grtitude.xml
+* FantasyRadio\src\main\res\layout\login_dialog.xml
+* FantasyRadio\src\main\res\layout\mp3_list_item_layout.xml
+* FantasyRadio\src\main\res\layout\mp3s.xml
+* FantasyRadio\src\main\res\layout\progress_bar.xml
+* FantasyRadio\src\main\res\layout\schedule_dialog.xml
+* FantasyRadio\src\main\res\layout\schedule_layout.xml
+* FantasyRadio\src\main\res\layout\schedule_list_item.xml
+* FantasyRadio\src\main\res\layout\settings.xml
+* FantasyRadio\src\main\res\layout\tab_indicator.xml
+* FantasyRadio\src\main\res\layout\tabs.xml
+* FantasyRadio\src\main\res\menu\
+* FantasyRadio\src\main\res\menu\activity_main.xml
+* FantasyRadio\src\main\res\values-v14\
+* FantasyRadio\src\main\res\values-v14\dimensions.xml
+* FantasyRadio\src\main\res\values\
+* FantasyRadio\src\main\res\values\dimensions.xml
+* FantasyRadio\src\main\res\values\strings.xml
+* FantasyRadio\src\main\res\values\styles.xml
+* FantasyRadio\src\main\res\xml\
+* FantasyRadio\src\main\res\xml\analytics.xml
+* FantasyRadio\src\main\res\xml\example_appwidget_info.xml
+* build.gradle
+* gradle\
+* gradle\wrapper\
+* gradle\wrapper\gradle-wrapper.jar
+* gradle\wrapper\gradle-wrapper.properties
+* gradlew
+* gradlew.bat
+* settings.gradle
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+joda-time-2.5.jar => joda-time:joda-time:2.5
+
+Potentially Missing Dependency:
+-------------------------------
+When we replaced the following .jar files with a Gradle dependency, we
+inferred the dependency version number from the filename. This
+specific version may not actually be available from the repository.
+If you get a build error stating that the dependency is missing, edit
+the version number to for example "+" to pick up the latest version
+instead. (This may require you to update your code if the library APIs
+have changed.)
+
+joda-time-2.5.jar => version 2.5 in joda-time:joda-time:2.5
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => FantasyRadio\src\main\AndroidManifest.xml
+* libs\acra-4.2.3.jar => FantasyRadio\libs\acra-4.2.3.jar
+* libs\armeabi-v7a\libbass.so => FantasyRadio\src\main\jniLibs\armeabi-v7a\libbass.so
+* libs\armeabi-v7a\libbass_aac.so => FantasyRadio\src\main\jniLibs\armeabi-v7a\libbass_aac.so
+* libs\armeabi\libbass.so => FantasyRadio\src\main\jniLibs\armeabi\libbass.so
+* libs\armeabi\libbass_aac.so => FantasyRadio\src\main\jniLibs\armeabi\libbass_aac.so
+* libs\jsoup-1.6.3.jar => FantasyRadio\libs\jsoup-1.6.3.jar
+* libs\universal-image-loader-1.8.6-with-sources.jar => FantasyRadio\libs\universal-image-loader-1.8.6-with-sources.jar
+* res\ => FantasyRadio\src\main\res\
+* src\ => FantasyRadio\src\main\java\
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)

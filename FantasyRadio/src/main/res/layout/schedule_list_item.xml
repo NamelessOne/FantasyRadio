@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:gravity="center"
+    android:minHeight="40dp"
+    android:orientation="horizontal"
+    android:weightSum="300"><!-- было 300-->
+
+    <TextView
+        android:id="@+id/ScheduleItemStartTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="100"
+        android:padding="3dp" />
+
+    <!--<ToggleButton
+        android:textOff=""
+        android:textOn=""
+        android:background="@drawable/bell"
+        android:id="@+id/scheduleReminder"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="50" />-->
+
+    <TextView
+        android:id="@+id/ScheduleItemTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="200"
+        android:adjustViewBounds="true" />
+
+</LinearLayout>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:orientation="vertical"
+    android:paddingBottom="3pt"
+    android:paddingTop="3pt" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="0.3" >
+
+        <TextView
+            android:id="@+id/MP3artist"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.27"
+            android:gravity="bottom"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <ImageButton
+            android:id="@+id/deleteMP3Button"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.02"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:onClick="deleteClick"
+            android:scaleType="fitCenter"
+            android:src="@drawable/delete_states" />
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:orientation="horizontal"
+        android:weightSum="1" >
+
+        <ImageButton
+            android:id="@+id/MP3buttonPlay"
+            android:layout_width="0pt"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.1"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:onClick="playClick"
+            android:padding="3dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/play_states" />
+
+        <SeekBar
+            android:id="@+id/MP3SeekBar1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.68"
+            android:paddingRight="2dp"
+            android:progress="0"
+            android:progressDrawable="@drawable/sb_progress"
+            android:thumb="@drawable/progress_control" />
+
+        <SeekBar
+            android:id="@+id/volumeSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.22"
+            android:paddingLeft="2dp"
+            android:progressDrawable="@drawable/sb_progress"
+            android:thumb="@drawable/progress_control" />
+    </LinearLayout>
+
+</LinearLayout>

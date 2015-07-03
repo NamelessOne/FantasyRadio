@@ -1,0 +1,98 @@
+<resources>
+
+    <color name="program_background">#d9dada</color>
+    <color name="bitrate_element_active">#0c648c</color>
+    <color name="bitrate_element">#5b5b5b</color>
+    <color name="main_background">#434242</color>
+    <color name="tab_active">#0c648c</color>
+    <color name="tab">#008dd2</color>
+    <color name="tab_line">#4ea7d3</color>
+    <color name="active_tab_line">#215a71</color>
+    <color name="refresh_border">#124E67</color>
+    <color name="refresh_background_active">#008DD2</color>
+    <color name="refresh_border_active">#124E67</color>
+    
+    <color name="widget_border">#0C648C</color>
+    <color name="widget_author">#0C648C</color>
+    <color name="widget_quality_active_background">#0C648C</color>
+    <color name="widget_background">#D9DADA</color>
+    <color name="widget_text">#434242</color>
+    <color name="widget_line">#434242</color>
+    <color name="widget_quality_active_text">#EBECEC</color>
+
+    <string name="username">Логин</string>
+    <string name="enter">Войти</string>
+    <string name="password">Пароль</string>
+    <string name="sleep_timer">Таймер отключения:</string>
+    <string name="app_name">Радио фантастики</string>
+    <string name="about">О программе</string>
+    <string name="exit">Выход</string>
+    <string name="gratitude_text">Спасибо за использование данного приложения. Если вас не затруднит, оставьте отзыв на play.google.com. </string>
+    <string name="gratitude">Спасибо!</string>
+    <string name="about_text">Первое в России радио, которое создано для любителей научной и антинаучной, боевой и космической фантастики, фэнтези, ужасов, детективов.
+Аудиокниги и радиоспектакли, рассказы в исполнении профессиональных актёров и чтецов хорошо знакомых произведений известных авторов и новые романы начинающих писателей. </string>
+    <string name="about_link">fantasyradio.ru\n</string>
+    <string name="rate">Оценить приложние.</string>
+    <string name="no_thanks">Нет, спасибо.</string>
+    <string name="registration_link"><a href="http://fantasyradio.ru/index.php/registratsiya">зарегистрироваться.</a></string>
+    <string name="versiontext">Версия</string>
+    <string name="title_activity_main">Радио фантастики</string>
+    <string name="connecting">Соединение…</string>
+    <string name="first_tab_text">Радио</string>
+    <string name="second_tab_text">Программа</string>
+    <string name="third_tab_text">Архив</string>
+    <string name="fourth_tab_text">Сохраненное</string>
+    <string name="download_started">Загрузка начинается</string>
+    <string name="settings">Настройки</string>
+    <string name="nnew">Новая папка</string>
+    <string name="select">Выбрать</string>
+    <string name="file_name">Имя файла:</string>
+    <string name="cancel">Отмена</string>
+    <string name="back">Назад</string>
+    <string name="settings_save_folder">Папка для сохранения mp3</string>
+    <string name="create">Сохранить</string>
+    <string name="no_data">Нет данных</string>
+    <string name="location">Путь</string>
+    <string name="cant_read_folder">Нельзя открыть директорию!</string>
+    <string name="browse">Обзор</string>
+    <string name="save">Сохранить</string>
+    <string name="refresh">Обновить</string>
+    <string name="are_you_sure_want_delete">Вы действительно хотите удалить запись?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="load">Загрузка</string>
+    <string name="download_finished">Скачивание завершено</string>
+    <string name="quality">Качество:</string>
+    <string name="stream_quality">Качество потока:</string>
+    <string name="admob_publisher_id">ca-app-pub-1743291198196470/7976420748</string>
+    <string name="wrong_login_or_password">Неправильный логин/пароль.</string>
+    <string name="archieve_text">Запись эфира за предыдущий день. Качество записи 32 кб/с. Периодически сервис может быть недоступен. Для использования архива необходимо <a href="http://fantasyradio.ru/index.php/registratsiya">зарегистрироваться.</a></string>
+    <string name="archieve_url">http://www.fantasyradio.ru/index_arch.php</string>
+    <string name="stream_url_AAC16">http://fantasyradioru.no-ip.biz:8016</string>
+    <string name="stream_url_AAC112">http://fantasyradioru.no-ip.biz:8000</string>
+    <string name="stream_url_MP364">http://stream0.radiostyle.ru:8000/fantasy-radio</string>
+    <string name="stream_url_MP332">http://fantasyradioru.no-ip.biz:8008</string>
+    <string name="stream_url_MP396">http://fantasyradioru.no-ip.biz:8002/live</string>
+    <string name="stream_AAC16">AAC 16 КБит/с</string>
+    <string name="stream_AAC112">AAC 112 КБит/с</string>
+    <string name="stream_MP364">MP3 64 КБит/с</string>
+    <string name="stream_MP332">MP3 32 КБит/с</string>
+    <string name="stream_MP396">MP3 96 КБит/с</string>
+
+    <string name="widget_AAC16">16</string>
+    <string name="widget_AAC112">112</string>
+    <string name="widget_MP364">64</string>
+    <string name="widget_MP332">32</string>
+    <string name="widget_MP396">96</string>
+
+    <string-array name="week">
+        <item>Понедельник</item>
+        <item>Вторник</item>
+        <item>Среда</item>
+        <item>Четверг</item>
+        <item>Пятница</item>
+        <item>Суббота</item>
+        <item>Воскресенье</item>
+    </string-array>
+
+</resources>
