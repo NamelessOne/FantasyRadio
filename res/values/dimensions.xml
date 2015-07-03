@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <dimen name="tab_space_bottom">2dp</dimen>
-    <dimen name="tab_space">1dp</dimen>
-    <dimen name="widget_margin">8dp</dimen>
-
-</resources>
