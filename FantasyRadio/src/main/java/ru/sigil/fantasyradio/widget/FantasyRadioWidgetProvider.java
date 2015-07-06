@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import com.un4seen.bass.BASS;
+import com.un4seen.bass.BASS_AAC;
 
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.utils.BASSUtil;
@@ -108,8 +109,9 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                     getPendingSelfIntent(context,
                             ACTION_STOP_CLICK)
             );
+            remoteViews.setTextViewText(R.id.widget_author, widgetAuthor);
+            remoteViews.setTextViewText(R.id.widget_title, widgetTitle);
             //-----------------------------------------------------------
-            //TODO сделать всем битрейтам дефолтный фон
             restoreDefaultBitrateColors(remoteViews);
             switch (currentBitrate) {
                 case aac_16:
@@ -227,14 +229,43 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             onUpdate(context);
         }
         if (ACTION_PLAY_CLICK.equals(intent.getAction())) {
+            BASS.BASS_Free();
+            BASS.BASS_Init(-1, 44100, 0);
+            BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);
+            BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PREBUF, 0);
+            BASS.BASS_SetVolume((float) 0.5);
             playerState = PlayerState.play;
-            Play(context.getString(R.string.stream_url_MP396));
+            switch (currentBitrate) {
+                case aac_16:
+                    PlayAAC(context.getString(R.string.stream_url_AAC16));
+                    break;
+                case mp3_32:
+                    Play(context.getString(R.string.stream_url_MP332));
+                    break;
+                case mp3_64:
+                    Play(context.getString(R.string.stream_url_MP364));
+                    break;
+                case mp3_96:
+                    Play(context.getString(R.string.stream_url_MP396));
+                    break;
+                case aac_112:
+                    PlayAAC(context.getString(R.string.stream_url_AAC112));
+                    break;
+            }
             onUpdate(context);
         }
         if (ACTION_STOP_CLICK.equals(intent.getAction())) {
             BASS.BASS_StreamFree(BASSUtil.getChan());
             playerState = PlayerState.stop;
             onUpdate(context);
+        }
+    }
+
+    void PlayAAC(String url) {
+        try {
+            new Thread(new OpenURLAAC(url)).start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -249,6 +280,46 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             new Thread(new OpenURL(url)).start();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Магия BASS.dll для AAC потока
+     */
+    class OpenURLAAC implements Runnable {
+        String url;
+
+        public OpenURLAAC(String p) {
+            url = p;
+        }
+
+        public void run() {
+            int r;
+            synchronized (lock) { // make sure only 1 thread at a time can
+                // do
+                // the following
+                r = ++req; // increment the request counter for this request
+            }
+            BASS.BASS_StreamFree(BASSUtil.getChan()); // close old stream
+            int c = BASS_AAC
+                    .BASS_AAC_StreamCreateURL(url, 0, BASS.BASS_STREAM_BLOCK
+                            | BASS.BASS_STREAM_STATUS
+                            | BASS.BASS_STREAM_AUTOFREE, BASSUtil.StatusProc, r); // open
+            // URL
+            synchronized (lock) {
+                if (r != req) { // there is a newer request, discard this
+                    // stream
+                    if (c != 0)
+                        BASS.BASS_StreamFree(c);
+                    return;
+                }
+                BASSUtil.setChan(c); // this is now the current stream
+            }
+
+            if (BASSUtil.getChan() != 0) {
+                handler.postDelayed(timer, 50);
+            } // start prebuffer
+            // monitoring
         }
     }
 

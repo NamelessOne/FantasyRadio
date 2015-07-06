@@ -15,7 +15,7 @@ import org.acra.annotation.ReportsCrashes;
 import ru.sigil.log.DefaultLogger;
 import ru.sigil.log.LogManager;
 
-@ReportsCrashes(formKey = "dFlLak5FaDNkbHNzblpMaUU5aU1IbEE6MQ", logcatArguments = {
+@ReportsCrashes(formKey = "", formUri = "http://fantasyradionotifications-sigil.rhcloud.com/crash", logcatArguments = {
         "-t", "50"})
 public class MyApp extends Application {
     private float vol = (float) 0.5;
@@ -44,6 +44,7 @@ public class MyApp extends Application {
         }
         LogManager.addLogger(new DefaultLogger());
     }
+
     private Tracker mTracker = null;
 
     synchronized public Tracker getTracker() {
