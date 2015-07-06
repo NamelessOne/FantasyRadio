@@ -24,7 +24,7 @@ import java.util.Collections;
 
 public class ScheduleParser {
     private static final String URL = "https://www.googleapis.com/calendar/v3/calendars/fantasyradioru@gmail.com/events?key=AIzaSyDam413Hzm4l8GOEEg-NF8w8wdAbUsKEjM&maxResults=50&singleEvents=true&orderBy=startTime";
-
+    //https://www.googleapis.com/calendar/v3/calendars/fantasyradioru@gmail.com/events?key=AIzaSyDam413Hzm4l8GOEEg-NF8w8wdAbUsKEjM&maxResults=50&singleEvents=true&orderBy=startTime&timeMin=2014-01-01T00:00:00Z&timeMax=2018-03-24T23:59:59Z
 
     /**
      * Парсим расписание. Результат в добавляется в ScheduleEntityesCollection.

@@ -12,11 +12,8 @@ import android.view.View;
 import android.widget.ExpandableListView;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -26,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import ru.sigil.fantasyradio.MyApp;
 import ru.sigil.fantasyradio.R;
 
 public class ScheduleActivity extends Activity {
@@ -106,9 +102,9 @@ public class ScheduleActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            ArrayList<ArrayList<ScheduleEntity>> arr = new ArrayList<ArrayList<ScheduleEntity>>();
+            ArrayList<ArrayList<ScheduleEntity>> arr = new ArrayList<>();
             for (int i = 0; i < 3; i++) {
-                ArrayList<ScheduleEntity> arr2 = new ArrayList<ScheduleEntity>();
+                ArrayList<ScheduleEntity> arr2 = new ArrayList<>();
                 LocalDate ld = LocalDate.now();
                 ld = ld.plusDays(i);
                 for (Iterator<ScheduleEntity> it = ScheduleEntityesCollection.getEntityes().iterator(); it.hasNext(); ) {
