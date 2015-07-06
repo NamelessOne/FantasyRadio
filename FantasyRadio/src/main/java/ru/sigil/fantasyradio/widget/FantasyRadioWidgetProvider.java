@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -17,7 +16,6 @@ import com.un4seen.bass.BASS_AAC;
 
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.utils.BASSUtil;
-import ru.sigil.log.LogManager;
 
 
 /**
@@ -53,17 +51,16 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     private static final int defaultBitrateTextColor = Color.parseColor("#424242");
     private static String widgetTitle = "";
     private static String widgetAuthor = "";
+    private Context context;
 
     @Override
     public void onEnabled(Context context) {
-        Log.d(TAG, "onEnabled method called");
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
                          int[] appWidgetIds) {
 
-        Log.d(TAG, "onUpdate method called");
         // Get all ids
 
         ComponentName thisWidget = new ComponentName(context,
@@ -74,7 +71,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.fantasyradio_widget);
 
-            LogManager.d(TAG, "onUpdate");
             Intent intent = new Intent(context, FantasyRadioWidgetProvider.class);
 
             intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
@@ -229,6 +225,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             onUpdate(context);
         }
         if (ACTION_PLAY_CLICK.equals(intent.getAction())) {
+            this.context = context;
             BASS.BASS_Free();
             BASS.BASS_Init(-1, 44100, 0);
             BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);
@@ -257,6 +254,8 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
         if (ACTION_STOP_CLICK.equals(intent.getAction())) {
             BASS.BASS_StreamFree(BASSUtil.getChan());
             playerState = PlayerState.stop;
+            widgetAuthor = "";
+            widgetTitle = "";
             onUpdate(context);
         }
     }
@@ -334,7 +333,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
         }
 
         public void run() {
-            LogManager.d(TAG, "play");
             int r;
             synchronized (lock) { // make sure only 1 thread at a time can
                 // do
@@ -419,7 +417,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     };
 
     private void DoMeta() {
-        //TODO написать
         String meta = (String) BASS.BASS_ChannelGetTags(BASSUtil.getChan(),
                 BASS.BASS_TAG_META);
         if (meta != null) { // got Shoutcast metadata
@@ -429,10 +426,14 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                 try {
                     title = meta.substring(ti + 13, meta.indexOf("'", ti + 13));
                     title = new String(title.getBytes("cp-1252"), "cp-1251");
+                    widgetTitle = title;
+                    try {
+                        onUpdate(context);
+                    } catch (Exception e) {
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-
                 }
             } else {
                 String[] ogg = (String[]) BASS.BASS_ChannelGetTags(
