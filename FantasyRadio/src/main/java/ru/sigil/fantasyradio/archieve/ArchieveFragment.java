@@ -12,7 +12,6 @@ import android.os.Message;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -24,15 +23,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.analytics.GoogleAnalytics;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import ru.sigil.fantasyradio.AbstractListActivity;
+import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.R;
+import ru.sigil.fantasyradio.TabHoster;
 import ru.sigil.fantasyradio.exceptions.WrongLoginOrPasswordException;
 import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.saved.MP3Saver;
@@ -40,51 +36,34 @@ import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.utils.DownladedEntityes;
 import ru.sigil.fantasyradio.utils.DownloadThread;
 
-public class ArchieveActivity extends AbstractListActivity {
-    private AdView adView;
+public class ArchieveFragment extends AbstractListFragment {
     private ArchieveListAdapter adapter;
     private ParseAsyncTask searchAsyncTasc;
     private AlertDialog.Builder ad;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.archieve_layout);
-        adView = (AdView)this.findViewById(R.id.archieveAdView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .build();
-        adView.loadAd(adRequest);
-        TextView tv = (TextView) findViewById(R.id.archive_text1);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View archieveActivityView = inflater.inflate(R.layout.archieve_layout, container, false);
+        TextView tv = (TextView) archieveActivityView.findViewById(R.id.archive_text1);
         tv.setMovementMethod(LinkMovementMethod.getInstance());
-        ad = new AlertDialog.Builder(this);
-        setLv((ListView) findViewById(R.id.ArchieveListView));
+        archieveActivityView.findViewById(R.id.archieve_refresh_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refreshClick(v);
+            }
+        });
+        ad = new AlertDialog.Builder(getActivity());
+        setLv((ListView) archieveActivityView.findViewById(R.id.ArchieveListView));
+        if(ArchieveEntityesCollection.getEntityes().size()>0) {
+            adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
+                    ArchieveEntityesCollection.getEntityes(), downloadClickListener);
+            getLv().setAdapter(adapter);
+        }
+        return archieveActivityView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        GoogleAnalytics.getInstance(this).reportActivityStart(this);   // Add this method.
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        GoogleAnalytics.getInstance(this).reportActivityStop(this); ;  // Add this method.
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        adView.resume();
-    }
-
-    public void refreshClick(@SuppressWarnings("UnusedParameters") View v) {
+    public void refreshClick(View v) {
         //Сначала логинимся
         ad.setTitle(getString(R.string.enter));  // заголовок
         /*
@@ -94,7 +73,7 @@ public class ArchieveActivity extends AbstractListActivity {
             e.printStackTrace();
         }
         */
-        LayoutInflater factory = LayoutInflater.from(this);
+        LayoutInflater factory = LayoutInflater.from(getActivity());
         final View textEntryView = factory.inflate(R.layout.login_dialog, null);
         ad.setTitle(R.string.enter)
                 .setView(textEntryView);
@@ -126,7 +105,6 @@ public class ArchieveActivity extends AbstractListActivity {
         });
         ad.create();
         ad.show();
-
         //--------------------
     }
 
@@ -144,7 +122,7 @@ public class ArchieveActivity extends AbstractListActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }// !
-            this.progress = new ProgressDialog(ArchieveActivity.this);
+            this.progress = new ProgressDialog(getActivity());
             this.progress.setMessage(getString(R.string.load));
             this.progress.setCancelable(false);
             this.progress.setOnCancelListener(new OnCancelListener() {
@@ -163,9 +141,9 @@ public class ArchieveActivity extends AbstractListActivity {
                 ArchieveParser.ParseArchieve(login, password);
             } catch (WrongLoginOrPasswordException e) {
                 //сообщение о неправильном логине/пароле
-                runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast toast = Toast.makeText(getBaseContext(),
+                        Toast toast = Toast.makeText(getActivity().getBaseContext(),
                                 getString(R.string.wrong_login_or_password), Toast.LENGTH_LONG);
                         toast.show();
                     }
@@ -184,11 +162,9 @@ public class ArchieveActivity extends AbstractListActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            adapter = new ArchieveListAdapter(getBaseContext(),
-                    ArchieveEntityesCollection.getEntityes());
+            adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
+                    ArchieveEntityesCollection.getEntityes(), downloadClickListener);
             getLv().setAdapter(adapter);
-            // ---------------------------------------
-            // ----------------------------------------
             if (progress.isShowing()) {
                 progress.dismiss();
             }
@@ -203,14 +179,14 @@ public class ArchieveActivity extends AbstractListActivity {
         }
     }
 
-    public void downloadClick(View v) {
-        /*
-        try {
-            EasyTracker.getTracker().sendEvent("Clicks", "ArchieveClicks", "DownloadFromArchieveClick", null);
-        } catch (Exception e) {
-            e.printStackTrace();
+    final View.OnClickListener downloadClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            downloadClick(v);
         }
-        */
+    };
+
+    public void downloadClick(View v) {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
         String formattedDate = df.format(c.getTime());
@@ -222,11 +198,11 @@ public class ArchieveActivity extends AbstractListActivity {
         mp3Entity.setTitle(entity.getName());
         mp3Entity.setDirectory(Environment.getExternalStorageDirectory()
                 + Settings.getSaveDir() + formattedDate + entity.getFileName());
-        Toast toast = Toast.makeText(getBaseContext(),
+        Toast toast = Toast.makeText(getActivity().getBaseContext(),
                 getString(R.string.download_started), Toast.LENGTH_LONG);
         toast.show();
         // -----------------------------------------------------------------------
-        try {
+        /*try {
             LinearLayout rl = (LinearLayout) v.getParent();
             ProgressBar pb = null;
             if (rl != null) {
@@ -238,12 +214,12 @@ public class ArchieveActivity extends AbstractListActivity {
             v.setVisibility(View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         DownladedEntityes.getDownloadedEntityes().add(entity.getURL());
         // -----------------------------------------------------------------------
         DownloadThread dt = new DownloadThread(entity.getURL(),
                 Environment.getExternalStorageDirectory() + Settings.getSaveDir(),
-                formattedDate + entity.getFileName(), getBaseContext(),
+                formattedDate + entity.getFileName(), getActivity().getBaseContext(),
                 downloadFinishedHandler, mp3Entity);
         dt.start();
         // ----------------------------
@@ -252,7 +228,7 @@ public class ArchieveActivity extends AbstractListActivity {
     private Handler downloadFinishedHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Toast toast = Toast.makeText(getBaseContext(),
+            Toast toast = Toast.makeText(getActivity().getBaseContext(),
                     getString(R.string.download_finished), Toast.LENGTH_LONG);
             toast.show();
             //А тут мы пишем инфу о скачанном
@@ -298,17 +274,11 @@ public class ArchieveActivity extends AbstractListActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            try {
+                ((TabHoster) getActivity()).mSectionsPagerAdapter.notifySavedFragment();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     };
-    @Override
-    public void onDestroy() {
-        adView.destroy();
-        super.onDestroy();
-    }
-    @Override
-    public void onPause() {
-        adView.pause();
-        super.onPause();
-    }
-
 }

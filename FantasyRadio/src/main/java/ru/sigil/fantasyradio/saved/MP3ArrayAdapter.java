@@ -23,12 +23,16 @@ class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
 
     public static int width;
 
-    private List<MP3Entity> MP3s = new ArrayList<MP3Entity>();
+    private List<MP3Entity> MP3s = new ArrayList<>();
+    private View.OnClickListener deleteCLickListener;
+    private View.OnClickListener playCLickListener;
 
     public MP3ArrayAdapter(Context context, int textViewResourceId,
-                           List<MP3Entity> objects) {
+                           List<MP3Entity> objects, View.OnClickListener deleteClickListener, View.OnClickListener playClickListener) {
         super(context, textViewResourceId, objects);
         this.MP3s = objects;
+        this.deleteCLickListener = deleteClickListener;
+        this.playCLickListener = playClickListener;
     }
 
     public int getCount() {
@@ -65,8 +69,10 @@ class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         messageMap.put("time", message.getTime());
         messageMap.put("title", message.getTitle());
         deleteBtn.setTag(messageMap);
+        deleteBtn.setOnClickListener(deleteCLickListener);
         ImageButton playBtn = (ImageButton) row.findViewById(R.id.MP3buttonPlay);
         playBtn.setTag(message);
+        playBtn.setOnClickListener(playCLickListener);
         progressSeekBar.setTag(message.getDirectory());
         volumeSeekBar.setTag(message.getDirectory() + "volume");
         playBtn.setImageResource(R.drawable.play_states);

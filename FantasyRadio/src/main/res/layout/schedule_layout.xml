@@ -7,11 +7,11 @@
     android:orientation="vertical" >
 
     <Button
+        android:id="@+id/schedule_refresh_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@drawable/refresh_states"
-        android:onClick="refreshClick"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
         android:text="@string/refresh" />
@@ -35,14 +35,4 @@
             android:dividerHeight="1dp"
             android:groupIndicator="@null" />
     </LinearLayout>
-
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/scheduleAdView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/admob_publisher_id"
-        android:gravity="bottom" >
-    </com.google.android.gms.ads.AdView>
-
 </LinearLayout>

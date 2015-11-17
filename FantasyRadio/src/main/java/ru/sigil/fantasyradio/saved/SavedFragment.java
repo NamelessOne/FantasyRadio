@@ -6,17 +6,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.un4seen.bass.BASS;
 import com.un4seen.bass.BASS_AAC;
 
@@ -25,16 +23,16 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ru.sigil.fantasyradio.AbstractListActivity;
+import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.utils.BASSUtil;
 import ru.sigil.fantasyradio.utils.PlayerState;
 
-public class SavedActivity extends AbstractListActivity {
-    private AdView adView;
+public class SavedFragment extends AbstractListFragment {
     private MP3Entity mp3EntityForDelete;
     private MP3ArrayAdapter adapter;
     private int nextPos;
+    private View savedActivityView;
     private TimerTask seekTask = new TimerTask() {
         public void run() {
             mp3ProgressHandler.sendEmptyMessage(0);
@@ -52,6 +50,27 @@ public class SavedActivity extends AbstractListActivity {
             }
         }
     };
+
+    public void notifyAdapter()
+    {
+        View.OnClickListener deleteClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteClick(v);
+            }
+        };
+        View.OnClickListener playClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playClick(v);
+            }
+        };
+        adapter = new MP3ArrayAdapter(getActivity().getBaseContext(),
+                R.layout.mp3_list_item_layout, MP3Saver.getMp3c()
+                .getMp3entityes(), deleteClickListener, playClickListener
+        );
+        getLv().setAdapter(adapter);
+    }
 
     private Handler mp3ProgressHandler = new Handler() {
         @Override
@@ -76,42 +95,19 @@ public class SavedActivity extends AbstractListActivity {
         }
     };
 
-    /**
-     * Called when the activity is first created.
-     */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.mp3s);
-        adView = (AdView)this.findViewById(R.id.mp3sAdView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .build();
-        adView.loadAd(adRequest);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        savedActivityView = inflater.inflate(R.layout.mp3s, container, false);
         CurrentControls.setRewindMP3Handler(rewindMp3Handler);
-        setLv((ListView) findViewById(R.id.MP3ListView));
+        setLv((ListView) savedActivityView.findViewById(R.id.MP3ListView));
+        return savedActivityView;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        GoogleAnalytics.getInstance(this).reportActivityStart(this);    // Add this method.
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        GoogleAnalytics.getInstance(this).reportActivityStop(this);    // Add this method.
-    }
-
-
-    @Override
-    protected void onResume() {
-        adapter = new MP3ArrayAdapter(getBaseContext(),
-                R.layout.mp3_list_item_layout, MP3Saver.getMp3c()
-                .getMp3entityes());
-        getLv().setAdapter(adapter);
+    public void onResume() {
+        notifyAdapter();
         super.onResume();
-        adView.resume();
     }
 
     class RunnableParam implements Runnable {
@@ -134,10 +130,10 @@ public class SavedActivity extends AbstractListActivity {
         // get error code in current thread for display in UI thread
         String s = String.format("%s\n(error code: %d)", es,
                 BASS.BASS_ErrorGetCode());
-        runOnUiThread(new RunnableParam(s) {
+        getActivity().runOnUiThread(new RunnableParam(s) {
             public void run() {
                 try {
-                    Toast toast = Toast.makeText(getApplicationContext(),
+                    Toast toast = Toast.makeText(getActivity().getApplicationContext(),
                             (String) param, Toast.LENGTH_SHORT);
                     toast.show();
                 } catch (Exception e) {
@@ -149,7 +145,7 @@ public class SavedActivity extends AbstractListActivity {
 
     private BASS.SYNCPROC EndSync = new BASS.SYNCPROC() {
         public void SYNCPROC(int handle, int channel, int data, Object user) {
-            runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     // Заканчивается воспроизведение. Переходим на следующий трек.
                     offPreviousMP3ListRow();
@@ -160,7 +156,7 @@ public class SavedActivity extends AbstractListActivity {
                                             // nextPos + 1,
                                             adapter.getCount() - nextPos,
                                             null,
-                                            (LinearLayout) findViewById(R.id.mp3sLinearLayout));
+                                            (LinearLayout) savedActivityView.findViewById(R.id.mp3sLinearLayout));
                             LinearLayout ll2 = null;
                             if (ll1 != null) {
                                 ll2 = (LinearLayout) ll1.getChildAt(1);
@@ -187,7 +183,7 @@ public class SavedActivity extends AbstractListActivity {
 
     BASS.SYNCPROC PosSync = new BASS.SYNCPROC() {
         public void SYNCPROC(int handle, int channel, int data, Object user) {
-            runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                 }
             });
@@ -282,7 +278,7 @@ public class SavedActivity extends AbstractListActivity {
         mp3entity.setTime(messageMap.get("time"));
         mp3entity.setTitle(messageMap.get("title"));
         mp3EntityForDelete = mp3entity;
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder
                 .setTitle(getString(R.string.are_you_sure_want_delete));
         alertDialogBuilder.setPositiveButton(getString(R.string.yes),
@@ -360,15 +356,5 @@ public class SavedActivity extends AbstractListActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    @Override
-    public void onPause() {
-        adView.pause();
-        super.onPause();
-    }
-    @Override
-    public void onDestroy() {
-        adView.destroy();
-        super.onDestroy();
     }
 }

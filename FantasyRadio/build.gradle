@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "23.0.0 rc2"
-
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId "ru.sigil.fantasyradio"
-        minSdkVersion 10
-        targetSdkVersion 22
+        minSdkVersion 15
+        targetSdkVersion 23
     }
 
     buildTypes {
@@ -16,12 +15,39 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+    flavorDimensions 'market'
+
+    productFlavors {
+        free {
+            buildConfigField 'boolean', 'Admob', 'true'
+            flavorDimension 'market'
+        }
+        paid {
+            buildConfigField 'boolean', 'Admob', 'false'
+            flavorDimension 'market'
+            applicationId = "ru.sigil.fantasyradioplus"
+        }
+    }
+
+    sourceSets {
+        free {
+            assets.srcDirs = ['src/free/assets']
+            res.srcDirs = ['src/free/res']
+            java.srcDirs = ['src/free/java']
+        }
+        paid {
+            assets.srcDirs = ['src/paid/assets']
+            res.srcDirs = ['src/paid/res']
+            java.srcDirs = ['src/paid/java']
+        }
+    }
 }
 
 dependencies {
     compile 'joda-time:joda-time:2.5'
-    compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.google.android.gms:play-services:8.3.0'
     compile files('libs/acra-4.2.3.jar')
-    compile files('libs/jsoup-1.6.3.jar')
     compile files('libs/universal-image-loader-1.8.6-with-sources.jar')
+    compile files('libs/jsoup-1.8.3.jar')
 }

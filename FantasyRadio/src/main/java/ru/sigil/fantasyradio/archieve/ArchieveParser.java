@@ -10,7 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,8 +80,6 @@ public abstract class ArchieveParser {
             } else {//TODO Залогиниться не удалось, TT. Кидаем Exception=)
                 throw new WrongLoginOrPasswordException();
             }
-        } catch (SocketTimeoutException ste) {
-            ste.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

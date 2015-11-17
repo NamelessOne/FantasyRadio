@@ -24,14 +24,4 @@
             android:paddingLeft="3pt"
             android:paddingRight="3pt" />
     </LinearLayout>
-
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/mp3sAdView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/admob_publisher_id"
-        android:gravity="bottom" >
-    </com.google.android.gms.ads.AdView>
-
 </LinearLayout>

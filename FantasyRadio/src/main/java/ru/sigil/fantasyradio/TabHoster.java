@@ -1,43 +1,52 @@
 package ru.sigil.fantasyradio;
 
-import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TabHost;
-import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.un4seen.bass.BASS;
 
-import ru.sigil.fantasyradio.archieve.ArchieveActivity;
+import ru.sigil.fantasyradio.archieve.ArchieveFragment;
 import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.saved.MP3Saver;
-import ru.sigil.fantasyradio.saved.SavedActivity;
-import ru.sigil.fantasyradio.schedule.ScheduleActivity;
+import ru.sigil.fantasyradio.saved.SavedFragment;
+import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.settings.SettingsActivity;
 import ru.sigil.fantasyradio.utils.BASSUtil;
 import ru.sigil.fantasyradio.utils.PlayerState;
 import ru.sigil.fantasyradio.utils.ProgramNotification;
 
-public class TabHoster extends TabActivity {
+public class TabHoster extends FragmentActivity {
     private static final String TAG = TabHoster.class.getSimpleName();
     Context context;
+    public SectionsPagerAdapter mSectionsPagerAdapter;
+    ViewPager mViewPager;
+    private AdView adView;
 
     private static int current_menu;
-    private TabHost tabHost;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = this.getBaseContext();  // Get current context.
+        setContentView(R.layout.tabs);
+        if(BuildConfig.FLAVOR.equals("free")) {
+            adView = (AdView) findViewById(R.id.mainAdView);
+            AdRequest adRequest = new AdRequest.Builder()
+                    .build();
+            adView.loadAd(adRequest);
+        }
         // EasyTracker is now ready for use.
         ProgramNotification.setContext(getBaseContext());
         setCurrent_menu(R.menu.activity_main);
@@ -50,24 +59,10 @@ public class TabHoster extends TabActivity {
         BASS.BASS_SetVolume((float) 0.5);
         SharedPreferences settings = getPreferences(0);
         Settings.setSettings(settings);
-        // -------------------------------------------------
-        try {
-            setContentView(R.layout.tabs);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        tabHost = getTabHost(); // tabHost is a private field
-        Intent intent = new Intent(this, MainActivity.class);
-        addTab(getString(R.string.first_tab_text), R.drawable.ephir, intent);
-        intent = new Intent(this, ScheduleActivity.class);
-        addTab(getString(R.string.second_tab_text), R.drawable.clocks, intent);
-        intent = new Intent(this, ArchieveActivity.class);
-        addTab(getString(R.string.third_tab_text), R.drawable.archive, intent);
-        intent = new Intent(this, SavedActivity.class);
-        addTab(getString(R.string.fourth_tab_text), R.drawable.downloadm,
-                intent);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
         context = getApplicationContext();
     }
 
@@ -78,6 +73,9 @@ public class TabHoster extends TabActivity {
 
     @Override
     public void onPause() {
+        if(BuildConfig.FLAVOR.equals("free")) {
+            adView.pause();
+        }
         if (PlayerState.isPlaying()) {
             ProgramNotification
                     .createNotification();
@@ -90,6 +88,9 @@ public class TabHoster extends TabActivity {
     @Override
     public void onDestroy() {
         BASS.BASS_ChannelStop(BASSUtil.getChan());
+        if(BuildConfig.FLAVOR.equals("free")) {
+            adView.destroy();
+        }
         super.onDestroy();
     }
 
@@ -193,23 +194,72 @@ public class TabHoster extends TabActivity {
             }
         }
         super.onResume();
+        if(BuildConfig.FLAVOR.equals("free")) {
+            adView.resume();
+        }
     }
 
-    private void addTab(String label, int drawableId, Intent intent) {
-        TabHost.TabSpec spec = tabHost.newTabSpec(label);
-        View tabIndicator = LayoutInflater.from(this).inflate(
-                R.layout.tab_indicator, getTabWidget(), false);
-        TextView title = null;
-        if (tabIndicator != null) {
-            title = (TextView) tabIndicator
-                    .findViewById(R.id.tabIndicatorTitle);
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private RadioFragment radioFragment = new RadioFragment();
+        private ScheduleFragment scheduleFragment = new ScheduleFragment();
+        private ArchieveFragment archieveFragment = new ArchieveFragment();
+        private SavedFragment savedFragment = new SavedFragment();
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
         }
-        ImageView image = (ImageView) tabIndicator
-                .findViewById(R.id.tabIndicatorImage);
-        image.setImageResource(drawableId);
-        title.setText(label);
-        spec.setIndicator(tabIndicator);
-        spec.setContent(intent);
-        tabHost.addTab(spec);
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a DummySectionFragment (defined as a static inner class
+            // below) with the page number as its lone argument.
+            //TODO
+            Fragment fragment = new Fragment();
+            switch (position) {
+                case 0:
+                    fragment = radioFragment;
+                    break;
+                case 1:
+                    fragment = scheduleFragment;
+                    break;
+                case 2:
+                    fragment = archieveFragment;
+                    break;
+                case 3:
+                    fragment = savedFragment;
+                    break;
+            }
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return getString(R.string.first_tab_text);
+                case 1:
+                    return getString(R.string.second_tab_text);
+                case 2:
+                    return getString(R.string.third_tab_text);
+                case 3:
+                    return getString(R.string.fourth_tab_text);
+            }
+            return null;
+        }
+
+        public void notifySavedFragment()
+        {
+            savedFragment.notifyAdapter();
+        }
     }
 }

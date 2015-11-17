@@ -13,7 +13,7 @@ import java.util.ListIterator;
 
 public class MP3Collection {
     private Context context;
-    private List<MP3Entity> mp3entityes = new ArrayList<MP3Entity>();
+    private List<MP3Entity> mp3entityes = new ArrayList<>();
     public SQLiteDatabase database;
     private final Object saveSync = new Object();
 

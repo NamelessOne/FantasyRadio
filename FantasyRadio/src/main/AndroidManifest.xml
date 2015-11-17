@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.sigil.fantasyradio"
     android:installLocation="auto"
+    android:hardwareAccelerated="false"
     android:versionCode="125"
     android:versionName="1.25">
 
@@ -31,22 +32,6 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_main" />
-        <activity
-            android:name=".archieve.ArchieveActivity"
-            android:configChanges="orientation"
-            android:label="@string/title_activity_main" />
-        <activity
-            android:name=".saved.SavedActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_main" />
-        <activity
-            android:name=".schedule.ScheduleActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_main" />
         <activity
             android:name=".settings.SettingsActivity"
             android:configChanges="orientation|screenSize"

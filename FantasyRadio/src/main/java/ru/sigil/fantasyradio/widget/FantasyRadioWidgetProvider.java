@@ -16,6 +16,7 @@ import com.un4seen.bass.BASS_AAC;
 
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.utils.BASSUtil;
+import ru.sigil.fantasyradio.utils.PlayerState;
 
 
 /**
@@ -40,12 +41,12 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     private static final String ACTION_STOP_CLICK =
             "ru.sigil.fantasyradio.widget.ACTION_STOP_CLICK";
 
-    private enum PlayerState {stop, play}
+    private enum PlayState {stop, play}
 
     private enum Bitrate {aac_16, mp3_32, mp3_64, mp3_96, aac_112}
 
     private static Bitrate currentBitrate = Bitrate.aac_16;
-    private static PlayerState playerState = PlayerState.stop;
+    private static PlayState playState = PlayState.stop;
     private static final int activeBitrateColor = Color.parseColor("#0C648C");
     private static final int activeBitrateTextColor = Color.parseColor("#EBECEC");
     private static final int defaultBitrateTextColor = Color.parseColor("#424242");
@@ -55,6 +56,30 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
+        /*if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
+            playState = PlayState.play;
+            switch (PlayerState.getInstance().getCurrent_stream()) {
+                case PlayerState.AAC112:
+                    currentBitrate = Bitrate.aac_112;
+                    break;
+                case PlayerState.AAC16:
+                    currentBitrate = Bitrate.aac_16;
+                    break;
+                case PlayerState.MP332:
+                    currentBitrate = Bitrate.aac_112;
+                    break;
+                case PlayerState.MP364:
+                    currentBitrate = Bitrate.aac_112;
+                    break;
+                case PlayerState.MP396:
+                    currentBitrate = Bitrate.aac_112;
+                    break;
+                default:
+                    currentBitrate = Bitrate.aac_16;
+                    break;
+            }
+        }*/
+        super.onEnabled(context);
     }
 
     @Override
@@ -141,7 +166,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                             activeBitrateTextColor);
                     break;
             }
-            switch (playerState) {
+            switch (playState) {
                 case play:
                     remoteViews.setViewVisibility(R.id.widget_play, View.GONE);
                     remoteViews.setViewVisibility(R.id.widget_stop, View.VISIBLE);
@@ -231,7 +256,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);
             BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PREBUF, 0);
             BASS.BASS_SetVolume((float) 0.5);
-            playerState = PlayerState.play;
+            playState = PlayState.play;
             switch (currentBitrate) {
                 case aac_16:
                     PlayAAC(context.getString(R.string.stream_url_AAC16));
@@ -253,7 +278,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
         }
         if (ACTION_STOP_CLICK.equals(intent.getAction())) {
             BASS.BASS_StreamFree(BASSUtil.getChan());
-            playerState = PlayerState.stop;
+            playState = PlayState.stop;
             widgetAuthor = "";
             widgetTitle = "";
             onUpdate(context);

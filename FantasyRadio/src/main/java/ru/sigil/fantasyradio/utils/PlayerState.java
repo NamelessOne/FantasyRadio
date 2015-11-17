@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import ru.sigil.fantasyradio.RadioEntity;
+import ru.sigil.fantasyradio.RadioFragment;
 import ru.sigil.fantasyradio.saved.MP3Entity;
 
 /**
@@ -115,7 +116,7 @@ public class PlayerState {
      *
      * @param newRecActive Если true - создаётся временный файл, куда пишется поток. Иначе выполняется
      *                     RecordFinishedHandler
-     * @see ru.sigil.fantasyradio.MainActivity#recordFinishedHandler
+     * @see RadioFragment#recordFinishedHandler
      */
     public void setRecActive(boolean newRecActive) {
         // -------------------------------------

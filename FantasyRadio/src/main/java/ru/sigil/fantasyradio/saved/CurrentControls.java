@@ -17,7 +17,7 @@ public abstract class CurrentControls {
     /**
      * Хэндлер перемотки
      *
-     * @see ru.sigil.fantasyradio.saved.SavedActivity#rewindMp3Handler
+     * @see SavedFragment#rewindMp3Handler
      */
     private static Handler getRewindMP3Handler() {
         return rewindMP3Handler;
@@ -25,7 +25,7 @@ public abstract class CurrentControls {
 
     /**
      * @param rewindMP3Handler Хэндер перемотки сохранённой mp3.
-     * @see ru.sigil.fantasyradio.saved.SavedActivity#rewindMp3Handler
+     * @see SavedFragment#rewindMp3Handler
      */
     public static void setRewindMP3Handler(Handler rewindMP3Handler) {
         CurrentControls.rewindMP3Handler = rewindMP3Handler;

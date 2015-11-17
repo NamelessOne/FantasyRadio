@@ -1,4 +1,4 @@
-<LinearLayout xmlns:ads="http://schemas.android.com/apk/res-auto"
+<LinearLayout
               xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -27,7 +27,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="40"
                     android:adjustViewBounds="true"
-                    android:onClick="streamButtonClick"
                     android:scaleType="fitCenter"
                     android:src="@drawable/play_states"/>
 
@@ -43,7 +42,6 @@
                     android:layout_gravity="bottom"
                     android:layout_weight="30"
                     android:adjustViewBounds="true"
-                    android:onClick="streamRecordClick"
                     android:scaleType="fitCenter"
                     android:src="@drawable/rec"/>
 
@@ -101,7 +99,6 @@
                     android:layout_height="wrap_content"
                     android:background="@color/bitrate_element"
                     android:clickable="true"
-                    android:onClick="bitrateClick"
                     android:padding="5dp"
                     android:tag="0"
                     android:text="@string/stream_AAC16"/>
@@ -112,7 +109,6 @@
                     android:layout_height="wrap_content"
                     android:background="@color/bitrate_element"
                     android:clickable="true"
-                    android:onClick="bitrateClick"
                     android:padding="5dp"
                     android:tag="1"
                     android:text="@string/stream_MP332"/>
@@ -123,7 +119,6 @@
                     android:layout_height="wrap_content"
                     android:background="@color/bitrate_element"
                     android:clickable="true"
-                    android:onClick="bitrateClick"
                     android:padding="5dp"
                     android:tag="2"
                     android:text="@string/stream_MP364"/>
@@ -134,7 +129,6 @@
                     android:layout_height="wrap_content"
                     android:background="@color/bitrate_element"
                     android:clickable="true"
-                    android:onClick="bitrateClick"
                     android:padding="5dp"
                     android:tag="3"
                     android:text="@string/stream_AAC112"/>
@@ -145,7 +139,6 @@
                     android:layout_height="wrap_content"
                     android:background="@color/bitrate_element"
                     android:clickable="true"
-                    android:onClick="bitrateClick"
                     android:padding="5dp"
                     android:tag="4"
                     android:text="@string/stream_MP396"/>
@@ -174,18 +167,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
-                    android:onClick="onTimerClick"
                     android:paddingLeft="5dp"/>
         </LinearLayout>
     </LinearLayout>
-
-    <com.google.android.gms.ads.AdView
-            android:id="@+id/mainAdView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ads:adSize="BANNER"
-            ads:adUnitId="@string/admob_publisher_id"
-            android:gravity="bottom">
-    </com.google.android.gms.ads.AdView>
-
 </LinearLayout>

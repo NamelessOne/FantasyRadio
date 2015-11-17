@@ -1,17 +1,19 @@
 package ru.sigil.fantasyradio;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.KeyEvent;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -20,9 +22,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 import com.un4seen.bass.BASS;
 import com.un4seen.bass.BASS_AAC;
 
@@ -35,25 +34,25 @@ import ru.sigil.fantasyradio.utils.AlarmReceiever;
 import ru.sigil.fantasyradio.utils.BASSUtil;
 import ru.sigil.fantasyradio.utils.PlayerState;
 
-public class MainActivity extends Activity {
+public class RadioFragment extends Fragment {
 
-    private AdView adView;
-    public final int TIME_DIALOG_ID = 999;
     private int hour;
     private int minute;
     private AlarmManager am;
     private PendingIntent sender;
     private CheckBox cb1;
     private final int MIN_SCREEN_HEIGHT = 350;
+    private View mainFragmentView;
+    public final int TIME_DIALOG_ID = 999;
 
     /**
      * Хэндлер, устанавливающий название трека
      */
-    private Handler setTitlehandler = new Handler() {
+    private Handler setTitleHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             try {
-                ((TextView) findViewById(R.id.textView1)).setText(msg.getData().getString("title"));
+                ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(msg.getData().getString("title"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -68,10 +67,10 @@ public class MainActivity extends Activity {
     private Handler sleepTimerHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    finish();
+                    getActivity().finish();
                 }
             });
 
@@ -111,12 +110,12 @@ public class MainActivity extends Activity {
     private Handler disablePlayerHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            ((ImageView) findViewById(R.id.streamButton))
+            ((ImageView) mainFragmentView.findViewById(R.id.streamButton))
                     .setImageResource(R.drawable.play_states);
-            ((ImageView) findViewById(R.id.recordButton))
+            ((ImageView) mainFragmentView.findViewById(R.id.recordButton))
                     .setImageResource(R.drawable.rec);
             PlayerState.getInstance().setCurrentRadioEntity(null);
-            TextView tv1 = (TextView) findViewById(R.id.textView1);
+            TextView tv1 = (TextView) mainFragmentView.findViewById(R.id.textView1);
             tv1.setText("");
         }
     };
@@ -139,9 +138,9 @@ public class MainActivity extends Activity {
                 r = ++req; // increment the request counter for this request
             }
             BASS.BASS_StreamFree(BASSUtil.getChan()); // close old stream
-            runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 public void run() {
-                    ((TextView) findViewById(R.id.textView1))
+                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
                             .setText(R.string.connecting);
                 }
             });
@@ -183,9 +182,9 @@ public class MainActivity extends Activity {
                 r = ++req; // increment the request counter for this request
             }
             BASS.BASS_StreamFree(BASSUtil.getChan()); // close old stream
-            runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 public void run() {
-                    ((TextView) findViewById(R.id.textView1))
+                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
                             .setText(R.string.connecting);
                 }
             });
@@ -262,13 +261,13 @@ public class MainActivity extends Activity {
         } else {
             ImageView iv = (ImageView) v;
             iv.setImageResource(R.drawable.play_states);
-            ImageView rib = (ImageView) findViewById(R.id.recordButton);
+            ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
             rib.setImageResource(R.drawable.rec);
             if (PlayerState.getInstance().isRecActive())
                 PlayerState.getInstance().setRecActive(false);
             PlayerState.getInstance().setCurrentRadioEntity(null);
             BASS.BASS_StreamFree(BASSUtil.getChan());
-            TextView tv1 = (TextView) findViewById(R.id.textView1);
+            TextView tv1 = (TextView) mainFragmentView.findViewById(R.id.textView1);
             tv1.setText("");
         }
     }
@@ -295,19 +294,43 @@ public class MainActivity extends Activity {
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        adView = (AdView) this.findViewById(R.id.mainAdView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .build();
-        adView.loadAd(adRequest);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        mainFragmentView = inflater.inflate(R.layout.activity_main, container, false);
+        //------------------------------------------------------------------------------------------
+        ImageView streamButton = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+        streamButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                streamButtonClick(v);
+            }
+        });
+        mainFragmentView.findViewById(R.id.bitrateText0).setOnClickListener(bitrateClick);
+        mainFragmentView.findViewById(R.id.bitrateText1).setOnClickListener(bitrateClick);
+        mainFragmentView.findViewById(R.id.bitrateText2).setOnClickListener(bitrateClick);
+        mainFragmentView.findViewById(R.id.bitrateText3).setOnClickListener(bitrateClick);
+        mainFragmentView.findViewById(R.id.bitrateText4).setOnClickListener(bitrateClick);
+        ImageView recordButton = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
+        recordButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                streamRecordClick();
+            }
+        });
+        mainFragmentView.findViewById(R.id.tvChangeTime).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTimerClick(v);
+            }
+        });
+        //------------------------------------------------------------------------------------------
+        //setContentView(R.layout.activity_main);
         AlarmReceiever.setSleepHandler(sleepTimerHandler);
-        cb1 = (CheckBox) findViewById(R.id.checkBox1);
-        Intent intent = new Intent(getBaseContext(), AlarmReceiever.class);
-        sender = PendingIntent.getBroadcast(getBaseContext(), 192837, intent,
+        cb1 = (CheckBox) mainFragmentView.findViewById(R.id.checkBox1);
+        Intent intent = new Intent(getActivity().getBaseContext(), AlarmReceiever.class);
+        sender = PendingIntent.getBroadcast(getActivity().getBaseContext(), 192837, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        am = (AlarmManager) getActivity().getBaseContext().getSystemService(Context.ALARM_SERVICE);
         cb1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -375,12 +398,13 @@ public class MainActivity extends Activity {
                     // play it!
                     BASS.BASS_ChannelPlay(BASSUtil.getChan(), false);
                 } else {
-                    ((TextView) findViewById(R.id.textView1)).setText(String
+                    ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String
                             .format("buffering... %d%%", progress));
                     handler.postDelayed(this, 50);
                 }
             }
         };
+        return mainFragmentView;
     }
 
     private int req; // request number/counter
@@ -409,9 +433,9 @@ public class MainActivity extends Activity {
     void Error(String es) {
         // get error code in current thread for display in UI thread
         String s = String.format("%s\n", es);
-        runOnUiThread(new RunnableParam(s) {
+        getActivity().runOnUiThread(new RunnableParam(s) {
             public void run() {
-                Toast toast = Toast.makeText(getApplicationContext(),
+                Toast toast = Toast.makeText(getActivity().getApplicationContext(),
                         (String) param, Toast.LENGTH_SHORT);
                 toast.show();
             }
@@ -432,6 +456,7 @@ public class MainActivity extends Activity {
                 String title = "No title";
                 try {
                     title = meta.substring(ti + 13, meta.indexOf("'", ti + 13));
+                    //noinspection InjectedReferences
                     title = new String(title.getBytes("cp-1252"), "cp-1251");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -441,7 +466,7 @@ public class MainActivity extends Activity {
                     bundle.putString("title", title);
                     Message msg = new Message();
                     msg.setData(bundle);
-                    setTitlehandler.sendMessage(msg);
+                    setTitleHandler.sendMessage(msg);
                 }
             } else {
                 String[] ogg = (String[]) BASS.BASS_ChannelGetTags(
@@ -459,16 +484,16 @@ public class MainActivity extends Activity {
                     }
                     if (title != null) {
                         if (artist != null)
-                            ((TextView) findViewById(R.id.textView1))
+                            ((TextView) mainFragmentView.findViewById(R.id.textView1))
                                     .setText(title + " - " + title);
                         else
-                            ((TextView) findViewById(R.id.textView1))
+                            ((TextView) mainFragmentView.findViewById(R.id.textView1))
                                     .setText(title);
                     }
                 }
             }
         } else {
-            ((TextView) findViewById(R.id.textView1)).setText("");
+            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText("");
         }
         PlayerState.getInstance().setCurrentRadioEntity(re);
     }
@@ -478,36 +503,34 @@ public class MainActivity extends Activity {
      *
      * @param v Вьюха, в тэге содержится строка с битрэйтом (URL)
      */
-    public void bitrateClick(View v) {
-        findViewById(R.id.bitrateText0).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        findViewById(R.id.bitrateText1).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        findViewById(R.id.bitrateText2).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        findViewById(R.id.bitrateText3).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        findViewById(R.id.bitrateText4).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        v.setBackgroundColor(getResources().getColor(
-                R.color.bitrate_element_active));
-        PlayerState.getInstance().setCurrent_stream(Integer.parseInt(v.getTag().toString()));
-        if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
-            ImageView b = (ImageView) findViewById(R.id.streamButton);
-            b.performClick();
-            b.performClick();
-        }
-    }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return keyCode != KeyEvent.KEYCODE_BACK && super.onKeyDown(keyCode, event);
-    }
+    private OnClickListener bitrateClick = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
+                    getResources().getColor(R.color.bitrate_element));
+            mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
+                    getResources().getColor(R.color.bitrate_element));
+            mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
+                    getResources().getColor(R.color.bitrate_element));
+            mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
+                    getResources().getColor(R.color.bitrate_element));
+            mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
+                    getResources().getColor(R.color.bitrate_element));
+            v.setBackgroundColor(getResources().getColor(
+                    R.color.bitrate_element_active));
+            PlayerState.getInstance().setCurrent_stream(Integer.parseInt(v.getTag().toString()));
+            if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
+                ImageView b = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+                b.performClick();
+                b.performClick();
+            }
+        }
+    };
 
     @Override
     public void onResume() {
-
-        SeekBar sb = (SeekBar) findViewById(R.id.mainVolumeSeekBar);
+        SeekBar sb = (SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar);
         sb.setProgress((int) (CurrentControls.getCurrentVolume() * 100));
         sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress,
@@ -522,58 +545,72 @@ public class MainActivity extends Activity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        if (Integer.parseInt(findViewById(R.id.bitrateText0).getTag()
+        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText0).getTag()
                 .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            findViewById(R.id.bitrateText0).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element));
         } else {
-            findViewById(R.id.bitrateText0).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element_active));
         }
-        if (Integer.parseInt(findViewById(R.id.bitrateText1).getTag()
+        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText1).getTag()
                 .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            findViewById(R.id.bitrateText1).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element));
         } else {
-            findViewById(R.id.bitrateText1).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element_active));
         }
-        if (Integer.parseInt(findViewById(R.id.bitrateText2).getTag()
+        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText2).getTag()
                 .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            findViewById(R.id.bitrateText2).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element));
         } else {
-            findViewById(R.id.bitrateText2).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element_active));
         }
-        if (Integer.parseInt(findViewById(R.id.bitrateText3).getTag()
+        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText3).getTag()
                 .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            findViewById(R.id.bitrateText3).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element));
         } else {
-            findViewById(R.id.bitrateText3).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element_active));
         }
-        if (Integer.parseInt(findViewById(R.id.bitrateText4).getTag()
+        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText4).getTag()
                 .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            findViewById(R.id.bitrateText4).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element));
         } else {
-            findViewById(R.id.bitrateText4).setBackgroundColor(
+            mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element_active));
         }
+
+        //TODO--------------------------------------------------------------------------------------
+        if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
+            ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+            iv.setImageResource(R.drawable.pause_states);
+            ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
+            if (PlayerState.getInstance().isRecActive()) {
+                rib.setImageResource(R.drawable.rec_active);
+            } else {
+                rib.setImageResource(R.drawable.rec);
+            }
+            TextView tv1 = (TextView) mainFragmentView.findViewById(R.id.textView1);
+            if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
+                tv1.setText(PlayerState.getInstance().getCurrentRadioEntity().getTitle());
+            }
+        }
+        //------------------------------------------------------------------------------------------
         super.onResume();
-        adView.resume();
     }
 
     /**
      * Запись потока.
-     *
-     * @param v
      */
-    public void streamRecordClick(@SuppressWarnings("UnusedParameters") View v) {
+    private void streamRecordClick() {
         if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
-            ImageView rib = (ImageView) findViewById(R.id.recordButton);
+            ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
             if (PlayerState.getInstance().isRecActive()) {
                 PlayerState.getInstance().setRecActive(false);
                 rib.setImageResource(R.drawable.rec);
@@ -584,23 +621,23 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void onTimerClick(View v) {
-        showDialog(TIME_DIALOG_ID);
+    /**
+     * Установка времени в вьюху
+     *
+     * @param h Часы
+     * @param m Минуты
+     */
+    void setTimer(int h, int m) {
+        hour = h;
+        minute = m;
+        TextView timeTv = (TextView) mainFragmentView.findViewById(R.id.tvChangeTime);
+        String str = "";
+        if (minute < 10)
+            str = "0";
+        timeTv.setText(hour + ":" + str + minute);
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case TIME_DIALOG_ID:
-                // set time picker as current time
-                return new TimePickerDialog(this, timePickerListener, Calendar
-                        .getInstance().get(Calendar.HOUR_OF_DAY), Calendar
-                        .getInstance().get(Calendar.MINUTE), true);
-        }
-        return null;
-    }
-
-    private TimePickerDialog.OnTimeSetListener timePickerListener = new TimePickerDialog.OnTimeSetListener() {
+    public TimePickerDialog.OnTimeSetListener timePickerListener = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             am.cancel(sender);
             setTimer(hourOfDay, minute);
@@ -623,31 +660,18 @@ public class MainActivity extends Activity {
         }
     };
 
-    /**
-     * Установка времени в вьюху
-     *
-     * @param h Часы
-     * @param m Минуты
-     */
-    void setTimer(int h, int m) {
-        hour = h;
-        minute = m;
-        TextView timeTv = (TextView) findViewById(R.id.tvChangeTime);
-        String str = "";
-        if (minute < 10)
-            str = "0";
-        timeTv.setText(hour + ":" + str + minute);
+    protected void showDialog(int id) {
+        switch (id) {
+            case TIME_DIALOG_ID:
+                // set time picker as current time
+                new TimePickerDialog(getActivity(), timePickerListener, Calendar
+                        .getInstance().get(Calendar.HOUR_OF_DAY), Calendar
+                        .getInstance().get(Calendar.MINUTE), true).show();
+                break;
+        }
     }
 
-    @Override
-    public void onPause() {
-        adView.pause();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        adView.destroy();
-        super.onDestroy();
+    public void onTimerClick(View v) {
+        showDialog(TIME_DIALOG_ID);
     }
 }

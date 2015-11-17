@@ -2,7 +2,6 @@ package ru.sigil.fantasyradio.schedule;
 
 import android.util.Log;
 
-import org.apache.http.client.ClientProtocolException;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -108,9 +107,7 @@ public class ScheduleParser {
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

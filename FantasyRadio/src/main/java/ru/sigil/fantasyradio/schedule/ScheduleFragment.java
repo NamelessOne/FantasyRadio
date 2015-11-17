@@ -1,19 +1,16 @@
 package ru.sigil.fantasyradio.schedule;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -24,44 +21,49 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import ru.sigil.fantasyradio.R;
+import ru.sigil.log.LogManager;
 
-public class ScheduleActivity extends Activity {
-    private String TAG = ScheduleActivity.class.getSimpleName();
-    private AdView adView;
+public class ScheduleFragment extends Fragment {
+    private String TAG = ScheduleFragment.class.getSimpleName();
     private ExpandableListView lv;
     private ParseAsyncTask searchAsyncTasc;
+    ArrayList<ArrayList<ScheduleEntity>> arr = new ArrayList<>();
+    private View scheduleFragmentView;
+
+    public ScheduleFragment() {
+        super();
+        setArguments(new Bundle());
+    }
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.schedule_layout);
-        adView = (AdView)this.findViewById(R.id.scheduleAdView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .build();
-        adView.loadAd(adRequest);
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getBaseContext()).build();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        LogManager.d(TAG, "onCreateView");
+        scheduleFragmentView = inflater.inflate(R.layout.schedule_layout, container, false);
+        scheduleFragmentView.findViewById(R.id.schedule_refresh_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refreshClick(v);
+            }
+        });
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity().getBaseContext()).build();
         ImageLoader.getInstance().init(config);
-        lv = (ExpandableListView) findViewById(R.id.ScheduleListView);
+        lv = (ExpandableListView) scheduleFragmentView.findViewById(R.id.ScheduleListView);
+        if (arr.size()>0) {
+            ScheduleListAdapter adapter = new ScheduleListAdapter(getActivity(), arr);
+            lv.setAdapter(adapter);
+            int count = adapter.getGroupCount();
+            for (int position = 1; position <= count; position++)
+                lv.expandGroup(position - 1);
+        }
+        return scheduleFragmentView;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        GoogleAnalytics.getInstance(this).reportActivityStart(this);    // Add this method.
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        GoogleAnalytics.getInstance(this).reportActivityStop(this);    // Add this method.
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
+    public void onPause() {
+        super.onPause();
     }
 
     /**
@@ -74,7 +76,7 @@ public class ScheduleActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            this.progress = new ProgressDialog(ScheduleActivity.this);
+            this.progress = new ProgressDialog(getActivity());
             this.progress.setMessage(getString(R.string.load));
             this.progress.setCancelable(false);
             this.progress.setOnCancelListener(new OnCancelListener() {
@@ -102,7 +104,7 @@ public class ScheduleActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            ArrayList<ArrayList<ScheduleEntity>> arr = new ArrayList<>();
+            arr = new ArrayList<>();
             for (int i = 0; i < 3; i++) {
                 ArrayList<ScheduleEntity> arr2 = new ArrayList<>();
                 LocalDate ld = LocalDate.now();
@@ -118,7 +120,7 @@ public class ScheduleActivity extends Activity {
                 arr.add(arr2);
             }
             // ------------------------------------
-            ScheduleListAdapter adapter = new ScheduleListAdapter(ScheduleActivity.this, arr);
+            ScheduleListAdapter adapter = new ScheduleListAdapter(getActivity(), arr);
             lv.setAdapter(adapter);
             int count = adapter.getGroupCount();
             for (int position = 1; position <= count; position++)
@@ -136,30 +138,14 @@ public class ScheduleActivity extends Activity {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        adView.resume();
-    }
-
     public void refreshClick(@SuppressWarnings("UnusedParameters") View v) {
         searchAsyncTasc = new ParseAsyncTask();
         searchAsyncTasc.execute();
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return keyCode != KeyEvent.KEYCODE_BACK && super.onKeyDown(keyCode, event);
+    public void onResume() {
+        LogManager.d(TAG, "onResume");
+        super.onResume();
     }
-    @Override
-    public void onDestroy() {
-        adView.destroy();
-        super.onDestroy();
-    }
-    @Override
-    public void onPause() {
-        adView.pause();
-        super.onPause();
-    }
-
 }

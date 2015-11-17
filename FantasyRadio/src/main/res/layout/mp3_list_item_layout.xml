@@ -28,7 +28,6 @@
             android:layout_weight="0.02"
             android:adjustViewBounds="true"
             android:background="@null"
-            android:onClick="deleteClick"
             android:scaleType="fitCenter"
             android:src="@drawable/delete_states" />
     </LinearLayout>
@@ -49,7 +48,6 @@
             android:layout_weight="0.1"
             android:adjustViewBounds="true"
             android:background="@null"
-            android:onClick="playClick"
             android:padding="3dp"
             android:scaleType="fitCenter"
             android:src="@drawable/play_states" />

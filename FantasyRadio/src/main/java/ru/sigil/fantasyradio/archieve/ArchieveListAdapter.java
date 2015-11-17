@@ -17,12 +17,14 @@ class ArchieveListAdapter extends ArrayAdapter<ArchieveEntity> {
 
     public static int width;
 
-    private List<ArchieveEntity> entities = new ArrayList<ArchieveEntity>();
+    private List<ArchieveEntity> entities = new ArrayList<>();
+    private View.OnClickListener downloadClickListener;
 
     public ArchieveListAdapter(Context context,
-                               List<ArchieveEntity> objects) {
+                               List<ArchieveEntity> objects, View.OnClickListener downloadClickListener) {
         super(context, R.layout.archieve_list_item, objects);
         this.entities = objects;
+        this.downloadClickListener = downloadClickListener;
     }
 
     public int getCount() {
@@ -52,6 +54,7 @@ class ArchieveListAdapter extends ArrayAdapter<ArchieveEntity> {
         ImageView downloadButton = (ImageView) row
                 .findViewById(R.id.archieveItemDownloadButton);
         downloadButton.setTag(message);
+        downloadButton.setOnClickListener(downloadClickListener);
         return row;
     }
 }
