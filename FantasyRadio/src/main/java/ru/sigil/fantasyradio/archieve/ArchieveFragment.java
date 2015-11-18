@@ -25,8 +25,10 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Random;
 
 import ru.sigil.fantasyradio.AbstractListFragment;
+import ru.sigil.fantasyradio.BuildConfig;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.TabHoster;
 import ru.sigil.fantasyradio.exceptions.WrongLoginOrPasswordException;
@@ -35,11 +37,14 @@ import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.utils.DownladedEntityes;
 import ru.sigil.fantasyradio.utils.DownloadThread;
+import ru.sigil.log.LogManager;
 
 public class ArchieveFragment extends AbstractListFragment {
     private ArchieveListAdapter adapter;
     private ParseAsyncTask searchAsyncTasc;
     private AlertDialog.Builder ad;
+    private Random random;
+    private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,7 +60,7 @@ public class ArchieveFragment extends AbstractListFragment {
         });
         ad = new AlertDialog.Builder(getActivity());
         setLv((ListView) archieveActivityView.findViewById(R.id.ArchieveListView));
-        if(ArchieveEntityesCollection.getEntityes().size()>0) {
+        if (ArchieveEntityesCollection.getEntityes().size() > 0) {
             adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
                     ArchieveEntityesCollection.getEntityes(), downloadClickListener);
             getLv().setAdapter(adapter);
@@ -108,6 +113,12 @@ public class ArchieveFragment extends AbstractListFragment {
         //--------------------
     }
 
+    private Random getRandom() {
+        if (random == null)
+            random = new Random();
+        return random;
+    }
+
     private class ParseAsyncTask extends AsyncTask<Void, Integer, Void> {
 
         ProgressDialog progress;
@@ -117,6 +128,11 @@ public class ArchieveFragment extends AbstractListFragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_REFRESH) {
+                if (((TabHoster)getActivity()).getmInterstitialAd().isLoaded()) {
+                    ((TabHoster)getActivity()).getmInterstitialAd().show();
+                }
+            }
             try {
                 adapter.clear();
             } catch (Exception e) {

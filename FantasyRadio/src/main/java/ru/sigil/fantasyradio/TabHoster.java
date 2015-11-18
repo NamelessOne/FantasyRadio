@@ -14,8 +14,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.un4seen.bass.BASS;
 
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
@@ -28,25 +29,35 @@ import ru.sigil.fantasyradio.settings.SettingsActivity;
 import ru.sigil.fantasyradio.utils.BASSUtil;
 import ru.sigil.fantasyradio.utils.PlayerState;
 import ru.sigil.fantasyradio.utils.ProgramNotification;
+import ru.sigil.log.LogManager;
 
 public class TabHoster extends FragmentActivity {
     private static final String TAG = TabHoster.class.getSimpleName();
     Context context;
     public SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
-    private AdView adView;
+    private InterstitialAd mInterstitialAd;
+    //private AdView adView;
 
     private static int current_menu;
+
+    private void requestNewInterstitial() {
+        if(!isFirstLaunch()) {
+            AdRequest adRequest = new AdRequest.Builder()
+                    .build();
+            getmInterstitialAd().loadAd(adRequest);
+        }
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tabs);
-        if(BuildConfig.FLAVOR.equals("free")) {
+        /*if(BuildConfig.FLAVOR.equals("free")) {
             adView = (AdView) findViewById(R.id.mainAdView);
             AdRequest adRequest = new AdRequest.Builder()
                     .build();
             adView.loadAd(adRequest);
-        }
+        }*/
         // EasyTracker is now ready for use.
         ProgramNotification.setContext(getBaseContext());
         setCurrent_menu(R.menu.activity_main);
@@ -64,6 +75,22 @@ public class TabHoster extends FragmentActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         context = getApplicationContext();
+        if (BuildConfig.FLAVOR.equals("free")) {
+            if (getmInterstitialAd() == null) {
+                mInterstitialAd = new InterstitialAd(this);
+                getmInterstitialAd().setAdUnitId(getString(R.string.admob_publisher_id));
+
+                getmInterstitialAd().setAdListener(new AdListener() {
+                    @Override
+                    public void onAdClosed() {
+                        LogManager.d("AD", "closed");
+                        requestNewInterstitial();
+                    }
+                });
+                requestNewInterstitial();
+            }
+        }
+
     }
 
     @Override
@@ -73,9 +100,9 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onPause() {
-        if(BuildConfig.FLAVOR.equals("free")) {
+        /*if(BuildConfig.FLAVOR.equals("free")) {
             adView.pause();
-        }
+        }*/
         if (PlayerState.isPlaying()) {
             ProgramNotification
                     .createNotification();
@@ -88,9 +115,9 @@ public class TabHoster extends FragmentActivity {
     @Override
     public void onDestroy() {
         BASS.BASS_ChannelStop(BASSUtil.getChan());
-        if(BuildConfig.FLAVOR.equals("free")) {
+        /*if(BuildConfig.FLAVOR.equals("free")) {
             adView.destroy();
-        }
+        }*/
         super.onDestroy();
     }
 
@@ -194,9 +221,13 @@ public class TabHoster extends FragmentActivity {
             }
         }
         super.onResume();
-        if(BuildConfig.FLAVOR.equals("free")) {
+        /*if(BuildConfig.FLAVOR.equals("free")) {
             adView.resume();
-        }
+        }*/
+    }
+
+    public InterstitialAd getmInterstitialAd() {
+        return mInterstitialAd;
     }
 
     /**
@@ -261,5 +292,11 @@ public class TabHoster extends FragmentActivity {
         {
             savedFragment.notifyAdapter();
         }
+    }
+
+    public boolean isFirstLaunch()
+    {
+        SharedPreferences settings = getPreferences(0);
+        return !settings.getBoolean("gratitude", false);
     }
 }

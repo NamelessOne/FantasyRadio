@@ -31,11 +31,11 @@
 
     </android.support.v4.view.ViewPager>
 
-    <com.google.android.gms.ads.AdView
+    <!--<com.google.android.gms.ads.AdView
         android:id="@+id/mainAdView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="bottom"
         ads:adSize="SMART_BANNER"
-        ads:adUnitId="@string/admob_publisher_id" />
+        ads:adUnitId="@string/admob_publisher_id" />-->
 </LinearLayout>

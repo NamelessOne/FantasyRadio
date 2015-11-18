@@ -1,7 +1,6 @@
 package ru.sigil.fantasyradio;
 
 import android.app.AlarmManager;
-import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -26,6 +25,7 @@ import com.un4seen.bass.BASS;
 import com.un4seen.bass.BASS_AAC;
 
 import java.util.Calendar;
+import java.util.Random;
 
 import ru.sigil.fantasyradio.saved.CurrentControls;
 import ru.sigil.fantasyradio.saved.MP3Entity;
@@ -44,6 +44,9 @@ public class RadioFragment extends Fragment {
     private final int MIN_SCREEN_HEIGHT = 350;
     private View mainFragmentView;
     public final int TIME_DIALOG_ID = 999;
+    private static final int AD_SHOW_PROBABILITY_REC = 25;
+    private static final int AD_SHOW_PROBABILITY_URL = 5;
+    private Random random;
 
     /**
      * Хэндлер, устанавливающий название трека
@@ -119,6 +122,12 @@ public class RadioFragment extends Fragment {
             tv1.setText("");
         }
     };
+
+    private Random getRandom() {
+        if (random == null)
+            random = new Random();
+        return random;
+    }
 
     /**
      * Магия BASS.dll
@@ -507,6 +516,11 @@ public class RadioFragment extends Fragment {
     private OnClickListener bitrateClick = new OnClickListener() {
         @Override
         public void onClick(View v) {
+            if(BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_URL) {
+                if (((TabHoster)getActivity()).getmInterstitialAd().isLoaded()) {
+                    ((TabHoster)getActivity()).getmInterstitialAd().show();
+                }
+            }
             mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element));
             mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
@@ -609,6 +623,11 @@ public class RadioFragment extends Fragment {
      * Запись потока.
      */
     private void streamRecordClick() {
+        if(BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_REC) {
+            if (((TabHoster)getActivity()).getmInterstitialAd().isLoaded()) {
+                ((TabHoster)getActivity()).getmInterstitialAd().show();
+            }
+        }
         if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
             ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
             if (PlayerState.getInstance().isRecActive()) {
