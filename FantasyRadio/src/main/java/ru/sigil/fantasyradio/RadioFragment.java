@@ -494,7 +494,7 @@ public class RadioFragment extends Fragment {
                     if (title != null) {
                         if (artist != null)
                             ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                                    .setText(title + " - " + title);
+                                    .setText(artist + " - " + title);
                         else
                             ((TextView) mainFragmentView.findViewById(R.id.textView1))
                                     .setText(title);
