@@ -178,9 +178,11 @@ public class ArchieveFragment extends AbstractListFragment {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
-                    ArchieveEntityesCollection.getEntityes(), downloadClickListener);
-            getLv().setAdapter(adapter);
+            if(getActivity()!=null) {
+                adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
+                        ArchieveEntityesCollection.getEntityes(), downloadClickListener);
+                getLv().setAdapter(adapter);
+            }
             if (progress.isShowing()) {
                 progress.dismiss();
             }
@@ -244,9 +246,11 @@ public class ArchieveFragment extends AbstractListFragment {
     private Handler downloadFinishedHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Toast toast = Toast.makeText(getActivity().getBaseContext(),
-                    getString(R.string.download_finished), Toast.LENGTH_LONG);
-            toast.show();
+            if(getActivity()!=null) {
+                Toast toast = Toast.makeText(getActivity().getBaseContext(),
+                        getString(R.string.download_finished), Toast.LENGTH_LONG);
+                toast.show();
+            }
             //А тут мы пишем инфу о скачанном
             // файле в базу
             MP3Entity mp3Entity = new MP3Entity();

@@ -125,7 +125,7 @@ public class ScheduleFragment extends Fragment {
                 ld = ld.plusDays(i);
                 for (Iterator<ScheduleEntity> it = ScheduleEntityesCollection.getEntityes().iterator(); it.hasNext(); ) {
                     ScheduleEntity scheduleEntity = it.next();
-                    if (scheduleEntity.getStartDate().getDayOfYear() == ld
+                    if (scheduleEntity.getStartDate()!=null&&scheduleEntity.getStartDate().getDayOfYear() == ld
                             .getDayOfYear()) {
                         arr2.add(scheduleEntity);
                     }

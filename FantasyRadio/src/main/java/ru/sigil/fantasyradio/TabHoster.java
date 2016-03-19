@@ -42,7 +42,7 @@ public class TabHoster extends FragmentActivity {
     private static int current_menu;
 
     private void requestNewInterstitial() {
-        if(!isFirstLaunch()) {
+        if (!isFirstLaunch()) {
             AdRequest adRequest = new AdRequest.Builder()
                     .build();
             getmInterstitialAd().loadAd(adRequest);
@@ -63,7 +63,7 @@ public class TabHoster extends FragmentActivity {
         setCurrent_menu(R.menu.activity_main);
         MP3Saver.setMp3c(new MP3Collection(getBaseContext()));
         MP3Saver.getMp3c().Load();
-        BASS.BASS_Free();
+        BASS.BASS_Free(); //TODO выдавть сообщение, что Bass.dll не грузится
         BASS.BASS_Init(-1, 44100, 0);
         BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);
         BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PREBUF, 0);
@@ -288,14 +288,12 @@ public class TabHoster extends FragmentActivity {
             return null;
         }
 
-        public void notifySavedFragment()
-        {
+        public void notifySavedFragment() {
             savedFragment.notifyAdapter();
         }
     }
 
-    public boolean isFirstLaunch()
-    {
+    public boolean isFirstLaunch() {
         SharedPreferences settings = getPreferences(0);
         return !settings.getBoolean("gratitude", false);
     }

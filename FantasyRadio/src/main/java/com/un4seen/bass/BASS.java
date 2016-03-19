@@ -1,6 +1,6 @@
 /*
 	BASS 2.4 Java class
-	Copyright (c) 1999-2015 Un4seen Developments Ltd.
+	Copyright (c) 1999-2016 Un4seen Developments Ltd.
 
 	See the BASS.CHM file for more detailed documentation
 */
@@ -88,6 +88,7 @@ public class BASS
 	public static final int BASS_CONFIG_VERIFY_NET = 52;
 	public static final int BASS_CONFIG_DEV_PERIOD = 53;
 	public static final int BASS_CONFIG_FLOAT = 54;
+	public static final int BASS_CONFIG_NET_SEEK = 56;
 
 	// BASS_SetConfigPtr options
 	public static final int BASS_CONFIG_NET_AGENT = 16;
@@ -419,6 +420,7 @@ public class BASS
 	public static final int BASS_ATTRIB_NET_RESUME = 9;
 	public static final int BASS_ATTRIB_SCANINFO = 10;
 	public static final int BASS_ATTRIB_NORAMP = 11;
+	public static final int BASS_ATTRIB_BITRATE = 12;
 	public static final int BASS_ATTRIB_MUSIC_AMPLIFY = 0x100;
 	public static final int BASS_ATTRIB_MUSIC_PANSEP = 0x101;
 	public static final int BASS_ATTRIB_MUSIC_PSCALER = 0x102;
@@ -439,6 +441,7 @@ public class BASS
 	public static final int BASS_DATA_FFT4096 = 0x80000004;	// 4096 FFT
 	public static final int BASS_DATA_FFT8192 = 0x80000005;	// 8192 FFT
 	public static final int BASS_DATA_FFT16384 = 0x80000006;	// 16384 FFT
+	public static final int BASS_DATA_FFT32768 = 0x80000007;	// 32768 FFT
 	public static final int BASS_DATA_FFT_INDIVIDUAL = 0x10;	// FFT flag: FFT for each channel, else all combined
 	public static final int BASS_DATA_FFT_NOWINDOW = 0x20;	// FFT flag: no Hanning window
 	public static final int BASS_DATA_FFT_REMOVEDC = 0x40;	// FFT flag: pre-remove DC bias
@@ -469,6 +472,7 @@ public class BASS
 	public static final int BASS_TAG_MUSIC_NAME = 0x10000;	// MOD music name : String
 	public static final int BASS_TAG_MUSIC_MESSAGE = 0x10001;	// MOD message : String
 	public static final int BASS_TAG_MUSIC_ORDERS = 0x10002;	// MOD order list : ByteBuffer
+	public static final int BASS_TAG_MUSIC_AUTH = 0x10003;	// MOD author : UTF-8 string
 	public static final int BASS_TAG_MUSIC_INST = 0x10100;	// + instrument #, MOD instrument name : String
 	public static final int BASS_TAG_MUSIC_SAMPLE = 0x10300;	// + sample #, MOD sample name : String
 	public static final int BASS_TAG_BYTEBUFFER = 0x10000000;	// flag: return a ByteBuffer instead of a String or TAG_ID3

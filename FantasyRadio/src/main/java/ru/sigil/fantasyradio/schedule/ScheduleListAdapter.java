@@ -1,21 +1,16 @@
 package ru.sigil.fantasyradio.schedule;
 
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -24,10 +19,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import ru.sigil.fantasyradio.R;
-import ru.sigil.fantasyradio.saved.MP3Entity;
 
 class ScheduleListAdapter extends BaseExpandableListAdapter {
 
@@ -43,7 +36,10 @@ class ScheduleListAdapter extends BaseExpandableListAdapter {
         this.context = context;
         this.entities = objects;
         Resources res = context.getResources();
-        item = res.getStringArray(R.array.week);
+        if(res!=null)
+            item = res.getStringArray(R.array.week);
+        else
+            item = new String[] {"", "", "", "", "", "", ""};
     }
 
     @Override
@@ -187,81 +183,4 @@ class ScheduleListAdapter extends BaseExpandableListAdapter {
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
     }
-
-    /*
-    private void addToBase(ScheduleEntity scheduleEntity) {
-        synchronized (saveSync) {
-            SQLiteDatabase mDatabase = context.openOrCreateDatabase(
-                    "MP3Base", 0, null);
-            ContentValues cv = new ContentValues();
-            mDatabase
-                    .execSQL("CREATE TABLE IF NOT EXISTS SCHEDULE (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                            + "TIME VARCHAR(255))");
-            cv.put("TIME", scheduleEntity.getStartDate().toString());
-            mDatabase.insert("MP3ENTITYES", null, cv);
-            mDatabase.close();
-        }
-    }
-
-    private void removeFromBase(ScheduleEntity scheduleEntity) {
-        synchronized (saveSync) {
-            SQLiteDatabase mDatabase = context.openOrCreateDatabase(
-                    "MP3Base", 0, null);
-            try {
-                mDatabase.delete("SCHEDULE",
-                        "TIME = '" + scheduleEntity.getStartDate() + "'", null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                mDatabase.close();
-            }
-        }
-    }
-
-    private void Save() {
-        synchronized (saveSync) {
-            SQLiteDatabase mDatabase = getContext().openOrCreateDatabase(
-                    "MP3Base", 0, null);
-            ContentValues cv = new ContentValues();
-            try {
-                mDatabase.execSQL("DROP TABLE IF EXISTS SCHEDULE");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            mDatabase
-                    .execSQL("CREATE TABLE IF NOT EXISTS SCHEDULE (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                            + "TIME VARCHAR(255))");
-            Iterator<MP3Entity> iter = getMp3entityes().iterator();
-            //noinspection WhileLoopReplaceableByForEach
-            while (iter.hasNext()) {
-                MP3Entity Mp3Entity = iter.next();
-                cv.put("TIME", Mp3Entity.getTime());
-                mDatabase.insert("SCHEDULE", null, cv);
-            }
-            mDatabase.close();
-        }
-    }
-
-    public void Load() {
-        SQLiteDatabase mDatabase = getContext().openOrCreateDatabase("MP3Base",
-                0, null);
-        getMp3entityes().clear();
-        // Make the query.
-        try {
-            Cursor managedCursor = mDatabase.query("SCHEDULE", null, null,
-                    null, null, null, null);
-            for (managedCursor.moveToFirst(); !managedCursor.isAfterLast(); managedCursor
-                    .moveToNext()) {
-                MP3Entity Mp3Entity = new MP3Entity();
-                Mp3Entity.setTitle(managedCursor.getString(managedCursor
-                        .getColumnIndex("TIME")));
-                getMp3entityes().add(Mp3Entity);
-            }
-            managedCursor.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            mDatabase.close();
-        }
-    }*/
 }

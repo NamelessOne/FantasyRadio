@@ -41,11 +41,12 @@ public class RadioFragment extends Fragment {
     private AlarmManager am;
     private PendingIntent sender;
     private CheckBox cb1;
-    private final int MIN_SCREEN_HEIGHT = 350;
     private View mainFragmentView;
     public final int TIME_DIALOG_ID = 999;
     private static final int AD_SHOW_PROBABILITY_REC = 25;
-    private static final int AD_SHOW_PROBABILITY_URL = 5;
+    private static final int AD_SHOW_PROBABILITY_URL = 4;
+    private static final int AD_SHOW_PROBABILITY_PLAY = 5;
+
     private Random random;
 
     /**
@@ -70,13 +71,16 @@ public class RadioFragment extends Fragment {
     private Handler sleepTimerHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    getActivity().finish();
-                }
-            });
-
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().finish();
+                    }
+                });
+            } else {
+                BASS.BASS_Free();
+            }
         }
     };
 
@@ -250,6 +254,11 @@ public class RadioFragment extends Fragment {
      * Кликныли на кнопку Play. Начинаем проигрывать выбранный поток.
      */
     public void streamButtonClick(View v) {
+        if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_PLAY) {
+            if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
+                ((TabHoster) getActivity()).getmInterstitialAd().show();
+            }
+        }
         if (PlayerState.getInstance().getCurrentRadioEntity() == null) {
             if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC16)
                 PlayAAC(getString(R.string.stream_url_AAC16));
@@ -502,7 +511,18 @@ public class RadioFragment extends Fragment {
                 }
             }
         } else {
-            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText("");
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText("");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
         }
         PlayerState.getInstance().setCurrentRadioEntity(re);
     }
@@ -516,9 +536,9 @@ public class RadioFragment extends Fragment {
     private OnClickListener bitrateClick = new OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_URL) {
-                if (((TabHoster)getActivity()).getmInterstitialAd().isLoaded()) {
-                    ((TabHoster)getActivity()).getmInterstitialAd().show();
+            if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_URL) {
+                if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
+                    ((TabHoster) getActivity()).getmInterstitialAd().show();
                 }
             }
             mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
@@ -623,9 +643,9 @@ public class RadioFragment extends Fragment {
      * Запись потока.
      */
     private void streamRecordClick() {
-        if(BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_REC) {
-            if (((TabHoster)getActivity()).getmInterstitialAd().isLoaded()) {
-                ((TabHoster)getActivity()).getmInterstitialAd().show();
+        if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_REC) {
+            if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
+                ((TabHoster) getActivity()).getmInterstitialAd().show();
             }
         }
         if (PlayerState.getInstance().getCurrentRadioEntity() != null) {

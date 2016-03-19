@@ -73,7 +73,9 @@ public class PlayerState {
 
     public void setCurrentMP3Entity(MP3Entity newCurrentMP3Entity) {
         currentRadioEntity = null;
-        getDisablePlayerHandler().sendEmptyMessage(0);
+        if(getDisablePlayerHandler()!=null) {
+            getDisablePlayerHandler().sendEmptyMessage(0);
+        }
         currentMP3Entity = newCurrentMP3Entity;
         if (newCurrentMP3Entity != null) {
             CurrentArtist = currentMP3Entity.getArtist();
