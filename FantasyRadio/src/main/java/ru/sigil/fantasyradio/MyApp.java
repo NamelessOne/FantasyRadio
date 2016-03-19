@@ -1,6 +1,7 @@
 package ru.sigil.fantasyradio;
 
 import android.app.Application;
+import android.content.Context;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
@@ -22,8 +23,6 @@ public class MyApp extends Application {
 
     @Override
     public void onCreate() {
-        ACRA.init(this);
-        ErrorReporter.getInstance().checkReportsOnApplicationStart();
         super.onCreate();
         GoogleAnalytics.getInstance(this).newTracker("UA-43435942-1").enableAutoActivityTracking(true);
         PhoneStateListener phoneStateListener = new PhoneStateListener() {
@@ -43,6 +42,15 @@ public class MyApp extends Application {
             mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
         }
         LogManager.addLogger(new DefaultLogger());
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        // The following line triggers the initialization of ACRA
+        ACRA.init(this);
+        ErrorReporter.getInstance().checkReportsOnApplicationStart();
     }
 
     private Tracker mTracker = null;
