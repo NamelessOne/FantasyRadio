@@ -46,7 +46,7 @@ android {
 
 dependencies {
     compile 'joda-time:joda-time:2.9.2'
-    compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.google.android.gms:play-services:8.3.0'
     compile 'ch.acra:acra:4.5.0'
     compile files('libs/universal-image-loader-1.9.5.jar')
     compile files('libs/jsoup-1.8.3.jar')
