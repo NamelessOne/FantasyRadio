@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 23
@@ -34,12 +35,12 @@ android {
         free {
             assets.srcDirs = ['src/free/assets']
             res.srcDirs = ['src/free/res']
-            java.srcDirs = ['src/free/java']
+            java.srcDirs = ['src/free/java', 'src/main/kotlin']
         }
         paid {
             assets.srcDirs = ['src/paid/assets']
             res.srcDirs = ['src/paid/res']
-            java.srcDirs = ['src/paid/java']
+            java.srcDirs = ['src/paid/java', 'src/main/kotlin']
         }
     }
 }
@@ -48,6 +49,7 @@ dependencies {
     compile 'joda-time:joda-time:2.9.2'
     compile 'com.google.android.gms:play-services:8.3.0'
     compile 'ch.acra:acra:4.5.0'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.1'
     compile files('libs/universal-image-loader-1.9.5.jar')
     compile files('libs/jsoup-1.8.3.jar')
 }

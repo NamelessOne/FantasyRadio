@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ScheduleEntityesCollection {
-    private static List<ScheduleEntity> entityes = new ArrayList<ScheduleEntity>();
+    private static List<ScheduleEntity> entityes = new ArrayList<>();
 
     public static List<ScheduleEntity> getEntityes() {
         return entityes;
