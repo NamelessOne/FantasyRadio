@@ -194,8 +194,8 @@ public class FileDialog extends ListActivity {
 	private void getDirImpl(final String dirPath) {
 		currentPath = dirPath;
 
-		path = new ArrayList<String>();
-		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		path = new ArrayList<>();
+		ArrayList<HashMap<String, Object>> mList = new ArrayList<>();
 
 		File f = new File(currentPath);
 		File[] files = f.listFiles();
@@ -245,10 +245,10 @@ public class FileDialog extends ListActivity {
 			parentPath = f.getParent();
 		}
 
-		TreeMap<String, String> dirsMap = new TreeMap<String, String>();
-		TreeMap<String, String> dirsPathMap = new TreeMap<String, String>();
-		TreeMap<String, String> filesMap = new TreeMap<String, String>();
-		TreeMap<String, String> filesPathMap = new TreeMap<String, String>();
+		TreeMap<String, String> dirsMap = new TreeMap<>();
+		TreeMap<String, String> dirsPathMap = new TreeMap<>();
+		TreeMap<String, String> filesMap = new TreeMap<>();
+		TreeMap<String, String> filesPathMap = new TreeMap<>();
 
 		for (File file : files) {
 			if (file.isDirectory()) {

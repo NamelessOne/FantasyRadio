@@ -37,7 +37,6 @@ import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.utils.DownladedEntityes;
 import ru.sigil.fantasyradio.utils.DownloadThread;
-import ru.sigil.log.LogManager;
 
 public class ArchieveFragment extends AbstractListFragment {
     private ArchieveListAdapter adapter;

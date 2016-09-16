@@ -1,6 +1,6 @@
 package ru.sigil.log;
 
-import android.util.Log;
+        import android.util.Log;
 
 /**
  * User: Nikita

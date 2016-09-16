@@ -6,10 +6,9 @@ package ru.sigil.log;
  */
 public interface ICustomLogger {
 
-    public static enum LogLevel {
+    enum LogLevel {
         DEBUG, ERROR, WARNING
     }
 
-    public void handle(final LogLevel logLevel, final String tag, final String component, final String message, final Exception e);
-
+    void handle(final LogLevel logLevel, final String tag, final String component, final String message, final Exception e);
 }
