@@ -19,14 +19,17 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.un4seen.bass.BASS;
-import com.un4seen.bass.BASS_AAC;
 
 import java.util.Calendar;
 import java.util.Random;
 
+import ru.sigil.fantasyradio.BackgroundService.Bitrate;
+import ru.sigil.fantasyradio.BackgroundService.IPlayer;
+import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
+import ru.sigil.fantasyradio.BackgroundService.PlayState;
+import ru.sigil.fantasyradio.BackgroundService.Player;
 import ru.sigil.fantasyradio.saved.CurrentControls;
 import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.saved.MP3Saver;
@@ -47,21 +50,10 @@ public class RadioFragment extends Fragment {
     private static final int AD_SHOW_PROBABILITY_URL = 4;
     private static final int AD_SHOW_PROBABILITY_PLAY = 5;
 
-    private Random random;
+    //TODO @Inject
+    private IPlayer player = new Player();
 
-    /**
-     * Хэндлер, устанавливающий название трека
-     */
-    private Handler setTitleHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            try {
-                ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(msg.getData().getString("title"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    };
+    private Random random;
 
     /**
      * Хэндлер, закрывающий приложение
@@ -106,8 +98,6 @@ public class RadioFragment extends Fragment {
             MP3Saver.getMp3c()
                     .removeEntityByDirectory(mp3Entity.getDirectory());
             MP3Saver.getMp3c().add(mp3Entity);
-            // ====================================================================
-            // --------------------------------OLOLO----------------------------------
         }
     };
 
@@ -134,124 +124,7 @@ public class RadioFragment extends Fragment {
     }
 
     /**
-     * Магия BASS.dll
-     */
-    class OpenURL implements Runnable {
-        String url;
-
-        public OpenURL(String p) {
-            url = p;
-        }
-
-        public void run() {
-            int r;
-            synchronized (lock) { // make sure only 1 thread at a time can
-                // do
-                // the following
-                r = ++req; // increment the request counter for this request
-            }
-            BASS.BASS_StreamFree(BASSUtil.getChan()); // close old stream
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                            .setText(R.string.connecting);
-                }
-            });
-            int c = BASS.BASS_StreamCreateURL(url, 0, BASS.BASS_STREAM_BLOCK
-                            | BASS.BASS_STREAM_STATUS | BASS.BASS_STREAM_AUTOFREE,
-                    BASSUtil.StatusProc, r); // open URL
-            synchronized (lock) {
-                if (r != req) { // there is a newer request, discard this
-                    // stream
-                    if (c != 0)
-                        BASS.BASS_StreamFree(c);
-                    return;
-                }
-                BASSUtil.setChan(c); // this is now the current stream
-            }
-
-            if (BASSUtil.getChan() != 0) { // failed to open
-                handler.postDelayed(timer, 50); // start prebuffer
-                // monitoring
-            }
-        }
-    }
-
-    /**
-     * Магия BASS.dll для AAC потока
-     */
-    class OpenURLAAC implements Runnable {
-        String url;
-
-        public OpenURLAAC(String p) {
-            url = p;
-        }
-
-        public void run() {
-            int r;
-            synchronized (lock) { // make sure only 1 thread at a time can
-                // do
-                // the following
-                r = ++req; // increment the request counter for this request
-            }
-            BASS.BASS_StreamFree(BASSUtil.getChan()); // close old stream
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                            .setText(R.string.connecting);
-                }
-            });
-            int c = BASS_AAC
-                    .BASS_AAC_StreamCreateURL(url, 0, BASS.BASS_STREAM_BLOCK
-                            | BASS.BASS_STREAM_STATUS
-                            | BASS.BASS_STREAM_AUTOFREE, BASSUtil.StatusProc, r); // open
-            // URL
-            synchronized (lock) {
-                if (r != req) { // there is a newer request, discard this
-                    // stream
-                    if (c != 0)
-                        BASS.BASS_StreamFree(c);
-                    return;
-                }
-                BASSUtil.setChan(c); // this is now the current stream
-            }
-
-            if (BASSUtil.getChan() != 0) {
-                handler.postDelayed(timer, 50);
-            } // start prebuffer
-            // monitoring
-        }
-    }
-
-    /**
-     * Начинаем играть поток
-     *
-     * @param url URL потока. Не AAC
-     */
-    void Play(String url) {
-        BASS.BASS_SetConfigPtr(BASS.BASS_CONFIG_NET_PROXY, null);
-        try {
-            new Thread(new OpenURL(url)).start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Начинаем играть поток
-     *
-     * @param url URL потока. AAC
-     */
-    void PlayAAC(String url) {
-        try {
-            new Thread(new OpenURLAAC(url)).start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Кликныли на кнопку Play. Начинаем проигрывать выбранный поток.
+     * Кликныли на кнопку play. Начинаем проигрывать выбранный поток.
      */
     public void streamButtonClick(View v) {
         if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_PLAY) {
@@ -260,16 +133,26 @@ public class RadioFragment extends Fragment {
             }
         }
         if (PlayerState.getInstance().getCurrentRadioEntity() == null) {
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC16)
-                PlayAAC(getString(R.string.stream_url_AAC16));
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC112)
-                PlayAAC(getString(R.string.stream_url_AAC112));
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP332)
-                Play(getString(R.string.stream_url_MP332));
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP364)
-                Play(getString(R.string.stream_url_MP364));
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP396)
-                Play(getString(R.string.stream_url_MP396));
+            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC16) {
+                player.setBitrate(Bitrate.aac_16);
+                player.playAAC(getString(R.string.stream_url_AAC16));
+            }
+            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC112) {
+                player.setBitrate(Bitrate.aac_112);
+                player.playAAC(getString(R.string.stream_url_AAC112));
+            }
+            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP332) {
+                player.setBitrate(Bitrate.mp3_32);
+                player.play(getString(R.string.stream_url_MP332));
+            }
+            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP364) {
+                player.setBitrate(Bitrate.mp3_64);
+                player.play(getString(R.string.stream_url_MP364));
+            }
+            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP396) {
+                player.setBitrate(Bitrate.mp3_96);
+                player.play(getString(R.string.stream_url_MP396));
+            }
             ImageView iv = (ImageView) v;
             iv.setImageResource(R.drawable.pause_states);
             RadioEntity ent = new RadioEntity();
@@ -290,30 +173,10 @@ public class RadioFragment extends Fragment {
         }
     }
 
-    /**
-     * Получаем метаданные (название, исполнитель и т.д.)
-     */
-    private BASS.SYNCPROC MetaSync = new BASS.SYNCPROC() {
-        public void SYNCPROC(int handle, int channel, int data, Object user) {
-            new Thread(new Runnable() {
-                public void run() {
-                    DoMeta();
-                }
-            }).start();
-        }
-    };
-
-    /**
-     * Выполняется после завершения проигрывания. В данный момент не используестя
-     */
-    private BASS.SYNCPROC EndSync = new BASS.SYNCPROC() {
-        public void SYNCPROC(int handle, int channel, int data, Object user) {
-        }
-    };
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        player.addEventListener(eventListener);
         mainFragmentView = inflater.inflate(R.layout.activity_main, container, false);
         //------------------------------------------------------------------------------------------
         ImageView streamButton = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
@@ -377,154 +240,13 @@ public class RadioFragment extends Fragment {
                 .getInstance().get(Calendar.MINUTE));
         PlayerState.getInstance().setDisablePlayerHandler(disablePlayerHandler);
         PlayerState.getInstance().setRecordFinishedHandler(recordFinishedHandler);
-        timer = new Runnable() {
-            public void run() {
-                // monitor prebuffering progress
-                long progress = BASS.BASS_StreamGetFilePosition(
-                        BASSUtil.getChan(), BASS.BASS_FILEPOS_BUFFER)
-                        * 100
-                        / BASS.BASS_StreamGetFilePosition(BASSUtil.getChan(),
-                        BASS.BASS_FILEPOS_END); // percentage of buffer
-                // filled
-                if (progress > 75
-                        || BASS.BASS_StreamGetFilePosition(BASSUtil.getChan(),
-                        BASS.BASS_FILEPOS_CONNECTED) == 0) { // over 75%
-                    // full
-                    // (or
-                    // end
-                    // of
-                    // download)
-                    // get the broadcast name and URL
-                    String[] icy = (String[]) BASS.BASS_ChannelGetTags(
-                            BASSUtil.getChan(), BASS.BASS_TAG_ICY);
-                    if (icy == null)
-                        icy = (String[]) BASS.BASS_ChannelGetTags(
-                                BASSUtil.getChan(), BASS.BASS_TAG_HTTP); // no
-                    // ICY
-                    // tags,
-                    // try
-                    // HTTP
-                    // get the stream title and set sync for subsequent titles
-                    DoMeta();
-                    BASS.BASS_ChannelSetSync(BASSUtil.getChan(),
-                            BASS.BASS_SYNC_META, 0, MetaSync, 0); // Shoutcast
-                    BASS.BASS_ChannelSetSync(BASSUtil.getChan(),
-                            BASS.BASS_SYNC_OGG_CHANGE, 0, MetaSync, 0); // Icecast/OGG
-                    // set sync for end of stream
-                    BASS.BASS_ChannelSetSync(BASSUtil.getChan(),
-                            BASS.BASS_SYNC_END, 0, EndSync, 0);
-                    // play it!
-                    BASS.BASS_ChannelPlay(BASSUtil.getChan(), false);
-                } else {
-                    ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String
-                            .format("buffering... %d%%", progress));
-                    handler.postDelayed(this, 50);
-                }
-            }
-        };
         return mainFragmentView;
     }
 
-    private int req; // request number/counter
-
-    private Handler handler = new Handler();
-    private Runnable timer;
-    private final Object lock = new Object();
-
-    class RunnableParam implements Runnable {
-        Object param;
-
-        RunnableParam(Object p) {
-            param = p;
-        }
-
-        public void run() {
-
-        }
-    }
-
-    /**
-     * Показываем Toast с сообщением об ошибке
-     *
-     * @param es Текст сообщения
-     */
-    void Error(String es) {
-        // get error code in current thread for display in UI thread
-        String s = String.format("%s\n", es);
-        getActivity().runOnUiThread(new RunnableParam(s) {
-            public void run() {
-                Toast toast = Toast.makeText(getActivity().getApplicationContext(),
-                        (String) param, Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        });
-    }
-
-
-    /**
-     * update stream title from metadata
-     */
-    void DoMeta() {
-        RadioEntity re = new RadioEntity();
-        String meta = (String) BASS.BASS_ChannelGetTags(BASSUtil.getChan(),
-                BASS.BASS_TAG_META);
-        if (meta != null) { // got Shoutcast metadata
-            int ti = meta.indexOf("StreamTitle='");
-            if (ti >= 0) {
-                String title = "No title";
-                try {
-                    title = meta.substring(ti + 13, meta.indexOf("'", ti + 13));
-                    //noinspection InjectedReferences
-                    title = new String(title.getBytes("cp-1252"), "cp-1251");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    re.setTitle(title);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("title", title);
-                    Message msg = new Message();
-                    msg.setData(bundle);
-                    setTitleHandler.sendMessage(msg);
-                }
-            } else {
-                String[] ogg = (String[]) BASS.BASS_ChannelGetTags(
-                        BASSUtil.getChan(), BASS.BASS_TAG_OGG);
-                if (ogg != null) { // got Icecast/OGG tags
-                    String artist = null, title = null;
-                    for (String s : ogg) {
-                        if (s.regionMatches(true, 0, "artist=", 0, 7)) {
-                            artist = s.substring(7);
-                            re.setArtist(artist);
-                        } else if (s.regionMatches(true, 0, "title=", 0, 6)) {
-                            title = s.substring(6);
-                            re.setTitle(title);
-                        }
-                    }
-                    if (title != null) {
-                        if (artist != null)
-                            ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                                    .setText(artist + " - " + title);
-                        else
-                            ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                                    .setText(title);
-                    }
-                }
-            }
-        } else {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText("");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        }
-        PlayerState.getInstance().setCurrentRadioEntity(re);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        player.removeEventListener(eventListener);
     }
 
     /**
@@ -713,4 +435,61 @@ public class RadioFragment extends Fragment {
     public void onTimerClick(View v) {
         showDialog(TIME_DIALOG_ID);
     }
+
+    private final IPlayerEventListener eventListener = new IPlayerEventListener() {
+        @Override
+        public void onTitleChanged(final String title) {
+            RadioEntity re = new RadioEntity();
+            re.setTitle(title);
+            re.setArtist(re.getArtist());
+            re.setStation(re.getStation());
+            getActivity().runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(title);
+                        }
+                    }
+            );
+            PlayerState.getInstance().setCurrentRadioEntity(re);
+        }
+
+        @Override
+        public void onAuthorChanged(final String author) {
+            getActivity().runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            if (author != null || !author.isEmpty()) {
+                                ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                                        .setText(author + " - " + player.currentTitle());
+                            } else {
+                                ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                                        .setText(player.currentTitle());
+                            }
+                        }
+                    }
+            );
+        }
+
+        @Override
+        public void onPlayStateChanged(PlayState state) {
+
+        }
+
+        @Override
+        public void onRecStateChanged(boolean isRec) {
+
+        }
+
+        @Override
+        public void onBitrateChanged(Bitrate bitrate) {
+
+        }
+
+        @Override
+        public void onBufferingProgress(long progress) {
+            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String.format("buffering... %d%%", progress));
+        }
+    };
 }
