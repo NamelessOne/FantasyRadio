@@ -7,19 +7,21 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.un4seen.bass.BASS;
 
-import ru.sigil.fantasyradio.utils.BASSUtil;
+import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 
-public abstract class CurrentControls {
+public class CurrentControls {
     private static Handler rewindMP3Handler;
     private static SeekBar currentMP3SeekBar;
     private static SeekBar currentVolumeSeekBar;
+    //TODO @Inject
+    private static /*TODO не static*/IPlayer player;
 
     /**
      * Хэндлер перемотки
      *
      * @see SavedFragment#rewindMp3Handler
      */
-    private static Handler getRewindMP3Handler() {
+    private Handler getRewindMP3Handler() {
         return rewindMP3Handler;
     }
 
@@ -27,16 +29,15 @@ public abstract class CurrentControls {
      * @param rewindMP3Handler Хэндер перемотки сохранённой mp3.
      * @see SavedFragment#rewindMp3Handler
      */
-    public static void setRewindMP3Handler(Handler rewindMP3Handler) {
+    public void setRewindMP3Handler(Handler rewindMP3Handler) {
         CurrentControls.rewindMP3Handler = rewindMP3Handler;
     }
 
     /**
      * Устанавливаем текущий контроллер перемотки. Нужно при переключении между Activity.
-     *
      * @param newCurrentMP3SeekBar текущий контроллер перемотки
      */
-    public static void setCurrentMP3SeekBar(SeekBar newCurrentMP3SeekBar) {
+    public void setCurrentMP3SeekBar(SeekBar newCurrentMP3SeekBar) {
         currentMP3SeekBar = newCurrentMP3SeekBar;
         currentMP3SeekBar
                 .setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -52,8 +53,7 @@ public abstract class CurrentControls {
                         long pos;
                         // --------------------------------------------
                         try {
-                            file_length = BASS.BASS_ChannelGetLength(
-                                    BASSUtil.getChan(), BASS.BASS_POS_BYTE);
+                            file_length = player.getFileLength();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -73,7 +73,7 @@ public abstract class CurrentControls {
      *
      * @param newCurrentVolumeSeekBar текущий контроллер громкости
      */
-    public static void setCurrentVolumeSeekBar(SeekBar newCurrentVolumeSeekBar) {
+    public void setCurrentVolumeSeekBar(SeekBar newCurrentVolumeSeekBar) {
         currentVolumeSeekBar = newCurrentVolumeSeekBar;
         currentVolumeSeekBar.setProgress((int) (BASS.BASS_GetVolume() * 100));
         currentVolumeSeekBar
@@ -90,14 +90,5 @@ public abstract class CurrentControls {
                     public void onStopTrackingTouch(SeekBar seekBar) {
                     }
                 });
-    }
-
-    /**
-     * Текущий уровень громкости BASS
-     *
-     * @return Текущий уровень громкости BASS
-     */
-    public static float getCurrentVolume() {
-        return BASS.BASS_GetVolume();
     }
 }
