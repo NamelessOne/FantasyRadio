@@ -5,8 +5,12 @@ package ru.sigil.fantasyradio.BackgroundService;
  * on 17.09.2016.
  */
 public interface IPlayer {
-    void play(String URL);
-    void playAAC(String URL);
+    String[] RESERVED_CHARS = {"|", "\\", "?", "*", "<", "\"",
+            ":", ">", "+", "[", "]", "/", "'", "%"};
+    void play(String URL, Bitrate bitrate);
+    void playAAC(String URL, Bitrate bitrate);
+    void playFile(String file);
+    void stop();
     void addEventListener(IPlayerEventListener listener);
     void removeEventListener(IPlayerEventListener listener);
     void removeAllListeners();
@@ -15,5 +19,10 @@ public interface IPlayer {
     Bitrate currentBitrate();
     PlayState currentState();
     boolean isRecActive();
-    void setBitrate(Bitrate bitrate);
+    void setChan(int chan);
+    int getChan();
+    long getFileLength();
+    float getVolume();
+    void rewind(int offset);
+    void rec(boolean isActive);
 }

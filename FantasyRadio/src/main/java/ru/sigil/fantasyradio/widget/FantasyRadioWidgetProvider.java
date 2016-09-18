@@ -10,15 +10,11 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.un4seen.bass.BASS;
-
 import ru.sigil.fantasyradio.BackgroundService.Bitrate;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
-import ru.sigil.fantasyradio.BackgroundService.Player;
 import ru.sigil.fantasyradio.R;
-import ru.sigil.fantasyradio.utils.BASSUtil;
 
 
 /**
@@ -53,7 +49,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     private Context context;
 
     //TODO @Inject
-    private IPlayer player = new Player();
+    private IPlayer player;
 
     @Override
     public void onEnabled(final Context context) {
@@ -235,43 +231,28 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             onUpdate(context);
         }
         if (ACTION_PLAY_CLICK.equals(intent.getAction())) {
-            //this.context = context;
-            BASS.BASS_Free();
-            BASS.BASS_Init(-1, 44100, 0);
-            BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);
-            BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PREBUF, 0);
-            BASS.BASS_SetVolume((float) 0.5);
             playState = PlayState.play;
             switch (currentBitrate) {
                 case aac_16:
-                    player.setBitrate(Bitrate.aac_16);
-                    player.playAAC(context.getString(R.string.stream_url_AAC16));
+                    player.playAAC(context.getString(R.string.stream_url_AAC16), Bitrate.aac_16);
                     break;
                 case mp3_32:
-                    player.setBitrate(Bitrate.mp3_32);
-                    player.play(context.getString(R.string.stream_url_MP332));
+                    player.play(context.getString(R.string.stream_url_MP332), Bitrate.mp3_32);
                     break;
                 case mp3_64:
-                    player.setBitrate(Bitrate.mp3_64);
-                    player.play(context.getString(R.string.stream_url_MP364));
+                    player.play(context.getString(R.string.stream_url_MP364), Bitrate.mp3_64);
                     break;
                 case mp3_96:
-                    player.setBitrate(Bitrate.mp3_96);
-                    player.play(context.getString(R.string.stream_url_MP396));
+                    player.play(context.getString(R.string.stream_url_MP396), Bitrate.mp3_96);
                     break;
                 case aac_112:
-                    player.setBitrate(Bitrate.aac_112);
-                    player.playAAC(context.getString(R.string.stream_url_AAC112));
+                    player.playAAC(context.getString(R.string.stream_url_AAC112), Bitrate.aac_112);
                     break;
             }
             onUpdate(context);
         }
         if (ACTION_STOP_CLICK.equals(intent.getAction())) {
-            BASS.BASS_StreamFree(BASSUtil.getChan());
-            playState = PlayState.stop;
-            widgetAuthor = "";
-            widgetTitle = "";
-            onUpdate(context);
+            player.stop();
         }
     }
 
@@ -308,6 +289,11 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
         @Override
         public void onBufferingProgress(long progress) {
             //Виджету пофиг
+        }
+
+        @Override
+        public void onStop() {
+            //TODO
         }
     };
 }

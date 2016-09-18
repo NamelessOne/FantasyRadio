@@ -1,14 +1,22 @@
 package ru.sigil.fantasyradio.BackgroundService;
 
+import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 
 import com.un4seen.bass.BASS;
 import com.un4seen.bass.BASS_AAC;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.sigil.fantasyradio.utils.BASSUtil;
+import ru.sigil.fantasyradio.utils.PlayerState;
 
 /**
  * Created by NamelessOne
@@ -19,13 +27,125 @@ public class Player implements IPlayer {
     private String title;
     private String author;
     private Bitrate bitrate;
+    private PlayState playState = PlayState.stop;
+    private boolean rec = false;
+    private String recDirectory;
 
+    private int chan;
 
-    public void playAAC(String url) {
+    public int getChan() {
+        return chan;
+    }
+
+    public float getVolume() {
+        return BASS.BASS_GetVolume();
+    }
+
+    @Override
+    public void rewind(int offset) {
+        BASS.BASS_ChannelSetPosition(getChan(), offset,
+                BASS.BASS_POS_BYTE);
+        if (!(BASS.BASS_ChannelIsActive(getChan()) == BASS.BASS_ACTIVE_PAUSED)) {
+            BASS.BASS_ChannelPlay(getChan(), false);
+        }
+    }
+
+    @Override
+    public void rec(boolean isActive) {
+            // -------------------------------------
+            if (!isActive) {
+                Message msg = new Message();
+                Bundle b = new Bundle();
+                b.putString("artist", author);
+                b.putString("title", title);
+                b.putString("directory", recDirectory);
+                b.putString("time", "");
+                // --------------------------------
+                b.putString("URL", "");
+                // --------------------------------
+                msg.setData(b);
+            } else {
+                File dir = new File(Environment.getExternalStorageDirectory()
+                        + "/fantasyradio/records/");
+                dir.mkdirs();
+                String fileName = title;
+                if (fileName == null)
+                    fileName = "rec";
+                if (fileName.length() < 2)
+                    fileName = "rec";
+                try {
+                    for (String s : RESERVED_CHARS) {
+                        fileName = fileName.replace(s, "_");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    fileName = new String(fileName.getBytes(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                File f = new File(dir.toString() + "/" + fileName);
+                try {
+                    if (!f.createNewFile()) {
+                        File f2 = new File(f.toString()
+                                + System.currentTimeMillis());
+                        f = f2;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                recDirectory = f.toString();
+            }
+            // -------------------------------------
+            setRecActive(isActive);
+    }
+
+    @Override
+    public long getFileLength() {
+        return BASS.BASS_ChannelGetLength(
+                getChan(), BASS.BASS_POS_BYTE);
+    }
+
+    public void setChan(int chan) {
+        this.chan = chan;
+    }
+
+    public void playAAC(String url,  Bitrate bitrate) {
         try {
+            setBitrate(bitrate);
             new Thread(new OpenURLAAC(url)).start();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void playFile(String file) {
+        //TODO
+    }
+
+    public Player()
+    {
+        BASS.BASS_Free();
+        BASS.BASS_Init(-1, 44100, 0);
+        BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);
+        BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PREBUF, 0);
+        BASS.BASS_SetVolume((float) 0.5);
+    }
+
+    @Override
+    public void stop() {
+        BASS.BASS_StreamFree(getChan());
+        setPlayState(PlayState.stop);
+        setAuthor("");
+        setTitle("");
+        for (IPlayerEventListener listener : eventListeners) {
+            try {
+                listener.onStop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -62,17 +182,27 @@ public class Player implements IPlayer {
     @Override
     public PlayState currentState() {
         //TODO
-        return null;
+        return playState;
+    }
+
+    private void setPlayState(PlayState state) {
+        playState = state;
+        for (IPlayerEventListener listener : eventListeners) {
+            try {
+                listener.onPlayStateChanged(state);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
     public boolean isRecActive() {
         //TODO
-        return false;
+        return rec;
     }
 
-    @Override
-    public void setBitrate(Bitrate bitrate) {
+    private void setBitrate(Bitrate bitrate) {
         this.bitrate = bitrate;
     }
 
@@ -82,12 +212,23 @@ public class Player implements IPlayer {
      * @param url URL потока. Не AAC
      */
     @Override
-    public void play(String url) {
-        BASS.BASS_SetConfigPtr(BASS.BASS_CONFIG_NET_PROXY, null);
+    public void play(String url, Bitrate bitrate) {
         try {
+            setBitrate(bitrate);
             new Thread(new OpenURL(url)).start();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void setRecActive(boolean recActive) {
+        rec = recActive;
+        for (IPlayerEventListener listener : eventListeners) {
+            try {
+                listener.onRecStateChanged(recActive);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -108,11 +249,11 @@ public class Player implements IPlayer {
                 // the following
                 r = ++req; // increment the request counter for this request
             }
-            BASS.BASS_StreamFree(BASSUtil.getChan()); // close old stream
+            BASS.BASS_StreamFree(chan); // close old stream
             int c = BASS_AAC
                     .BASS_AAC_StreamCreateURL(url, 0, BASS.BASS_STREAM_BLOCK
                             | BASS.BASS_STREAM_STATUS
-                            | BASS.BASS_STREAM_AUTOFREE, BASSUtil.StatusProc, r); // open
+                            | BASS.BASS_STREAM_AUTOFREE, StatusProc, r); // open
             // URL
             synchronized (lock) {
                 if (r != req) { // there is a newer request, discard this
@@ -121,10 +262,10 @@ public class Player implements IPlayer {
                         BASS.BASS_StreamFree(c);
                     return;
                 }
-                BASSUtil.setChan(c); // this is now the current stream
+                setChan(c); // this is now the current stream
             }
 
-            if (BASSUtil.getChan() != 0) {
+            if (chan != 0) {
                 handler.postDelayed(timer, 50);
             } // start prebuffer
             // monitoring
@@ -148,10 +289,10 @@ public class Player implements IPlayer {
                 // the following
                 r = ++req; // increment the request counter for this request
             }
-            BASS.BASS_StreamFree(BASSUtil.getChan()); // close old stream
+            BASS.BASS_StreamFree(getChan()); // close old stream
             int c = BASS.BASS_StreamCreateURL(url, 0, BASS.BASS_STREAM_BLOCK
                             | BASS.BASS_STREAM_STATUS | BASS.BASS_STREAM_AUTOFREE,
-                    BASSUtil.StatusProc, r); // open URL
+                    StatusProc, r); // open URL
             synchronized (lock) {
                 if (r != req) { // there is a newer request, discard this
                     // stream
@@ -159,10 +300,10 @@ public class Player implements IPlayer {
                         BASS.BASS_StreamFree(c);
                     return;
                 }
-                BASSUtil.setChan(c); // this is now the current stream
+                setChan(c); // this is now the current stream
             }
 
-            if (BASSUtil.getChan() != 0) { // failed to open
+            if (getChan() != 0) { // failed to open
                 handler.postDelayed(timer, 50); // start prebuffer
                 // monitoring
             }
@@ -177,13 +318,13 @@ public class Player implements IPlayer {
         public void run() {
             // monitor prebuffering progress
             long progress = BASS.BASS_StreamGetFilePosition(
-                    BASSUtil.getChan(), BASS.BASS_FILEPOS_BUFFER)
+                    getChan(), BASS.BASS_FILEPOS_BUFFER)
                     * 100
-                    / BASS.BASS_StreamGetFilePosition(BASSUtil.getChan(),
+                    / BASS.BASS_StreamGetFilePosition(getChan(),
                     BASS.BASS_FILEPOS_END); // percentage of buffer
             // filled
             if (progress > 75
-                    || BASS.BASS_StreamGetFilePosition(BASSUtil.getChan(),
+                    || BASS.BASS_StreamGetFilePosition(getChan(),
                     BASS.BASS_FILEPOS_CONNECTED) == 0) { // over 75%
                 // full
                 // (or
@@ -192,25 +333,25 @@ public class Player implements IPlayer {
                 // download)
                 // get the broadcast name and URL
                 String[] icy = (String[]) BASS.BASS_ChannelGetTags(
-                        BASSUtil.getChan(), BASS.BASS_TAG_ICY);
+                        getChan(), BASS.BASS_TAG_ICY);
                 if (icy == null)
                     icy = (String[]) BASS.BASS_ChannelGetTags(
-                            BASSUtil.getChan(), BASS.BASS_TAG_HTTP); // no
+                            getChan(), BASS.BASS_TAG_HTTP); // no
                 // ICY
                 // tags,
                 // try
                 // HTTP
                 // get the stream title and set sync for subsequent titles
                 DoMeta();
-                BASS.BASS_ChannelSetSync(BASSUtil.getChan(),
+                BASS.BASS_ChannelSetSync(getChan(),
                         BASS.BASS_SYNC_META, 0, MetaSync, 0); // Shoutcast
-                BASS.BASS_ChannelSetSync(BASSUtil.getChan(),
+                BASS.BASS_ChannelSetSync(getChan(),
                         BASS.BASS_SYNC_OGG_CHANGE, 0, MetaSync, 0); // Icecast/OGG
                 // set sync for end of stream
-                BASS.BASS_ChannelSetSync(BASSUtil.getChan(),
+                BASS.BASS_ChannelSetSync(getChan(),
                         BASS.BASS_SYNC_END, 0, EndSync, 0);
                 // play it!
-                BASS.BASS_ChannelPlay(BASSUtil.getChan(), false);
+                BASS.BASS_ChannelPlay(getChan(), false);
             } else {
                 setBufferingProgress(progress);
                 handler.postDelayed(this, 50);
@@ -252,7 +393,7 @@ public class Player implements IPlayer {
     }
 
     private void DoMeta() {
-        String meta = (String) BASS.BASS_ChannelGetTags(BASSUtil.getChan(),
+        String meta = (String) BASS.BASS_ChannelGetTags(getChan(),
                 BASS.BASS_TAG_META);
         if (meta != null) { // got Shoutcast metadata
             int ti = meta.indexOf("StreamTitle='");
@@ -266,7 +407,7 @@ public class Player implements IPlayer {
                 }
             } else {
                 String[] ogg = (String[]) BASS.BASS_ChannelGetTags(
-                        BASSUtil.getChan(), BASS.BASS_TAG_OGG);
+                        getChan(), BASS.BASS_TAG_OGG);
                 if (ogg != null) { // got Icecast/OGG tags
                     String artist = null, title = null;
                     for (String s : ogg) {
@@ -309,6 +450,41 @@ public class Player implements IPlayer {
     private BASS.SYNCPROC EndSync = new BASS.SYNCPROC() {
         public void SYNCPROC(int handle, int channel, int data, Object user) {
 
+        }
+    };
+
+    private BASS.DOWNLOADPROC StatusProc = new BASS.DOWNLOADPROC() {
+        /**
+         * Тут можно получить байты потока. Используется для записи.
+         * @param buffer Данные потока
+         * @param length Длина куска данных потока
+         * @param user BASS.dll магия. ХЗ что это
+         */
+        public void DOWNLOADPROC(ByteBuffer buffer, int length, Object user) {
+            if (rec) {
+                byte[] ba = new byte[length];
+                FileOutputStream fos = null;
+                try {
+                    buffer.get(ba);
+                    //1111
+                    fos = new FileOutputStream(recDirectory, true);
+                    fos.write(ba);
+                    PlayerState.getInstance().setRecArtist(author);
+                    PlayerState.getInstance().setRecTime("");
+                    PlayerState.getInstance().setRecTitle(title);
+                    PlayerState.getInstance().setRecURL("");
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+                try {
+                    if (fos != null) {
+                        fos.flush();
+                        fos.close();
+                    }
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
         }
     };
 }

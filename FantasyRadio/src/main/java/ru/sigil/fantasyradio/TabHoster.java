@@ -19,6 +19,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.un4seen.bass.BASS;
 
+import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
 import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.saved.MP3Saver;
@@ -26,7 +27,6 @@ import ru.sigil.fantasyradio.saved.SavedFragment;
 import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.settings.SettingsActivity;
-import ru.sigil.fantasyradio.utils.BASSUtil;
 import ru.sigil.fantasyradio.utils.PlayerState;
 import ru.sigil.fantasyradio.utils.ProgramNotification;
 import ru.sigil.log.LogManager;
@@ -37,7 +37,9 @@ public class TabHoster extends FragmentActivity {
     public SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
     private InterstitialAd mInterstitialAd;
-    //private AdView adView;
+
+    //TODO @Inject
+    private IPlayer player;
 
     private static int current_menu;
 
@@ -52,12 +54,6 @@ public class TabHoster extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tabs);
-        /*if(BuildConfig.FLAVOR.equals("free")) {
-            adView = (AdView) findViewById(R.id.mainAdView);
-            AdRequest adRequest = new AdRequest.Builder()
-                    .build();
-            adView.loadAd(adRequest);
-        }*/
         // EasyTracker is now ready for use.
         ProgramNotification.setContext(getBaseContext());
         setCurrent_menu(R.menu.activity_main);
@@ -100,24 +96,18 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onPause() {
-        /*if(BuildConfig.FLAVOR.equals("free")) {
-            adView.pause();
-        }*/
         if (PlayerState.isPlaying()) {
             ProgramNotification
                     .createNotification();
         } else {
-            BASS.BASS_ChannelStop(BASSUtil.getChan());
+            player.stop();
         }
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        BASS.BASS_ChannelStop(BASSUtil.getChan());
-        /*if(BuildConfig.FLAVOR.equals("free")) {
-            adView.destroy();
-        }*/
+        player.stop();
         super.onDestroy();
     }
 
@@ -180,8 +170,7 @@ public class TabHoster extends FragmentActivity {
                 }
                 return true;
             case R.id.exit:
-                BASS.BASS_ChannelStop(BASSUtil.getChan());
-                BASS.BASS_StreamFree(BASSUtil.getChan());
+                player.stop();
                 PlayerState.getInstance().setCurrentRadioEntity(null);
                 //--------------
                 SharedPreferences settings = getPreferences(0);

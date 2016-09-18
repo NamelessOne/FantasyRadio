@@ -9,19 +9,21 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.un4seen.bass.BASS;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ru.sigil.fantasyradio.BackgroundService.IPlayer;
+import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
-import ru.sigil.fantasyradio.utils.BASSUtil;
 import ru.sigil.fantasyradio.utils.PlayerState;
 
 class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
 
     public static int width;
+
+    //TODO @Inject
+    private IPlayer player;
 
     private List<MP3Entity> MP3s = new ArrayList<>();
     private View.OnClickListener deleteCLickListener;
@@ -63,7 +65,7 @@ class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         messageArtistView.setText(message.getArtist() + " / "
                 + message.getTime() + " / " + message.getTitle());
         ImageButton deleteBtn = (ImageButton) row.findViewById(R.id.deleteMP3Button);
-        HashMap<String, String> messageMap = new HashMap<String, String>();
+        HashMap<String, String> messageMap = new HashMap<>();
         messageMap.put("artist", message.getArtist());
         messageMap.put("directory", message.getDirectory());
         messageMap.put("time", message.getTime());
@@ -79,9 +81,9 @@ class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         if (message == PlayerState.getInstance().getCurrentMP3Entity()) {
             progressSeekBar.setVisibility(View.VISIBLE);
             volumeSeekBar.setVisibility(View.VISIBLE);
-            CurrentControls.setCurrentMP3SeekBar(progressSeekBar);
-            CurrentControls.setCurrentVolumeSeekBar(volumeSeekBar);
-            if (!(BASS.BASS_ChannelIsActive(BASSUtil.getChan()) == BASS.BASS_ACTIVE_PAUSED))
+            //CurrentControls.setCurrentMP3SeekBar(progressSeekBar);
+            //CurrentControls.setCurrentVolumeSeekBar(volumeSeekBar);
+            if (player.currentState()== PlayState.pause)
                 playBtn.setImageResource(R.drawable.pause_states);
         } else {
             progressSeekBar.setVisibility(View.INVISIBLE);

@@ -1,18 +1,10 @@
 package ru.sigil.fantasyradio.utils;
 
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-
 import com.un4seen.bass.BASS;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import ru.sigil.fantasyradio.RadioEntity;
-import ru.sigil.fantasyradio.RadioFragment;
 import ru.sigil.fantasyradio.saved.MP3Entity;
 
 /**
@@ -20,8 +12,6 @@ import ru.sigil.fantasyradio.saved.MP3Entity;
  * Singleton.
  */
 public class PlayerState {
-    private final static String[] ReservedChars = {"|", "\\", "?", "*", "<", "\"",
-            ":", ">", "+", "[", "]", "/", "'", "%"};
     public static final int AAC16 = 0;
     public static final int MP332 = 1;
     public static final int MP364 = 2;
@@ -33,23 +23,20 @@ public class PlayerState {
     private MP3Entity currentMP3Entity;
     private String CurrentArtist = "";
     private String CurrentSong = "";
-    private Handler disablePlayerHandler;
     private boolean recActive;
-    private Handler recordFinishedHandler;
     // ----------------------------rec-------------------------
     private String recArtist;
     private String recTitle;
     private String recDirectory;
     private String recTime;
     private String recURL;
-    private File f;
 
     private PlayerState() {
     }
 
     public static boolean isPlaying() {
-        return BASS.BASS_ChannelIsActive(BASSUtil.getChan()) == BASS.BASS_ACTIVE_PLAYING
-                | BASS.BASS_ChannelIsActive(BASSUtil.getChan()) == BASS.BASS_ACTIVE_STALLED;
+        //TODO
+        return true;
     }
 
     public RadioEntity getCurrentRadioEntity() {
@@ -73,9 +60,7 @@ public class PlayerState {
 
     public void setCurrentMP3Entity(MP3Entity newCurrentMP3Entity) {
         currentRadioEntity = null;
-        if(getDisablePlayerHandler()!=null) {
-            getDisablePlayerHandler().sendEmptyMessage(0);
-        }
+
         currentMP3Entity = newCurrentMP3Entity;
         if (newCurrentMP3Entity != null) {
             CurrentArtist = currentMP3Entity.getArtist();
@@ -101,79 +86,10 @@ public class PlayerState {
         this.current_stream = current_stream;
     }
 
-    private Handler getDisablePlayerHandler() {
-        return disablePlayerHandler;
-    }
-
-    public void setDisablePlayerHandler(Handler disablePlayerHandler) {
-        this.disablePlayerHandler = disablePlayerHandler;
-    }
-
     public boolean isRecActive() {
         return recActive;
     }
 
-    /**
-     * Устанавливает состояние записи.
-     *
-     * @param newRecActive Если true - создаётся временный файл, куда пишется поток. Иначе выполняется
-     *                     RecordFinishedHandler
-     * @see RadioFragment#recordFinishedHandler
-     */
-    public void setRecActive(boolean newRecActive) {
-        // -------------------------------------
-        if (!newRecActive) {
-            Message msg = new Message();
-            Bundle b = new Bundle();
-            b.putString("artist", getRecArtist());
-            b.putString("title", getRecTitle());
-            b.putString("directory", getRecDirectory());
-            b.putString("time", getRecTime());
-            // --------------------------------
-            b.putString("URL", getRecURL());
-            // --------------------------------
-            msg.setData(b);
-            recordFinishedHandler.sendMessage(msg);
-        } else {
-            File dir = new File(Environment.getExternalStorageDirectory()
-                    + "/fantasyradio/records/");
-            dir.mkdirs();
-            String fileName = this.getCurrentSong();
-            if (fileName == null)
-                fileName = "rec";
-            if (fileName.length() < 2)
-                fileName = "rec";
-            try {
-                for (String s : ReservedChars) {
-                    fileName = fileName.replace(s, "_");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                fileName = new String(fileName.getBytes(), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            f = new File(dir.toString() + "/" + fileName);
-            try {
-                if (!f.createNewFile()) {
-                    File f2 = new File(f.toString()
-                            + System.currentTimeMillis());
-                    f = f2;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            this.setRecDirectory(f.toString());
-        }
-        // -------------------------------------
-        this.recActive = newRecActive;
-    }
-
-    public void setRecordFinishedHandler(Handler recordFinishedHandler) {
-        this.recordFinishedHandler = recordFinishedHandler;
-    }
 
     private String getRecArtist() {
         return recArtist;
@@ -213,10 +129,6 @@ public class PlayerState {
 
     public void setRecURL(String recURL) {
         this.recURL = recURL;
-    }
-
-    public File getF() {
-        return f;
     }
 
     public static PlayerState getInstance() {

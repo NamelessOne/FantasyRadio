@@ -11,4 +11,5 @@ public interface IPlayerEventListener {
     void onRecStateChanged(boolean isRec);
     void onBitrateChanged(Bitrate bitrate);
     void onBufferingProgress(long progress);
+    void onStop();
 }

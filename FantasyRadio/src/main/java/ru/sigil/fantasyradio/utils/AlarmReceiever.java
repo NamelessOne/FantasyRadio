@@ -7,9 +7,13 @@ import android.os.Handler;
 
 import com.un4seen.bass.BASS;
 
+import ru.sigil.fantasyradio.BackgroundService.IPlayer;
+
 public class AlarmReceiever extends BroadcastReceiver {
 
     private static Handler sleepHandler;
+    //TODO @Inject
+    private IPlayer player;
 
     /**
      * Глушим звук и выключаем прогу
@@ -19,7 +23,7 @@ public class AlarmReceiever extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        BASS.BASS_ChannelStop(BASSUtil.getChan());
+        BASS.BASS_ChannelStop(player.getChan());
         try {
             sleepHandler.sendEmptyMessage(0);
         } catch (NullPointerException e) {

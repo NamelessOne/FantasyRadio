@@ -29,12 +29,10 @@ import ru.sigil.fantasyradio.BackgroundService.Bitrate;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
-import ru.sigil.fantasyradio.BackgroundService.Player;
-import ru.sigil.fantasyradio.saved.CurrentControls;
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
-import ru.sigil.fantasyradio.utils.BASSUtil;
 import ru.sigil.fantasyradio.utils.PlayerState;
 
 public class RadioFragment extends Fragment {
@@ -51,7 +49,7 @@ public class RadioFragment extends Fragment {
     private static final int AD_SHOW_PROBABILITY_PLAY = 5;
 
     //TODO @Inject
-    private IPlayer player = new Player();
+    private IPlayer player;
 
     private Random random;
 
@@ -76,47 +74,6 @@ public class RadioFragment extends Fragment {
         }
     };
 
-    /**
-     * Хэндлер окончания записи.
-     * Пересохраняет временный файл, добавляет информацию в базу данных.
-     *
-     * @see ru.sigil.fantasyradio.saved.MP3Saver
-     */
-    private Handler recordFinishedHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            // А тут мы пишем инфу о скачанном
-            // файле в базу
-            MP3Entity mp3Entity = new MP3Entity();
-            Bundle b = msg.getData();
-            if (b != null) {
-                mp3Entity.setArtist(b.getString("artist"));
-            }
-            mp3Entity.setTitle(b.getString("title"));
-            mp3Entity.setDirectory(b.getString("directory"));
-            mp3Entity.setTime(b.getString("time"));
-            MP3Saver.getMp3c()
-                    .removeEntityByDirectory(mp3Entity.getDirectory());
-            MP3Saver.getMp3c().add(mp3Entity);
-        }
-    };
-
-    /**
-     * Хэндлер обращающий контролы в неактивное состояние
-     */
-    private Handler disablePlayerHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            ((ImageView) mainFragmentView.findViewById(R.id.streamButton))
-                    .setImageResource(R.drawable.play_states);
-            ((ImageView) mainFragmentView.findViewById(R.id.recordButton))
-                    .setImageResource(R.drawable.rec);
-            PlayerState.getInstance().setCurrentRadioEntity(null);
-            TextView tv1 = (TextView) mainFragmentView.findViewById(R.id.textView1);
-            tv1.setText("");
-        }
-    };
-
     private Random getRandom() {
         if (random == null)
             random = new Random();
@@ -134,42 +91,27 @@ public class RadioFragment extends Fragment {
         }
         if (PlayerState.getInstance().getCurrentRadioEntity() == null) {
             if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC16) {
-                player.setBitrate(Bitrate.aac_16);
-                player.playAAC(getString(R.string.stream_url_AAC16));
+                player.playAAC(getString(R.string.stream_url_AAC16), Bitrate.aac_16);
             }
             if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC112) {
-                player.setBitrate(Bitrate.aac_112);
-                player.playAAC(getString(R.string.stream_url_AAC112));
+                player.playAAC(getString(R.string.stream_url_AAC112), Bitrate.aac_112);
             }
             if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP332) {
-                player.setBitrate(Bitrate.mp3_32);
-                player.play(getString(R.string.stream_url_MP332));
+                player.play(getString(R.string.stream_url_MP332), Bitrate.mp3_32);
             }
             if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP364) {
-                player.setBitrate(Bitrate.mp3_64);
-                player.play(getString(R.string.stream_url_MP364));
+                player.play(getString(R.string.stream_url_MP364), Bitrate.mp3_64);
             }
             if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP396) {
-                player.setBitrate(Bitrate.mp3_96);
-                player.play(getString(R.string.stream_url_MP396));
+                player.play(getString(R.string.stream_url_MP396), Bitrate.mp3_96);
             }
-            ImageView iv = (ImageView) v;
-            iv.setImageResource(R.drawable.pause_states);
-            RadioEntity ent = new RadioEntity();
-            ent.setArtist("");
-            ent.setTitle("");
-            PlayerState.getInstance().setCurrentRadioEntity(new RadioEntity());
         } else {
             ImageView iv = (ImageView) v;
             iv.setImageResource(R.drawable.play_states);
             ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
             rib.setImageResource(R.drawable.rec);
-            if (PlayerState.getInstance().isRecActive())
-                PlayerState.getInstance().setRecActive(false);
-            PlayerState.getInstance().setCurrentRadioEntity(null);
-            BASS.BASS_StreamFree(BASSUtil.getChan());
-            TextView tv1 = (TextView) mainFragmentView.findViewById(R.id.textView1);
-            tv1.setText("");
+            if (player.isRecActive())
+                player.rec(false);
         }
     }
 
@@ -238,8 +180,6 @@ public class RadioFragment extends Fragment {
         });
         setTimer(Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar
                 .getInstance().get(Calendar.MINUTE));
-        PlayerState.getInstance().setDisablePlayerHandler(disablePlayerHandler);
-        PlayerState.getInstance().setRecordFinishedHandler(recordFinishedHandler);
         return mainFragmentView;
     }
 
@@ -287,7 +227,7 @@ public class RadioFragment extends Fragment {
     @Override
     public void onResume() {
         SeekBar sb = (SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar);
-        sb.setProgress((int) (CurrentControls.getCurrentVolume() * 100));
+        sb.setProgress((int) (player.getVolume() * 100));
         sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
@@ -343,18 +283,18 @@ public class RadioFragment extends Fragment {
         }
 
         //TODO--------------------------------------------------------------------------------------
-        if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
+        if (player.currentState() != PlayState.stop) {
             ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
             iv.setImageResource(R.drawable.pause_states);
             ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
-            if (PlayerState.getInstance().isRecActive()) {
+            if (player.isRecActive()) {
                 rib.setImageResource(R.drawable.rec_active);
             } else {
                 rib.setImageResource(R.drawable.rec);
             }
             TextView tv1 = (TextView) mainFragmentView.findViewById(R.id.textView1);
-            if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
-                tv1.setText(PlayerState.getInstance().getCurrentRadioEntity().getTitle());
+            if (player.currentState() != PlayState.stop) {
+                tv1.setText(player.currentTitle());
             }
         }
         //------------------------------------------------------------------------------------------
@@ -371,13 +311,10 @@ public class RadioFragment extends Fragment {
             }
         }
         if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
-            ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
-            if (PlayerState.getInstance().isRecActive()) {
-                PlayerState.getInstance().setRecActive(false);
-                rib.setImageResource(R.drawable.rec);
+            if (player.isRecActive()) {
+                player.rec(false);
             } else {
-                PlayerState.getInstance().setRecActive(true);
-                rib.setImageResource(R.drawable.rec_active);
+                player.rec(true);
             }
         }
     }
@@ -478,8 +415,30 @@ public class RadioFragment extends Fragment {
         }
 
         @Override
-        public void onRecStateChanged(boolean isRec) {
-
+        public void onRecStateChanged(final boolean isRec) {
+            getActivity().runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
+                            if (isRec) {
+                                rib.setImageResource(R.drawable.rec_active);
+                            } else {
+                                // А тут мы пишем инфу о скачанном
+                                // файле в базу
+                                //TODO логика в контроллере. Плохо.
+                                MP3Entity mp3Entity = new MP3Entity();
+                                mp3Entity.setArtist(player.currentArtist());
+                                mp3Entity.setTitle(player.currentTitle());
+                                mp3Entity.setDirectory(""/*TODO инкапсулирвовать запись в плеере player.getRecDirectory()*/);
+                                mp3Entity.setTime("");
+                                MP3Saver.getMp3c().removeEntityByDirectory(mp3Entity.getDirectory());
+                                MP3Saver.getMp3c().add(mp3Entity);
+                                rib.setImageResource(R.drawable.rec);
+                            }
+                        }
+                    }
+            );
         }
 
         @Override
@@ -488,8 +447,20 @@ public class RadioFragment extends Fragment {
         }
 
         @Override
-        public void onBufferingProgress(long progress) {
-            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String.format("buffering... %d%%", progress));
+        public void onBufferingProgress(final long progress) {
+            getActivity().runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String.format("buffering... %d%%", progress));
+                        }
+                    }
+            );
+        }
+
+        @Override
+        public void onStop() {
+            //TODO
         }
     };
 }

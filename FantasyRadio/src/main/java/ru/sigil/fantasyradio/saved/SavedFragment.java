@@ -24,8 +24,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.sigil.fantasyradio.AbstractListFragment;
+import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.R;
-import ru.sigil.fantasyradio.utils.BASSUtil;
 import ru.sigil.fantasyradio.utils.PlayerState;
 
 public class SavedFragment extends AbstractListFragment {
@@ -33,6 +33,9 @@ public class SavedFragment extends AbstractListFragment {
     private MP3ArrayAdapter adapter;
     private int nextPos;
     private View savedActivityView;
+    //TODO @Inject
+    private IPlayer player;
+
     private TimerTask seekTask = new TimerTask() {
         public void run() {
             mp3ProgressHandler.sendEmptyMessage(0);
@@ -42,12 +45,7 @@ public class SavedFragment extends AbstractListFragment {
     private Handler rewindMp3Handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            int streamOffset = msg.arg1;
-            BASS.BASS_ChannelSetPosition(BASSUtil.getChan(), streamOffset,
-                    BASS.BASS_POS_BYTE);
-            if (!(BASS.BASS_ChannelIsActive(BASSUtil.getChan()) == BASS.BASS_ACTIVE_PAUSED)) {
-                BASS.BASS_ChannelPlay(BASSUtil.getChan(), false);
-            }
+            player.rewind(msg.arg1);
         }
     };
 
@@ -76,9 +74,9 @@ public class SavedFragment extends AbstractListFragment {
         @Override
         public void handleMessage(Message msg) {
             long streamProgress = BASS.BASS_ChannelGetPosition(
-                    BASSUtil.getChan(), BASS.BASS_POS_BYTE)
+            player.getChan(), BASS.BASS_POS_BYTE)
                     * 100
-                    / BASS.BASS_ChannelGetLength(BASSUtil.getChan(),
+                    / BASS.BASS_ChannelGetLength(player.getChan(),
                     BASS.BASS_POS_BYTE);
             try {
                 if (PlayerState
@@ -99,7 +97,7 @@ public class SavedFragment extends AbstractListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         savedActivityView = inflater.inflate(R.layout.mp3s, container, false);
-        CurrentControls.setRewindMP3Handler(rewindMp3Handler);
+        //CurrentControls.setRewindMP3Handler(rewindMp3Handler);
         setLv((ListView) savedActivityView.findViewById(R.id.MP3ListView));
         return savedActivityView;
     }
@@ -191,10 +189,10 @@ public class SavedFragment extends AbstractListFragment {
     };
 
     public void playClick(View v) {
-        if (BASS.BASS_ChannelIsActive(BASSUtil.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
+        if (BASS.BASS_ChannelIsActive(player.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
             if (PlayerState.getInstance().getCurrentMP3Entity() == v.getTag()) {
                 // Это была пауза.
-                BASS.BASS_ChannelPlay(BASSUtil.getChan(), false);
+                BASS.BASS_ChannelPlay(player.getChan(), false);
                 ImageButton bv = (ImageButton) getLv().findViewWithTag(PlayerState
                         .getInstance().getCurrentMP3Entity());
                 if (bv != null) {
@@ -210,7 +208,7 @@ public class SavedFragment extends AbstractListFragment {
         }
         if (PlayerState.isPlaying()) {
             if (PlayerState.getInstance().getCurrentMP3Entity() == v.getTag()) {
-                BASS.BASS_ChannelPause(BASSUtil.getChan());
+                BASS.BASS_ChannelPause(player.getChan());
                 ImageButton bv = (ImageButton) v;// !!!!!!!!!!!!!!!
                 bv.setImageResource(R.drawable.play_states);
             } else {
@@ -219,7 +217,7 @@ public class SavedFragment extends AbstractListFragment {
                 PlayerState.getInstance().setCurrentMP3Entity((MP3Entity) v.getTag());
                 nextPos = adapter
                         .getPosition(PlayerState.getInstance().getCurrentMP3Entity()); // почему-то 0
-                BASS.BASS_StreamFree(BASSUtil.getChan());
+                BASS.BASS_StreamFree(player.getChan());
                 // -------------------------------------------------
                 String file = PlayerState.getInstance().getCurrentMP3Entity().getDirectory();
                 int x;
@@ -228,25 +226,25 @@ public class SavedFragment extends AbstractListFragment {
                         BASS.BASS_MUSIC_RAMP, 0)) == 0) {
                     if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
                         // whatever it is, it ain't playable
-                        BASSUtil.setChan(x);
+                        player.setChan(x);
                         Error("Can't play the file");
                         return;
                     }
                 }
-                BASSUtil.setChan(x);
-                BASS.BASS_ChannelPlay(BASSUtil.getChan(), false);
-                BASS.BASS_ChannelSetSync(BASSUtil.getChan(),
+                player.setChan(x);
+                BASS.BASS_ChannelPlay(player.getChan(), false);
+                BASS.BASS_ChannelSetSync(player.getChan(),
                         BASS.BASS_SYNC_END, 0, EndSync, null);
                 // -------------------------------------------------
                 onCurrentMP3ListRow();
             }
         } else {
-            if (BASS.BASS_ChannelIsActive(BASSUtil.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
+            if (BASS.BASS_ChannelIsActive(player.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
                 offPreviousMP3ListRow();
             }
             PlayerState.getInstance().setCurrentMP3Entity((MP3Entity) v.getTag());
             nextPos = adapter.getPosition(PlayerState.getInstance().getCurrentMP3Entity());
-            BASS.BASS_StreamFree(BASSUtil.getChan());
+            BASS.BASS_StreamFree(player.getChan());
             // -------------------------------------------------
             String file = PlayerState.getInstance().getCurrentMP3Entity().getDirectory();
             int x;
@@ -255,14 +253,14 @@ public class SavedFragment extends AbstractListFragment {
                     BASS.BASS_MUSIC_RAMP, 0)) == 0) {
                 if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
                     // whatever it is, it ain't playable
-                    BASSUtil.setChan(x);
+                    player.setChan(x);
                     Error("Can't play the file");
                     return;
                 }
             }
-            BASSUtil.setChan(x);
-            BASS.BASS_ChannelPlay(BASSUtil.getChan(), false);
-            BASS.BASS_ChannelSetSync(BASSUtil.getChan(), BASS.BASS_SYNC_END, 0,
+            player.setChan(x);
+            BASS.BASS_ChannelPlay(player.getChan(), false);
+            BASS.BASS_ChannelSetSync(player.getChan(), BASS.BASS_SYNC_END, 0,
                     EndSync, null);
             // -------------------------------------------------
             onCurrentMP3ListRow();
@@ -289,7 +287,7 @@ public class SavedFragment extends AbstractListFragment {
                         if (PlayerState.getInstance().getCurrentMP3Entity() != null) {
                             if (mp3EntityForDelete.getDirectory().equals(PlayerState
                                     .getInstance().getCurrentMP3Entity().getDirectory())) {
-                                BASS.BASS_ChannelStop(BASSUtil.getChan());
+                                BASS.BASS_ChannelStop(player.getChan());
                             }
                         }
                         File f = new File(mp3EntityForDelete.getDirectory());
@@ -351,8 +349,8 @@ public class SavedFragment extends AbstractListFragment {
             if (volumeSeekBar != null) {
                 volumeSeekBar.setVisibility(View.VISIBLE);
             }
-            CurrentControls.setCurrentMP3SeekBar(sb);
-            CurrentControls.setCurrentVolumeSeekBar(volumeSeekBar);
+            //CurrentControls.setCurrentMP3SeekBar(sb);
+            //CurrentControls.setCurrentVolumeSeekBar(volumeSeekBar);
         } catch (Exception e) {
             e.printStackTrace();
         }
