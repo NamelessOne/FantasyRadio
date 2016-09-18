@@ -10,11 +10,14 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import javax.inject.Inject;
+
 import ru.sigil.fantasyradio.BackgroundService.Bitrate;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 
 
 /**
@@ -48,12 +51,13 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     private static String widgetAuthor = "";
     private Context context;
 
-    //TODO @Inject
-    private IPlayer player;
+    @Inject
+    IPlayer player;
 
     @Override
     public void onEnabled(final Context context) {
         super.onEnabled(context);
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
         this.context = context;
         player.addEventListener(eventListener);
     }

@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.Player;
 import ru.sigil.fantasyradio.TabHoster;
 import ru.sigil.fantasyradio.settings.Settings;
@@ -25,7 +26,7 @@ public class PlayerModule {
 
     @Provides
     @Singleton
-    Player providesPlayer()
+    IPlayer providesPlayer()
     {
         return new Player();
     }

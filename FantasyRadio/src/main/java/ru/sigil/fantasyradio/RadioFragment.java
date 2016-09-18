@@ -25,6 +25,8 @@ import com.un4seen.bass.BASS;
 import java.util.Calendar;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import ru.sigil.fantasyradio.BackgroundService.Bitrate;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
@@ -48,8 +50,8 @@ public class RadioFragment extends Fragment {
     private static final int AD_SHOW_PROBABILITY_URL = 4;
     private static final int AD_SHOW_PROBABILITY_PLAY = 5;
 
-    //TODO @Inject
-    private IPlayer player;
+    @Inject
+    IPlayer player;
 
     private Random random;
 
@@ -118,6 +120,7 @@ public class RadioFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
         player.addEventListener(eventListener);
         mainFragmentView = inflater.inflate(R.layout.activity_main, container, false);
         //------------------------------------------------------------------------------------------

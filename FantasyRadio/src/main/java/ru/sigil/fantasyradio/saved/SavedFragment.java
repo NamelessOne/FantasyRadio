@@ -23,9 +23,12 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.inject.Inject;
+
 import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.R;
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.PlayerState;
 
 public class SavedFragment extends AbstractListFragment {
@@ -33,8 +36,8 @@ public class SavedFragment extends AbstractListFragment {
     private MP3ArrayAdapter adapter;
     private int nextPos;
     private View savedActivityView;
-    //TODO @Inject
-    private IPlayer player;
+    @Inject
+    IPlayer player;
 
     private TimerTask seekTask = new TimerTask() {
         public void run() {
@@ -97,6 +100,7 @@ public class SavedFragment extends AbstractListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         savedActivityView = inflater.inflate(R.layout.mp3s, container, false);
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
         //CurrentControls.setRewindMP3Handler(rewindMp3Handler);
         setLv((ListView) savedActivityView.findViewById(R.id.MP3ListView));
         return savedActivityView;

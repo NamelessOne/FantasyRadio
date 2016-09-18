@@ -7,7 +7,9 @@ import ru.sigil.fantasyradio.MyApp;
 import ru.sigil.fantasyradio.RadioFragment;
 import ru.sigil.fantasyradio.TabHoster;
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
+import ru.sigil.fantasyradio.saved.SavedFragment;
 import ru.sigil.fantasyradio.settings.SettingsActivity;
+import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 
 /**
  * Created by NamelessOne
@@ -17,7 +19,8 @@ import ru.sigil.fantasyradio.settings.SettingsActivity;
 @Component(modules = PlayerModule.class)
 public interface PlayerComponent {
     void inject(RadioFragment radioFragment);
-    void inject(ArchieveFragment archieveFragment);
+    void inject(SavedFragment savedFragment);
+    void inject(FantasyRadioWidgetProvider fantasyRadioWidgetProvider);
 
     final class Initializer {
         private Initializer() {
