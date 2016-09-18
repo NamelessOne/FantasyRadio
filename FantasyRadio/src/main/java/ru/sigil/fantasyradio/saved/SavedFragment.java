@@ -231,7 +231,7 @@ public class SavedFragment extends AbstractListFragment {
                     if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
                         // whatever it is, it ain't playable
                         player.setChan(x);
-                        Error("Can't play the file");
+                        Error("Can't PLAY the file");
                         return;
                     }
                 }
@@ -258,7 +258,7 @@ public class SavedFragment extends AbstractListFragment {
                 if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
                     // whatever it is, it ain't playable
                     player.setChan(x);
-                    Error("Can't play the file");
+                    Error("Can't PLAY the file");
                     return;
                 }
             }

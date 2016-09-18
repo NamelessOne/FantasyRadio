@@ -27,7 +27,7 @@ public class Player implements IPlayer {
     private String title;
     private String author;
     private Bitrate bitrate;
-    private PlayState playState = PlayState.stop;
+    private PlayState playState = PlayState.STOP;
     private boolean rec = false;
     private String recDirectory;
 
@@ -137,7 +137,7 @@ public class Player implements IPlayer {
     @Override
     public void stop() {
         BASS.BASS_StreamFree(getChan());
-        setPlayState(PlayState.stop);
+        setPlayState(PlayState.STOP);
         setAuthor("");
         setTitle("");
         for (IPlayerEventListener listener : eventListeners) {
@@ -350,7 +350,7 @@ public class Player implements IPlayer {
                 // set sync for end of stream
                 BASS.BASS_ChannelSetSync(getChan(),
                         BASS.BASS_SYNC_END, 0, EndSync, 0);
-                // play it!
+                // PLAY it!
                 BASS.BASS_ChannelPlay(getChan(), false);
             } else {
                 setBufferingProgress(progress);

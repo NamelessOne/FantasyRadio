@@ -93,7 +93,7 @@ public class ScheduleFragment extends Fragment {
             this.progress.setOnCancelListener(new OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                    // stop thread execution
+                    // STOP thread execution
                     searchAsyncTasc.cancel(true);
                 }
             });

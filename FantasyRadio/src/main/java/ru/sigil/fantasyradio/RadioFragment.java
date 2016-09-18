@@ -83,7 +83,7 @@ public class RadioFragment extends Fragment {
     }
 
     /**
-     * Кликныли на кнопку play. Начинаем проигрывать выбранный поток.
+     * Кликныли на кнопку PLAY. Начинаем проигрывать выбранный поток.
      */
     public void streamButtonClick(View v) {
         if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_PLAY) {
@@ -91,7 +91,7 @@ public class RadioFragment extends Fragment {
                 ((TabHoster) getActivity()).getmInterstitialAd().show();
             }
         }
-        if (PlayerState.getInstance().getCurrentRadioEntity() == null) {
+        if (player.currentState() != PlayState.PLAY) {
             if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC16) {
                 player.playAAC(getString(R.string.stream_url_AAC16), Bitrate.aac_16);
             }
@@ -108,12 +108,7 @@ public class RadioFragment extends Fragment {
                 player.play(getString(R.string.stream_url_MP396), Bitrate.mp3_96);
             }
         } else {
-            ImageView iv = (ImageView) v;
-            iv.setImageResource(R.drawable.play_states);
-            ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
-            rib.setImageResource(R.drawable.rec);
-            if (player.isRecActive())
-                player.rec(false);
+            player.stop();
         }
     }
 
@@ -286,7 +281,7 @@ public class RadioFragment extends Fragment {
         }
 
         //TODO--------------------------------------------------------------------------------------
-        if (player.currentState() != PlayState.stop) {
+        if (player.currentState() != PlayState.STOP) {
             ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
             iv.setImageResource(R.drawable.pause_states);
             ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
@@ -296,7 +291,7 @@ public class RadioFragment extends Fragment {
                 rib.setImageResource(R.drawable.rec);
             }
             TextView tv1 = (TextView) mainFragmentView.findViewById(R.id.textView1);
-            if (player.currentState() != PlayState.stop) {
+            if (player.currentState() != PlayState.STOP) {
                 tv1.setText(player.currentTitle());
             }
         }
@@ -414,7 +409,18 @@ public class RadioFragment extends Fragment {
 
         @Override
         public void onPlayStateChanged(PlayState state) {
-
+            ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+            switch (state)
+            {
+                case PLAY:
+                    iv.setImageResource(R.drawable.play_states);
+                    break;
+                case PAUSE:
+                    iv.setImageResource(R.drawable.pause_states);
+                    break;
+                default:
+                    break;
+            }
         }
 
         @Override
@@ -455,7 +461,7 @@ public class RadioFragment extends Fragment {
                     new Runnable() {
                         @Override
                         public void run() {
-                            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String.format("buffering... %d%%", progress));
+                            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String.format("BUFFERING... %d%%", progress));
                         }
                     }
             );

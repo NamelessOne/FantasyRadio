@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class BASS_AAC
 {
 	// Additional BASS_SetConfig options
-	public static final int BASS_CONFIG_MP4_VIDEO = 0x10700; // play the audio from MP4 videos
+	public static final int BASS_CONFIG_MP4_VIDEO = 0x10700; // PLAY the audio from MP4 videos
 	public static final int BASS_CONFIG_AAC_MP4 = 0x10701; // support MP4 in BASS_AAC_StreamCreateXXX functions (no need for BASS_MP4_StreamCreateXXX)
 
 	public static final int BASS_AAC_STEREO = 0x400000; // downmatrix to stereo

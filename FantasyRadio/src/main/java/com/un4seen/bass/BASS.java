@@ -177,10 +177,10 @@ public class BASS
 
 	public static final int BASS_STREAM_PRESCAN = 0x20000;	// enable pin-point seeking/length (MP3/MP2/MP1)
 	public static final int BASS_MP3_SETPOS = BASS_STREAM_PRESCAN;
-	public static final int BASS_STREAM_AUTOFREE = 0x40000;	// automatically free the stream when it stop/ends
+	public static final int BASS_STREAM_AUTOFREE = 0x40000;	// automatically free the stream when it STOP/ends
 	public static final int BASS_STREAM_RESTRATE = 0x80000;	// restrict the download rate of internet file streams
-	public static final int BASS_STREAM_BLOCK = 0x100000;	// download/play internet file stream in small blocks
-	public static final int BASS_STREAM_DECODE = 0x200000;	// don't play the stream, only decode (BASS_ChannelGetData)
+	public static final int BASS_STREAM_BLOCK = 0x100000;	// download/PLAY internet file stream in small blocks
+	public static final int BASS_STREAM_DECODE = 0x200000;	// don't PLAY the stream, only decode (BASS_ChannelGetData)
 	public static final int BASS_STREAM_STATUS = 0x800000;	// give server status info (HTTP/ICY tags) in DOWNLOADPROC
 
 	public static final int BASS_MUSIC_FLOAT = BASS_SAMPLE_FLOAT;
@@ -197,13 +197,13 @@ public class BASS
 	public static final int BASS_MUSIC_SURROUND = 0x800;	// surround sound
 	public static final int BASS_MUSIC_SURROUND2 = 0x1000;	// surround sound (mode 2)
 	public static final int BASS_MUSIC_FT2PAN = 0x2000; // apply FastTracker 2 panning to XM files
-	public static final int BASS_MUSIC_FT2MOD = 0x2000;	// play .MOD as FastTracker 2 does
-	public static final int BASS_MUSIC_PT1MOD = 0x4000;	// play .MOD as ProTracker 1 does
+	public static final int BASS_MUSIC_FT2MOD = 0x2000;	// PLAY .MOD as FastTracker 2 does
+	public static final int BASS_MUSIC_PT1MOD = 0x4000;	// PLAY .MOD as ProTracker 1 does
 	public static final int BASS_MUSIC_NONINTER = 0x10000;	// non-interpolated sample mixing
 	public static final int BASS_MUSIC_SINCINTER = 0x800000; // sinc interpolated sample mixing
-	public static final int BASS_MUSIC_POSRESET = 0x8000;	// stop all notes when moving position
-	public static final int BASS_MUSIC_POSRESETEX = 0x400000; // stop all notes and reset bmp/etc when moving position
-	public static final int BASS_MUSIC_STOPBACK = 0x80000;	// stop the music on a backwards jump effect
+	public static final int BASS_MUSIC_POSRESET = 0x8000;	// STOP all notes when moving position
+	public static final int BASS_MUSIC_POSRESETEX = 0x400000; // STOP all notes and reset bmp/etc when moving position
+	public static final int BASS_MUSIC_STOPBACK = 0x80000;	// STOP the music on a backwards jump effect
 	public static final int BASS_MUSIC_NOSAMPLE = 0x100000; // don't load the samples
 
 	// Speaker assignment flags
@@ -399,7 +399,7 @@ public class BASS
 		buffer : Buffer containing the recorded sample data
 		length : Number of bytes
 		user   : The 'user' parameter value given when calling BASS_RecordStart
-		RETURN : true = continue recording, false = stop */
+		RETURN : true = continue recording, false = STOP */
 	}
 
 	// BASS_ChannelIsActive return values
