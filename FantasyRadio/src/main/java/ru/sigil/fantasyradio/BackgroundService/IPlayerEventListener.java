@@ -9,7 +9,7 @@ public interface IPlayerEventListener {
     void onAuthorChanged(String author);
     void onPlayStateChanged(PlayState playState);
     void onRecStateChanged(boolean isRec);
-    void onBitrateChanged(Bitrate bitrate);
+    void onBitrateChanged(Bitrate bitrate); //TODO
     void onBufferingProgress(long progress);
     void onStop();
 }

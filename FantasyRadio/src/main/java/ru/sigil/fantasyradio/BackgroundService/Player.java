@@ -113,9 +113,12 @@ public class Player implements IPlayer {
 
     public void playAAC(String url,  Bitrate bitrate) {
         try {
+            setPlayState(PlayState.PLAY);
+            setTitle("Соединение...");
             setBitrate(bitrate);
             new Thread(new OpenURLAAC(url)).start();
         } catch (Exception e) {
+            setPlayState(PlayState.STOP);
             e.printStackTrace();
         }
     }
@@ -123,6 +126,7 @@ public class Player implements IPlayer {
     @Override
     public void playFile(String file) {
         //TODO
+        setPlayState(PlayState.PLAY_FILE);
     }
 
     public Player()
@@ -202,7 +206,7 @@ public class Player implements IPlayer {
         return rec;
     }
 
-    private void setBitrate(Bitrate bitrate) {
+    public void setBitrate(Bitrate bitrate) {
         this.bitrate = bitrate;
     }
 
@@ -214,6 +218,8 @@ public class Player implements IPlayer {
     @Override
     public void play(String url, Bitrate bitrate) {
         try {
+            setPlayState(PlayState.PLAY);
+            setTitle("Соединение...");
             setBitrate(bitrate);
             new Thread(new OpenURL(url)).start();
         } catch (Exception e) {
@@ -268,6 +274,7 @@ public class Player implements IPlayer {
             if (chan != 0) {
                 handler.postDelayed(timer, 50);
             } // start prebuffer
+            int v = BASS.BASS_ErrorGetCode();
             // monitoring
         }
     }

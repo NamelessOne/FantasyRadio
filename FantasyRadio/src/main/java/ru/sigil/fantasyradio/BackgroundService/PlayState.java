@@ -5,5 +5,5 @@ package ru.sigil.fantasyradio.BackgroundService;
  * on 17.09.2016.
  */
 public enum PlayState {
-    STOP, PLAY, BUFFERING, PAUSE
+    STOP, PLAY, BUFFERING, PAUSE, PLAY_FILE
 }

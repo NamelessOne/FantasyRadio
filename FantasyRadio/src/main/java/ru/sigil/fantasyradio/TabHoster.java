@@ -59,11 +59,6 @@ public class TabHoster extends FragmentActivity {
         setCurrent_menu(R.menu.activity_main);
         MP3Saver.setMp3c(new MP3Collection(getBaseContext()));
         MP3Saver.getMp3c().Load();
-        BASS.BASS_Free(); //TODO выдавть сообщение, что Bass.dll не грузится
-        BASS.BASS_Init(-1, 44100, 0);
-        BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);
-        BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PREBUF, 0);
-        BASS.BASS_SetVolume((float) 0.5);
         SharedPreferences settings = getPreferences(0);
         Settings.setSettings(settings);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());

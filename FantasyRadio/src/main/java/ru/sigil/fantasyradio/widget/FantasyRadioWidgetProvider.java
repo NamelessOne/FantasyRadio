@@ -57,9 +57,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     @Override
     public void onEnabled(final Context context) {
         super.onEnabled(context);
-        Bootstrap.INSTANCE.getBootstrap().inject(this);
-        this.context = context;
-        player.addEventListener(eventListener);
     }
 
     @Override
@@ -213,7 +210,9 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-
+        this.context = context;
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
+        player.addEventListener(eventListener);
         if (ACTION_BITRATE_CLICK_16.equals(intent.getAction())) {
             currentBitrate = Bitrate.aac_16;
             onUpdate(context);
@@ -234,6 +233,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             currentBitrate = Bitrate.aac_112;
             onUpdate(context);
         }
+
         if (ACTION_PLAY_CLICK.equals(intent.getAction())) {
             playState = PlayState.PLAY;
             switch (currentBitrate) {

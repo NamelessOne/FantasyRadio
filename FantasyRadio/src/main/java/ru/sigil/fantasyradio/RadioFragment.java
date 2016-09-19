@@ -23,6 +23,8 @@ import android.widget.TimePicker;
 import com.un4seen.bass.BASS;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -49,6 +51,17 @@ public class RadioFragment extends Fragment {
     private static final int AD_SHOW_PROBABILITY_REC = 25;
     private static final int AD_SHOW_PROBABILITY_URL = 4;
     private static final int AD_SHOW_PROBABILITY_PLAY = 5;
+
+    private static final Map<Integer, Bitrate> bitratesMap;
+    static
+    {
+        bitratesMap = new HashMap<>();
+        bitratesMap.put(0, Bitrate.aac_16);
+        bitratesMap.put(1, Bitrate.mp3_32);
+        bitratesMap.put(2, Bitrate.mp3_64);
+        bitratesMap.put(3, Bitrate.aac_112);
+        bitratesMap.put(4, Bitrate.mp3_96);
+    }
 
     @Inject
     IPlayer player;
@@ -92,19 +105,19 @@ public class RadioFragment extends Fragment {
             }
         }
         if (player.currentState() != PlayState.PLAY) {
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC16) {
+            if (player.currentBitrate()==Bitrate.aac_16) {
                 player.playAAC(getString(R.string.stream_url_AAC16), Bitrate.aac_16);
             }
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.AAC112) {
+            if (player.currentBitrate()==Bitrate.aac_112) {
                 player.playAAC(getString(R.string.stream_url_AAC112), Bitrate.aac_112);
             }
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP332) {
+            if (player.currentBitrate()==Bitrate.mp3_32) {
                 player.play(getString(R.string.stream_url_MP332), Bitrate.mp3_32);
             }
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP364) {
+            if (player.currentBitrate()==Bitrate.mp3_64) {
                 player.play(getString(R.string.stream_url_MP364), Bitrate.mp3_64);
             }
-            if (PlayerState.getInstance().getCurrent_stream() == PlayerState.MP396) {
+            if (player.currentBitrate()==Bitrate.mp3_96) {
                 player.play(getString(R.string.stream_url_MP396), Bitrate.mp3_96);
             }
         } else {
@@ -213,8 +226,9 @@ public class RadioFragment extends Fragment {
                     getResources().getColor(R.color.bitrate_element));
             v.setBackgroundColor(getResources().getColor(
                     R.color.bitrate_element_active));
-            PlayerState.getInstance().setCurrent_stream(Integer.parseInt(v.getTag().toString()));
-            if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
+            //TODO
+            player.setBitrate(bitratesMap.get(Integer.valueOf(v.getTag().toString())));
+            if (player.currentState() == PlayState.PLAY) {
                 ImageView b = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
                 b.performClick();
                 b.performClick();
@@ -410,13 +424,13 @@ public class RadioFragment extends Fragment {
         @Override
         public void onPlayStateChanged(PlayState state) {
             ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
-            switch (state)
-            {
+            switch (state) {
                 case PLAY:
-                    iv.setImageResource(R.drawable.play_states);
+                    iv.setImageResource(R.drawable.pause_states);
                     break;
                 case PAUSE:
-                    iv.setImageResource(R.drawable.pause_states);
+                case STOP:
+                    iv.setImageResource(R.drawable.play_states);
                     break;
                 default:
                     break;

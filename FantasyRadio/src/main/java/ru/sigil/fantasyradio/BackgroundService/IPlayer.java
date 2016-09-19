@@ -18,6 +18,7 @@ public interface IPlayer {
     String currentArtist();
     Bitrate currentBitrate();
     PlayState currentState();
+    void setBitrate(Bitrate bitrate);
     boolean isRecActive();
     void setChan(int chan);
     int getChan();
