@@ -17,12 +17,14 @@ import android.view.MenuItem;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.un4seen.bass.BASS;
+
+import javax.inject.Inject;
 
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
+import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.saved.MP3Collection;
-import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.saved.SavedFragment;
 import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.settings.Settings;
@@ -38,8 +40,8 @@ public class TabHoster extends FragmentActivity {
     ViewPager mViewPager;
     private InterstitialAd mInterstitialAd;
 
-    //TODO @Inject
-    private IPlayer player;
+    @Inject
+    IPlayer player;
 
     private static int current_menu;
 
@@ -53,12 +55,13 @@ public class TabHoster extends FragmentActivity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
         setContentView(R.layout.tabs);
         // EasyTracker is now ready for use.
         ProgramNotification.setContext(getBaseContext());
         setCurrent_menu(R.menu.activity_main);
-        MP3Saver.setMp3c(new MP3Collection(getBaseContext()));
-        MP3Saver.getMp3c().Load();
+        player.getMp3Saver().setMp3c(new MP3Collection(getBaseContext()));
+        player.getMp3Saver().getMp3c().Load();
         SharedPreferences settings = getPreferences(0);
         Settings.setSettings(settings);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -91,7 +94,7 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onPause() {
-        if (PlayerState.isPlaying()) {
+        if (player.currentState()== PlayState.PLAY) {
             ProgramNotification
                     .createNotification();
         } else {

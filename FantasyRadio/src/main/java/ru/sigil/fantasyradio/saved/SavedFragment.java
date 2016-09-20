@@ -67,7 +67,7 @@ public class SavedFragment extends AbstractListFragment {
             }
         };
         adapter = new MP3ArrayAdapter(getActivity().getBaseContext(),
-                R.layout.mp3_list_item_layout, MP3Saver.getMp3c()
+                R.layout.mp3_list_item_layout, player.getMp3Saver().getMp3c()
                 .getMp3entityes(), deleteClickListener, playClickListener
         );
         getLv().setAdapter(adapter);
@@ -286,7 +286,7 @@ public class SavedFragment extends AbstractListFragment {
         alertDialogBuilder.setPositiveButton(getString(R.string.yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        MP3Saver.getMp3c().removeEntityByDirectory(
+                        player.getMp3Saver().getMp3c().removeEntityByDirectory(
                                 mp3EntityForDelete.getDirectory());
                         if (PlayerState.getInstance().getCurrentMP3Entity() != null) {
                             if (mp3EntityForDelete.getDirectory().equals(PlayerState

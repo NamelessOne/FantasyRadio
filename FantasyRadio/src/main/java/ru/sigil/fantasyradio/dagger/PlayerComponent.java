@@ -21,6 +21,8 @@ public interface PlayerComponent {
     void inject(RadioFragment radioFragment);
     void inject(SavedFragment savedFragment);
     void inject(FantasyRadioWidgetProvider fantasyRadioWidgetProvider);
+    void inject(ArchieveFragment archieveFragment);
+    void inject(TabHoster tabHoster);
 
     final class Initializer {
         private Initializer() {

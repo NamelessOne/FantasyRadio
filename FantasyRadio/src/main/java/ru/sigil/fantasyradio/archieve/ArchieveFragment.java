@@ -27,10 +27,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.BuildConfig;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.TabHoster;
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.exceptions.WrongLoginOrPasswordException;
 import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.saved.MP3Saver;
@@ -44,10 +47,13 @@ public class ArchieveFragment extends AbstractListFragment {
     private AlertDialog.Builder ad;
     private Random random;
     private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
+    @Inject
+    MP3Saver mp3Saver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
         View archieveActivityView = inflater.inflate(R.layout.archieve_layout, container, false);
         TextView tv = (TextView) archieveActivityView.findViewById(R.id.archive_text1);
         tv.setMovementMethod(LinkMovementMethod.getInstance());
@@ -260,9 +266,9 @@ public class ArchieveFragment extends AbstractListFragment {
             mp3Entity.setTitle(b.getString("title"));
             mp3Entity.setDirectory(b.getString("directory"));
             mp3Entity.setTime(b.getString("time"));
-            MP3Saver.getMp3c()
+            mp3Saver.getMp3c()
                     .removeEntityByDirectory(mp3Entity.getDirectory());
-            MP3Saver.getMp3c().add(mp3Entity);
+            mp3Saver.getMp3c().add(mp3Entity);
             DownladedEntityes.getDownloadedEntityes()
                     .remove(b.getString("URL"));
             try {

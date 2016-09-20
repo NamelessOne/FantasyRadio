@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.utils.PlayerState;
 
 /**
@@ -26,10 +27,11 @@ public class Player implements IPlayer {
     private final List<IPlayerEventListener> eventListeners = new ArrayList<>();
     private String title;
     private String author;
-    private Bitrate bitrate;
+    private Bitrate bitrate = Bitrate.aac_16;
     private PlayState playState = PlayState.STOP;
     private boolean rec = false;
     private String recDirectory;
+    private MP3Saver mp3Saver;
 
     private int chan;
 
@@ -102,6 +104,11 @@ public class Player implements IPlayer {
     }
 
     @Override
+    public MP3Saver getMp3Saver() {
+        return mp3Saver;
+    }
+
+    @Override
     public long getFileLength() {
         return BASS.BASS_ChannelGetLength(
                 getChan(), BASS.BASS_POS_BYTE);
@@ -129,8 +136,9 @@ public class Player implements IPlayer {
         setPlayState(PlayState.PLAY_FILE);
     }
 
-    public Player()
+    public Player(MP3Saver mp3Saver)
     {
+        this.mp3Saver = mp3Saver;
         BASS.BASS_Free();
         BASS.BASS_Init(-1, 44100, 0);
         BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);

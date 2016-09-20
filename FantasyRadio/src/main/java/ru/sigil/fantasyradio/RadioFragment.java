@@ -455,8 +455,8 @@ public class RadioFragment extends Fragment {
                                 mp3Entity.setTitle(player.currentTitle());
                                 mp3Entity.setDirectory(""/*TODO инкапсулирвовать запись в плеере player.getRecDirectory()*/);
                                 mp3Entity.setTime("");
-                                MP3Saver.getMp3c().removeEntityByDirectory(mp3Entity.getDirectory());
-                                MP3Saver.getMp3c().add(mp3Entity);
+                                player.getMp3Saver().getMp3c().removeEntityByDirectory(mp3Entity.getDirectory());
+                                player.getMp3Saver().getMp3c().add(mp3Entity);
                                 rib.setImageResource(R.drawable.rec);
                             }
                         }

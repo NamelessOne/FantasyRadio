@@ -8,8 +8,7 @@ import dagger.Module;
 import dagger.Provides;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.Player;
-import ru.sigil.fantasyradio.TabHoster;
-import ru.sigil.fantasyradio.settings.Settings;
+import ru.sigil.fantasyradio.saved.MP3Saver;
 
 /**
  * Created by NamelessOne
@@ -26,8 +25,15 @@ public class PlayerModule {
 
     @Provides
     @Singleton
-    IPlayer providesPlayer()
+    MP3Saver provadesMP3Saver()
     {
-        return new Player();
+        return new MP3Saver();
+    }
+
+    @Provides
+    @Singleton
+    IPlayer providesPlayer(MP3Saver mp3Saver)
+    {
+        return new Player(mp3Saver);
     }
 }
