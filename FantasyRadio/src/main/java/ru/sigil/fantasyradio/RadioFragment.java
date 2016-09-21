@@ -35,7 +35,6 @@ import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.saved.MP3Entity;
-import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
 import ru.sigil.fantasyradio.utils.PlayerState;
 
@@ -253,45 +252,40 @@ public class RadioFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText0).getTag()
-                .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
-        } else {
-            mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element_active));
-        }
-        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText1).getTag()
-                .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
-        } else {
-            mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element_active));
-        }
-        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText2).getTag()
-                .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
-        } else {
-            mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element_active));
-        }
-        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText3).getTag()
-                .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
-        } else {
-            mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element_active));
-        }
-        if (Integer.parseInt(mainFragmentView.findViewById(R.id.bitrateText4).getTag()
-                .toString()) != PlayerState.getInstance().getCurrent_stream()) {
-            mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
-        } else {
-            mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element_active));
+
+        mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        switch(player.currentBitrate())
+        {
+            case aac_16:
+                mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
+                        getResources().getColor(R.color.bitrate_element_active));
+                break;
+            case mp3_32:
+                mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
+                        getResources().getColor(R.color.bitrate_element_active));
+                break;
+            case mp3_64:
+                mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
+                        getResources().getColor(R.color.bitrate_element_active));
+                break;
+            case mp3_96:
+                mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
+                        getResources().getColor(R.color.bitrate_element_active));
+                break;
+            case aac_112:
+                mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
+                        getResources().getColor(R.color.bitrate_element_active));
+                break;
+
         }
 
         //TODO--------------------------------------------------------------------------------------

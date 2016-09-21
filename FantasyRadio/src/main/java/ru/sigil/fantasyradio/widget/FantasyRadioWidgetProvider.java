@@ -42,7 +42,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     private static final String ACTION_STOP_CLICK =
             "ru.sigil.fantasyradio.widget.ACTION_STOP_CLICK";
 
-    private static Bitrate currentBitrate = Bitrate.aac_16;
     private static PlayState playState = PlayState.STOP;
     private static final int activeBitrateColor = Color.parseColor("#0C648C");
     private static final int activeBitrateTextColor = Color.parseColor("#EBECEC");
@@ -57,6 +56,12 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     @Override
     public void onEnabled(final Context context) {
         super.onEnabled(context);
+    }
+
+    public FantasyRadioWidgetProvider()
+    {
+        super();
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
     }
 
     @Override
@@ -111,7 +116,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             remoteViews.setTextViewText(R.id.widget_title, widgetTitle);
             //-----------------------------------------------------------
             restoreDefaultBitrateColors(remoteViews);
-            switch (currentBitrate) {
+            switch (player.currentBitrate()) {
                 case aac_16:
                     remoteViews.setInt(R.id.toggleQuality16, "setBackgroundColor",
                             activeBitrateColor);
@@ -200,8 +205,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
                     thisAppWidgetComponentName);
             onUpdate(context, appWidgetManager, appWidgetIds);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -211,32 +215,51 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         this.context = context;
-        Bootstrap.INSTANCE.getBootstrap().inject(this);
         player.addEventListener(eventListener);
         if (ACTION_BITRATE_CLICK_16.equals(intent.getAction())) {
-            currentBitrate = Bitrate.aac_16;
+            player.setBitrate(Bitrate.aac_16);
+            if (player.currentState() == PlayState.PLAY) {
+                player.stop();
+                player.playAAC(context.getString(R.string.stream_url_AAC16), Bitrate.aac_16);
+            }
             onUpdate(context);
         }
         if (ACTION_BITRATE_CLICK_32.equals(intent.getAction())) {
-            currentBitrate = Bitrate.mp3_32;
+            player.setBitrate(Bitrate.mp3_32);
+            if (player.currentState() == PlayState.PLAY) {
+                player.stop();
+                player.play(context.getString(R.string.stream_url_MP332), Bitrate.mp3_32);
+            }
             onUpdate(context);
         }
         if (ACTION_BITRATE_CLICK_64.equals(intent.getAction())) {
-            currentBitrate = Bitrate.mp3_64;
+            player.setBitrate(Bitrate.mp3_64);
+            if (player.currentState() == PlayState.PLAY) {
+                player.stop();
+                player.play(context.getString(R.string.stream_url_MP364), Bitrate.mp3_64);
+            }
             onUpdate(context);
         }
         if (ACTION_BITRATE_CLICK_96.equals(intent.getAction())) {
-            currentBitrate = Bitrate.mp3_96;
+            player.setBitrate(Bitrate.mp3_96);
+            if (player.currentState() == PlayState.PLAY) {
+                player.stop();
+                player.play(context.getString(R.string.stream_url_MP396), Bitrate.mp3_96);
+            }
             onUpdate(context);
         }
         if (ACTION_BITRATE_CLICK_112.equals(intent.getAction())) {
-            currentBitrate = Bitrate.aac_112;
+            player.setBitrate(Bitrate.aac_112);
+            if (player.currentState() == PlayState.PLAY) {
+                player.stop();
+                player.playAAC(context.getString(R.string.stream_url_AAC112), Bitrate.aac_112);
+            }
             onUpdate(context);
         }
 
         if (ACTION_PLAY_CLICK.equals(intent.getAction())) {
             playState = PlayState.PLAY;
-            switch (currentBitrate) {
+            switch (player.currentBitrate()) {
                 case aac_16:
                     player.playAAC(context.getString(R.string.stream_url_AAC16), Bitrate.aac_16);
                     break;
@@ -286,8 +309,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
 
         @Override
         public void onBitrateChanged(Bitrate bitrate) {
-            currentBitrate = bitrate;
-            onUpdate(context);
+            onUpdate(context);  //Само обновится
         }
 
         @Override
