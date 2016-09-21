@@ -124,6 +124,16 @@
                     android:text="@string/stream_MP364"/>
 
             <TextView
+                android:id="@+id/bitrateText4"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/bitrate_element"
+                android:clickable="true"
+                android:padding="5dp"
+                android:tag="4"
+                android:text="@string/stream_MP396"/>
+
+            <TextView
                     android:id="@+id/bitrateText3"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -133,15 +143,6 @@
                     android:tag="3"
                     android:text="@string/stream_AAC112"/>
 
-            <TextView
-                    android:id="@+id/bitrateText4"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/bitrate_element"
-                    android:clickable="true"
-                    android:padding="5dp"
-                    android:tag="4"
-                    android:text="@string/stream_MP396"/>
         </LinearLayout>
 
         <TextView
