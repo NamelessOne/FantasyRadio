@@ -8,6 +8,7 @@ import ru.sigil.fantasyradio.RadioFragment;
 import ru.sigil.fantasyradio.TabHoster;
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
 import ru.sigil.fantasyradio.saved.SavedFragment;
+import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.settings.SettingsActivity;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 
@@ -23,6 +24,7 @@ public interface PlayerComponent {
     void inject(FantasyRadioWidgetProvider fantasyRadioWidgetProvider);
     void inject(ArchieveFragment archieveFragment);
     void inject(TabHoster tabHoster);
+    void inject(ScheduleFragment scheduleFragment);
 
     final class Initializer {
         private Initializer() {

@@ -9,6 +9,8 @@ import dagger.Provides;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.Player;
 import ru.sigil.fantasyradio.saved.MP3Saver;
+import ru.sigil.fantasyradio.schedule.ScheduleEntityesCollection;
+import ru.sigil.fantasyradio.schedule.ScheduleParser;
 
 /**
  * Created by NamelessOne
@@ -35,5 +37,18 @@ public class PlayerModule {
     IPlayer providesPlayer(MP3Saver mp3Saver)
     {
         return new Player(mp3Saver);
+    }
+
+    @Provides
+    @Singleton
+    ScheduleEntityesCollection provadesScheduleEntityesCollection()
+    {
+        return new ScheduleEntityesCollection();
+    }
+
+    @Provides
+    ScheduleParser provadesScheduleParser(ScheduleEntityesCollection scheduleEntityesCollection)
+    {
+        return new ScheduleParser(scheduleEntityesCollection);
     }
 }

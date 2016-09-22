@@ -21,9 +21,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import ru.sigil.fantasyradio.BuildConfig;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.TabHoster;
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.log.LogManager;
 
 public class ScheduleFragment extends Fragment {
@@ -33,6 +36,10 @@ public class ScheduleFragment extends Fragment {
     ArrayList<ArrayList<ScheduleEntity>> arr = new ArrayList<>();
     private Random random;
     private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
+    @Inject
+    ScheduleEntityesCollection scheduleEntityesCollection;
+    @Inject
+    ScheduleParser scheduleParser;
 
     public ScheduleFragment() {
         super();
@@ -42,9 +49,8 @@ public class ScheduleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
         LogManager.d(TAG, "onCreateView");
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
         View scheduleFragmentView = inflater.inflate(R.layout.schedule_layout, container, false);
         scheduleFragmentView.findViewById(R.id.schedule_refresh_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,8 +108,7 @@ public class ScheduleFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            ScheduleParser.ParseSchedule();
-
+            scheduleParser.ParseSchedule();
             return null;
         }
 
@@ -120,7 +125,7 @@ public class ScheduleFragment extends Fragment {
                 ArrayList<ScheduleEntity> arr2 = new ArrayList<>();
                 LocalDate ld = LocalDate.now();
                 ld = ld.plusDays(i);
-                for (Iterator<ScheduleEntity> it = ScheduleEntityesCollection.getEntityes().iterator(); it.hasNext(); ) {
+                for (Iterator<ScheduleEntity> it = scheduleEntityesCollection.getEntityes().iterator(); it.hasNext(); ) {
                     ScheduleEntity scheduleEntity = it.next();
                     if (scheduleEntity.getStartDate()!=null&&scheduleEntity.getStartDate().getDayOfYear() == ld
                             .getDayOfYear()) {

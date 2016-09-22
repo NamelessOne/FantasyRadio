@@ -24,11 +24,18 @@ import java.util.Collections;
 public class ScheduleParser {
     private static final String URL = "https://www.googleapis.com/calendar/v3/calendars/fantasyradioru@gmail.com/events?key=AIzaSyDam413Hzm4l8GOEEg-NF8w8wdAbUsKEjM&maxResults=50&singleEvents=true&orderBy=startTime";
     //https://www.googleapis.com/calendar/v3/calendars/fantasyradioru@gmail.com/events?key=AIzaSyDam413Hzm4l8GOEEg-NF8w8wdAbUsKEjM&maxResults=50&singleEvents=true&orderBy=startTime&timeMin=2014-01-01T00:00:00Z&timeMax=2018-03-24T23:59:59Z
-
     /**
      * Парсим расписание. Результат в добавляется в ScheduleEntityesCollection.
      */
-    public static void ParseSchedule() {
+
+    private ScheduleEntityesCollection scheduleEntityesCollection;
+
+    public ScheduleParser(ScheduleEntityesCollection scheduleEntityesCollection)
+    {
+        this.scheduleEntityesCollection = scheduleEntityesCollection;
+    }
+
+    public synchronized  void ParseSchedule() {
         try {
             // -----------------------------------------------
             LocalDate ld = LocalDate.now();
@@ -37,7 +44,7 @@ public class ScheduleParser {
             String urlMax = "&timeMax=" + fmt.print(ld.plusDays(3))
                     + "00:00:00.000Z";
             // -----------------------------------------------
-            ScheduleEntityesCollection.getEntityes().clear();
+            scheduleEntityesCollection.getEntityes().clear();
             // -------------------------------------
             JSONObject jsObject = getJSONFromUrl(URL + urlMin + urlMax);
             //JSONObject feedObject = jsObject.getJSONObject("feed");
@@ -68,12 +75,12 @@ public class ScheduleParser {
                     se.setStartDate(parser2.parseDateTime(startDate));
                     se.setEndDate(parser2.parseDateTime(endDate));
 
-                    ScheduleEntityesCollection.getEntityes().add(se);
+                    scheduleEntityesCollection.getEntityes().add(se);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-            Collections.reverse(ScheduleEntityesCollection.getEntityes());
+            Collections.reverse(scheduleEntityesCollection.getEntityes());
         } catch (Exception e) {
             e.printStackTrace();
         }
