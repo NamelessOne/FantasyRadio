@@ -114,16 +114,6 @@
                     android:text="@string/stream_MP332"/>
 
             <TextView
-                    android:id="@+id/bitrateText2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/bitrate_element"
-                    android:clickable="true"
-                    android:padding="5dp"
-                    android:tag="2"
-                    android:text="@string/stream_MP364"/>
-
-            <TextView
                 android:id="@+id/bitrateText4"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

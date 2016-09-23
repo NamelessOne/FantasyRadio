@@ -61,7 +61,6 @@ public class RadioFragment extends Fragment {
         bitratesMap = new HashMap<>();
         bitratesMap.put(0, Bitrate.aac_16);
         bitratesMap.put(1, Bitrate.mp3_32);
-        bitratesMap.put(2, Bitrate.mp3_64);
         bitratesMap.put(3, Bitrate.aac_112);
         bitratesMap.put(4, Bitrate.mp3_96);
     }
@@ -118,9 +117,6 @@ public class RadioFragment extends Fragment {
             if (player.currentBitrate()==Bitrate.mp3_32) {
                 player.play(getString(R.string.stream_url_MP332), Bitrate.mp3_32);
             }
-            if (player.currentBitrate()==Bitrate.mp3_64) {
-                player.play(getString(R.string.stream_url_MP364), Bitrate.mp3_64);
-            }
             if (player.currentBitrate()==Bitrate.mp3_96) {
                 player.play(getString(R.string.stream_url_MP396), Bitrate.mp3_96);
             }
@@ -145,7 +141,6 @@ public class RadioFragment extends Fragment {
         });
         mainFragmentView.findViewById(R.id.bitrateText0).setOnClickListener(bitrateClick);
         mainFragmentView.findViewById(R.id.bitrateText1).setOnClickListener(bitrateClick);
-        mainFragmentView.findViewById(R.id.bitrateText2).setOnClickListener(bitrateClick);
         mainFragmentView.findViewById(R.id.bitrateText3).setOnClickListener(bitrateClick);
         mainFragmentView.findViewById(R.id.bitrateText4).setOnClickListener(bitrateClick);
         ImageView recordButton = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
@@ -222,8 +217,6 @@ public class RadioFragment extends Fragment {
                     getResources().getColor(R.color.bitrate_element));
             mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element));
-            mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
             mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
                     getResources().getColor(R.color.bitrate_element));
             mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
@@ -262,8 +255,6 @@ public class RadioFragment extends Fragment {
                 getResources().getColor(R.color.bitrate_element));
         mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
                 getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
         mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
                 getResources().getColor(R.color.bitrate_element));
         mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
@@ -276,10 +267,6 @@ public class RadioFragment extends Fragment {
                 break;
             case mp3_32:
                 mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
-                        getResources().getColor(R.color.bitrate_element_active));
-                break;
-            case mp3_64:
-                mainFragmentView.findViewById(R.id.bitrateText2).setBackgroundColor(
                         getResources().getColor(R.color.bitrate_element_active));
                 break;
             case mp3_96:

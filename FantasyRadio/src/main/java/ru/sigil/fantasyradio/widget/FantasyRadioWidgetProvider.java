@@ -31,8 +31,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             "ru.sigil.fantasyradio.widget.ACTION_BITRATE_CLICK_16";
     private static final String ACTION_BITRATE_CLICK_32 =
             "ru.sigil.fantasyradio.widget.ACTION_BITRATE_CLICK_32";
-    private static final String ACTION_BITRATE_CLICK_64 =
-            "ru.sigil.fantasyradio.widget.ACTION_BITRATE_CLICK_64";
     private static final String ACTION_BITRATE_CLICK_96 =
             "ru.sigil.fantasyradio.widget.ACTION_BITRATE_CLICK_96";
     private static final String ACTION_BITRATE_CLICK_112 =
@@ -91,10 +89,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                     getPendingSelfIntent(context,
                             ACTION_BITRATE_CLICK_32)
             );
-            remoteViews.setOnClickPendingIntent(R.id.toggleQuality64,
-                    getPendingSelfIntent(context,
-                            ACTION_BITRATE_CLICK_64)
-            );
             remoteViews.setOnClickPendingIntent(R.id.toggleQuality96,
                     getPendingSelfIntent(context,
                             ACTION_BITRATE_CLICK_96)
@@ -126,12 +120,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                     remoteViews.setInt(R.id.toggleQuality32, "setBackgroundColor",
                             activeBitrateColor);
                     remoteViews.setInt(R.id.toggleQuality32, "setTextColor",
-                            activeBitrateTextColor);
-                    break;
-                case mp3_64:
-                    remoteViews.setInt(R.id.toggleQuality64, "setBackgroundColor",
-                            activeBitrateColor);
-                    remoteViews.setInt(R.id.toggleQuality64, "setTextColor",
                             activeBitrateTextColor);
                     break;
                 case mp3_96:
@@ -166,8 +154,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                 Color.TRANSPARENT);
         remoteViews.setInt(R.id.toggleQuality32, "setBackgroundColor",
                 Color.TRANSPARENT);
-        remoteViews.setInt(R.id.toggleQuality64, "setBackgroundColor",
-                Color.TRANSPARENT);
         remoteViews.setInt(R.id.toggleQuality96, "setBackgroundColor",
                 Color.TRANSPARENT);
         remoteViews.setInt(R.id.toggleQuality112, "setBackgroundColor",
@@ -175,8 +161,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
         remoteViews.setInt(R.id.toggleQuality16, "setTextColor",
                 defaultBitrateTextColor);
         remoteViews.setInt(R.id.toggleQuality32, "setTextColor",
-                defaultBitrateTextColor);
-        remoteViews.setInt(R.id.toggleQuality64, "setTextColor",
                 defaultBitrateTextColor);
         remoteViews.setInt(R.id.toggleQuality96, "setTextColor",
                 defaultBitrateTextColor);
@@ -231,14 +215,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             }
             onUpdate(context);
         }
-        if (ACTION_BITRATE_CLICK_64.equals(intent.getAction())) {
-            player.setBitrate(Bitrate.mp3_64);
-            if (player.currentState() == PlayState.PLAY) {
-                player.stop();
-                player.play(context.getString(R.string.stream_url_MP364), Bitrate.mp3_64);
-            }
-            onUpdate(context);
-        }
         if (ACTION_BITRATE_CLICK_96.equals(intent.getAction())) {
             player.setBitrate(Bitrate.mp3_96);
             if (player.currentState() == PlayState.PLAY) {
@@ -263,9 +239,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                     break;
                 case mp3_32:
                     player.play(context.getString(R.string.stream_url_MP332), Bitrate.mp3_32);
-                    break;
-                case mp3_64:
-                    player.play(context.getString(R.string.stream_url_MP364), Bitrate.mp3_64);
                     break;
                 case mp3_96:
                     player.play(context.getString(R.string.stream_url_MP396), Bitrate.mp3_96);

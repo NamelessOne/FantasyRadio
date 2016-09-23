@@ -94,15 +94,6 @@
                     android:textColor="@color/widget_text" />
 
                 <TextView
-                    android:id="@+id/toggleQuality64"
-                    android:layout_width="26dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:tag="widget_64"
-                    android:text="@string/widget_MP364"
-                    android:textColor="@color/widget_text" />
-
-                <TextView
                     android:id="@+id/toggleQuality96"
                     android:layout_width="26dp"
                     android:layout_height="wrap_content"
