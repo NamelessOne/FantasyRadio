@@ -70,18 +70,15 @@
     <string name="archieve_url">http://www.fantasyradio.ru/index_arch.php</string>
     <string name="stream_url_AAC16">http://fantasyradioru.no-ip.biz:8016</string>
     <string name="stream_url_AAC112">http://fantasyradioru.no-ip.biz:8000</string>
-    <string name="stream_url_MP364">http://stream0.radiostyle.ru:8000/fantasy-radio</string>
     <string name="stream_url_MP332">http://fantasyradioru.no-ip.biz:8008</string>
     <string name="stream_url_MP396">http://fantasyradioru.no-ip.biz:8002/live</string>
     <string name="stream_AAC16">AAC 16 КБит/с</string>
     <string name="stream_AAC112">AAC 112 КБит/с</string>
-    <string name="stream_MP364">MP3 64 КБит/с</string>
     <string name="stream_MP332">MP3 32 КБит/с</string>
     <string name="stream_MP396">MP3 96 КБит/с</string>
 
     <string name="widget_AAC16">16</string>
     <string name="widget_AAC112">112</string>
-    <string name="widget_MP364">64</string>
     <string name="widget_MP332">32</string>
     <string name="widget_MP396">96</string>
 

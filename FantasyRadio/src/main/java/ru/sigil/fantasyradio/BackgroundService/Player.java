@@ -13,8 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.utils.PlayerState;
@@ -25,7 +25,7 @@ import ru.sigil.log.LogManager;
  * on 17.09.2016.
  */
 public class Player implements IPlayer {
-    private final List<IPlayerEventListener> eventListeners = new ArrayList<>();
+    private final Set<IPlayerEventListener> eventListeners = new HashSet<>();
     private String title;
     private String author;
     private Bitrate bitrate = Bitrate.aac_16;
