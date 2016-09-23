@@ -18,6 +18,7 @@ import java.util.List;
 
 import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.utils.PlayerState;
+import ru.sigil.log.LogManager;
 
 /**
  * Created by NamelessOne
@@ -215,6 +216,7 @@ public class Player implements IPlayer {
     }
 
     public void setBitrate(Bitrate bitrate) {
+        LogManager.e("Radio", "bitrate = " + bitrate);
         this.bitrate = bitrate;
     }
 

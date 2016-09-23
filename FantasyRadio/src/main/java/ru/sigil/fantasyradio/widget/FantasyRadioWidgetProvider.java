@@ -42,7 +42,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     private static final String ACTION_STOP_CLICK =
             "ru.sigil.fantasyradio.widget.ACTION_STOP_CLICK";
 
-    private static PlayState playState = PlayState.STOP;
     private static final int activeBitrateColor = Color.parseColor("#0C648C");
     private static final int activeBitrateTextColor = Color.parseColor("#EBECEC");
     private static final int defaultBitrateTextColor = Color.parseColor("#424242");
@@ -148,7 +147,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                             activeBitrateTextColor);
                     break;
             }
-            switch (playState) {
+            switch (player.currentState()) {
                 case PLAY:
                     remoteViews.setViewVisibility(R.id.widget_play, View.GONE);
                     remoteViews.setViewVisibility(R.id.widget_stop, View.VISIBLE);
@@ -258,7 +257,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
         }
 
         if (ACTION_PLAY_CLICK.equals(intent.getAction())) {
-            playState = PlayState.PLAY;
             switch (player.currentBitrate()) {
                 case aac_16:
                     player.playAAC(context.getString(R.string.stream_url_AAC16), Bitrate.aac_16);
@@ -298,7 +296,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
 
         @Override
         public void onPlayStateChanged(PlayState state) {
-            playState = state;
             onUpdate(context);
         }
 
@@ -319,7 +316,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
 
         @Override
         public void onStop() {
-            //TODO
+            onUpdate(context);
         }
     };
 }

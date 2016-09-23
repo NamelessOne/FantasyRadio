@@ -3,6 +3,8 @@ package ru.sigil.fantasyradio;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,6 +39,8 @@ import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
 import ru.sigil.fantasyradio.utils.PlayerState;
+import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
+import ru.sigil.log.LogManager;
 
 public class RadioFragment extends Fragment {
 
@@ -98,13 +102,14 @@ public class RadioFragment extends Fragment {
      * Кликныли на кнопку PLAY. Начинаем проигрывать выбранный поток.
      */
     public void streamButtonClick(View v) {
+        updateWidget();
         if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_PLAY) {
             if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
                 ((TabHoster) getActivity()).getmInterstitialAd().show();
             }
         }
         if (player.currentState() != PlayState.PLAY) {
-            if (player.currentBitrate()==Bitrate.aac_16) {
+            if (player.currentBitrate() == Bitrate.aac_16) {
                 player.playAAC(getString(R.string.stream_url_AAC16), Bitrate.aac_16);
             }
             if (player.currentBitrate()==Bitrate.aac_112) {
@@ -480,4 +485,13 @@ public class RadioFragment extends Fragment {
             //TODO
         }
     };
+
+    private void updateWidget() {
+        Intent intent = new Intent(getActivity().getApplicationContext(), FantasyRadioWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int ids[] = AppWidgetManager.getInstance(getActivity().getApplicationContext()).getAppWidgetIds(
+                new ComponentName(getActivity().getApplicationContext(), FantasyRadioWidgetProvider.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        getActivity().getApplicationContext().sendBroadcast(intent);
+    }
 }

@@ -1,7 +1,10 @@
 package ru.sigil.fantasyradio.saved;
 
 import android.app.AlertDialog;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,6 +33,7 @@ import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.PlayerState;
+import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 
 public class SavedFragment extends AbstractListFragment {
     private MP3Entity mp3EntityForDelete;
@@ -193,6 +197,7 @@ public class SavedFragment extends AbstractListFragment {
     };
 
     public void playClick(View v) {
+        updateWidget();
         if (BASS.BASS_ChannelIsActive(player.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
             if (PlayerState.getInstance().getCurrentMP3Entity() == v.getTag()) {
                 // Это была пауза.
@@ -358,5 +363,14 @@ public class SavedFragment extends AbstractListFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateWidget() {
+        Intent intent = new Intent(getActivity().getApplicationContext(), FantasyRadioWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int ids[] = AppWidgetManager.getInstance(getActivity().getApplicationContext()).getAppWidgetIds(
+                new ComponentName(getActivity().getApplicationContext(), FantasyRadioWidgetProvider.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        getActivity().getApplicationContext().sendBroadcast(intent);
     }
 }
