@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
+import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.PlayerState;
@@ -215,8 +216,9 @@ public class SavedFragment extends AbstractListFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (PlayerState.isPlaying()) {
+        if (player.currentState() == PlayState.PLAY) {
             if (PlayerState.getInstance().getCurrentMP3Entity() == v.getTag()) {
+                //TODO !!!
                 BASS.BASS_ChannelPause(player.getChan());
                 ImageButton bv = (ImageButton) v;// !!!!!!!!!!!!!!!
                 bv.setImageResource(R.drawable.play_states);

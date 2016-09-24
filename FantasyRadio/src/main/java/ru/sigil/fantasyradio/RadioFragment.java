@@ -40,7 +40,6 @@ import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
 import ru.sigil.fantasyradio.utils.PlayerState;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
-import ru.sigil.log.LogManager;
 
 public class RadioFragment extends Fragment {
 
@@ -56,8 +55,8 @@ public class RadioFragment extends Fragment {
     private static final int AD_SHOW_PROBABILITY_PLAY = 5;
 
     private static final Map<Integer, Bitrate> bitratesMap;
-    static
-    {
+
+    static {
         bitratesMap = new HashMap<>();
         bitratesMap.put(0, Bitrate.aac_16);
         bitratesMap.put(1, Bitrate.mp3_32);
@@ -111,13 +110,13 @@ public class RadioFragment extends Fragment {
             if (player.currentBitrate() == Bitrate.aac_16) {
                 player.playAAC(getString(R.string.stream_url_AAC16), Bitrate.aac_16);
             }
-            if (player.currentBitrate()==Bitrate.aac_112) {
+            if (player.currentBitrate() == Bitrate.aac_112) {
                 player.playAAC(getString(R.string.stream_url_AAC112), Bitrate.aac_112);
             }
-            if (player.currentBitrate()==Bitrate.mp3_32) {
+            if (player.currentBitrate() == Bitrate.mp3_32) {
                 player.play(getString(R.string.stream_url_MP332), Bitrate.mp3_32);
             }
-            if (player.currentBitrate()==Bitrate.mp3_96) {
+            if (player.currentBitrate() == Bitrate.mp3_96) {
                 player.play(getString(R.string.stream_url_MP396), Bitrate.mp3_96);
             }
         } else {
@@ -259,8 +258,7 @@ public class RadioFragment extends Fragment {
                 getResources().getColor(R.color.bitrate_element));
         mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
                 getResources().getColor(R.color.bitrate_element));
-        switch(player.currentBitrate())
-        {
+        switch (player.currentBitrate()) {
             case aac_16:
                 mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
                         getResources().getColor(R.color.bitrate_element_active));
@@ -308,12 +306,10 @@ public class RadioFragment extends Fragment {
                 ((TabHoster) getActivity()).getmInterstitialAd().show();
             }
         }
-        if (PlayerState.getInstance().getCurrentRadioEntity() != null) {
-            if (player.isRecActive()) {
-                player.rec(false);
-            } else {
-                player.rec(true);
-            }
+        if (player.isRecActive()) {
+            player.rec(false);
+        } else {
+            player.rec(true);
         }
     }
 
@@ -433,16 +429,6 @@ public class RadioFragment extends Fragment {
                             if (isRec) {
                                 rib.setImageResource(R.drawable.rec_active);
                             } else {
-                                // А тут мы пишем инфу о скачанном
-                                // файле в базу
-                                //TODO логика в контроллере. Плохо.
-                                MP3Entity mp3Entity = new MP3Entity();
-                                mp3Entity.setArtist(player.currentArtist());
-                                mp3Entity.setTitle(player.currentTitle());
-                                mp3Entity.setDirectory(""/*TODO инкапсулирвовать запись в плеере player.getRecDirectory()*/);
-                                mp3Entity.setTime("");
-                                player.getMp3Saver().getMp3c().removeEntityByDirectory(mp3Entity.getDirectory());
-                                player.getMp3Saver().getMp3c().add(mp3Entity);
                                 rib.setImageResource(R.drawable.rec);
                             }
                         }

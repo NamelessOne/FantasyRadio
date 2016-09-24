@@ -13,17 +13,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.PlayerState;
 
-class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
+public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
 
     public static int width;
 
-    //TODO @Inject
-    private IPlayer player;
+    @Inject
+    public IPlayer player;
 
     private List<MP3Entity> MP3s = new ArrayList<>();
     private View.OnClickListener deleteCLickListener;
@@ -32,6 +35,7 @@ class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
     public MP3ArrayAdapter(Context context, int textViewResourceId,
                            List<MP3Entity> objects, View.OnClickListener deleteClickListener, View.OnClickListener playClickListener) {
         super(context, textViewResourceId, objects);
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
         this.MP3s = objects;
         this.deleteCLickListener = deleteClickListener;
         this.playCLickListener = playClickListener;

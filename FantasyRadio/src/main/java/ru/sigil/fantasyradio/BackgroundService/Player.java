@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
+import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.utils.PlayerState;
 import ru.sigil.log.LogManager;
@@ -33,6 +34,7 @@ public class Player implements IPlayer {
     private boolean rec = false;
     private String recDirectory;
     private MP3Saver mp3Saver;
+    private String currentMP3Entity;
 
     private int chan;
 
@@ -57,16 +59,16 @@ public class Player implements IPlayer {
     public void rec(boolean isActive) {
             // -------------------------------------
             if (!isActive) {
-                Message msg = new Message();
-                Bundle b = new Bundle();
-                b.putString("artist", author);
-                b.putString("title", title);
-                b.putString("directory", recDirectory);
-                b.putString("time", "");
-                // --------------------------------
-                b.putString("URL", "");
-                // --------------------------------
-                msg.setData(b);
+                // А тут мы пишем инфу о записанном
+                // файле в базу
+                MP3Entity mp3Entity = new MP3Entity();
+                mp3Entity.setArtist(author);
+                mp3Entity.setTitle(title);
+                mp3Entity.setDirectory(recDirectory);
+                mp3Entity.setTime("");
+                mp3Saver.getMp3c().removeEntityByDirectory(mp3Entity.getDirectory());
+                mp3Saver.getMp3c().add(mp3Entity);
+                //----------------------------------------------------
             } else {
                 File dir = new File(Environment.getExternalStorageDirectory()
                         + "/fantasyradio/records/");
