@@ -12,6 +12,7 @@ public interface IPlayer {
     void play(String URL, Bitrate bitrate);
     void playAAC(String URL, Bitrate bitrate);
     void playFile(String file);
+    void pause();
     void stop();
     void addEventListener(IPlayerEventListener listener);
     void removeEventListener(IPlayerEventListener listener);
@@ -29,4 +30,5 @@ public interface IPlayer {
     void rewind(int offset);
     void rec(boolean isActive);
     MP3Saver getMp3Saver();
+    boolean isPaused();
 }

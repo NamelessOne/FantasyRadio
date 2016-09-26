@@ -136,7 +136,39 @@ public class Player implements IPlayer {
     @Override
     public void playFile(String file) {
         //TODO
+        BASS.BASS_StreamFree(getChan());
+        // -------------------------------------------------
+        int x;
+        if ((x = BASS.BASS_StreamCreateFile(file, 0, 0, 0)) == 0
+                && (x = BASS.BASS_MusicLoad(file, 0, 0,
+                BASS.BASS_MUSIC_RAMP, 0)) == 0) {
+            if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
+                    // whatever it is, it ain't playable
+                    int s = BASS.BASS_ErrorGetCode();
+                    setChan(x);
+                    //TODO Error тоже через событие
+                    //Error("Can't PLAY the file");
+                    return;
+            }
+        }
+        setChan(x);
+        BASS.BASS_ChannelPlay(getChan(), false);
+        BASS.BASS_ChannelSetSync(getChan(), BASS.BASS_SYNC_END, 0,
+                EndSync, null);
         setPlayState(PlayState.PLAY_FILE);
+    }
+
+    @Override
+    public boolean isPaused()
+    {
+        //TODO по хорошему это должен быть state
+        return  BASS.BASS_ChannelIsActive(getChan()) == BASS.BASS_ACTIVE_PAUSED;
+    }
+
+    @Override
+    public void pause()
+    {
+        //TODO
     }
 
     public Player(MP3Saver mp3Saver)

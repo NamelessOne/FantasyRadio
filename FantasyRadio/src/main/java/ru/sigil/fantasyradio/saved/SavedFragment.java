@@ -57,8 +57,7 @@ public class SavedFragment extends AbstractListFragment {
         }
     };
 
-    public void notifyAdapter()
-    {
+    public void notifyAdapter() {
         View.OnClickListener deleteClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +81,7 @@ public class SavedFragment extends AbstractListFragment {
         @Override
         public void handleMessage(Message msg) {
             long streamProgress = BASS.BASS_ChannelGetPosition(
-            player.getChan(), BASS.BASS_POS_BYTE)
+                    player.getChan(), BASS.BASS_POS_BYTE)
                     * 100
                     / BASS.BASS_ChannelGetLength(player.getChan(),
                     BASS.BASS_POS_BYTE);
@@ -228,51 +227,16 @@ public class SavedFragment extends AbstractListFragment {
                 PlayerState.getInstance().setCurrentMP3Entity((MP3Entity) v.getTag());
                 nextPos = adapter
                         .getPosition(PlayerState.getInstance().getCurrentMP3Entity()); // почему-то 0
-                BASS.BASS_StreamFree(player.getChan());
-                // -------------------------------------------------
-                String file = PlayerState.getInstance().getCurrentMP3Entity().getDirectory();
-                int x;
-                if ((x = BASS.BASS_StreamCreateFile(file, 0, 0, 0)) == 0
-                        && (x = BASS.BASS_MusicLoad(file, 0, 0,
-                        BASS.BASS_MUSIC_RAMP, 0)) == 0) {
-                    if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
-                        // whatever it is, it ain't playable
-                        player.setChan(x);
-                        Error("Can't PLAY the file");
-                        return;
-                    }
-                }
-                player.setChan(x);
-                BASS.BASS_ChannelPlay(player.getChan(), false);
-                BASS.BASS_ChannelSetSync(player.getChan(),
-                        BASS.BASS_SYNC_END, 0, EndSync, null);
-                // -------------------------------------------------
+                player.playFile(((MP3Entity) v.getTag()).getDirectory());
                 onCurrentMP3ListRow();
             }
         } else {
-            if (BASS.BASS_ChannelIsActive(player.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
+            if (player.isPaused()) {
                 offPreviousMP3ListRow();
+                //TODO скорее всего по событию сделать
             }
-            PlayerState.getInstance().setCurrentMP3Entity((MP3Entity) v.getTag());
-            nextPos = adapter.getPosition(PlayerState.getInstance().getCurrentMP3Entity());
-            BASS.BASS_StreamFree(player.getChan());
-            // -------------------------------------------------
-            String file = PlayerState.getInstance().getCurrentMP3Entity().getDirectory();
-            int x;
-            if ((x = BASS.BASS_StreamCreateFile(file, 0, 0, 0)) == 0
-                    && (x = BASS.BASS_MusicLoad(file, 0, 0,
-                    BASS.BASS_MUSIC_RAMP, 0)) == 0) {
-                if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
-                    // whatever it is, it ain't playable
-                    player.setChan(x);
-                    Error("Can't PLAY the file");
-                    return;
-                }
-            }
-            player.setChan(x);
-            BASS.BASS_ChannelPlay(player.getChan(), false);
-            BASS.BASS_ChannelSetSync(player.getChan(), BASS.BASS_SYNC_END, 0,
-                    EndSync, null);
+            nextPos = adapter.getPosition((MP3Entity) v.getTag());
+            player.playFile(((MP3Entity) v.getTag()).getDirectory());
             // -------------------------------------------------
             onCurrentMP3ListRow();
         }
