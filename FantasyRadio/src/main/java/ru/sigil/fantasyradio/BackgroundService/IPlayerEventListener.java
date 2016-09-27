@@ -12,4 +12,5 @@ public interface IPlayerEventListener {
     void onBitrateChanged(Bitrate bitrate); //TODO
     void onBufferingProgress(long progress);
     void onStop();
+    void endSync();
 }

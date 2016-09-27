@@ -29,7 +29,9 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 
 import ru.sigil.fantasyradio.AbstractListFragment;
+import ru.sigil.fantasyradio.BackgroundService.Bitrate;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
+import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
@@ -105,9 +107,17 @@ public class SavedFragment extends AbstractListFragment {
                              Bundle savedInstanceState) {
         savedActivityView = inflater.inflate(R.layout.mp3s, container, false);
         Bootstrap.INSTANCE.getBootstrap().inject(this);
+        player.addEventListener(eventListener);
         //CurrentControls.setRewindMP3Handler(rewindMp3Handler);
         setLv((ListView) savedActivityView.findViewById(R.id.MP3ListView));
         return savedActivityView;
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        player.removeEventListener(eventListener);
+        super.onDestroy();
     }
 
     @Override
@@ -147,54 +157,6 @@ public class SavedFragment extends AbstractListFragment {
             }
         });
     }
-
-
-    private BASS.SYNCPROC EndSync = new BASS.SYNCPROC() {
-        public void SYNCPROC(int handle, int channel, int data, Object user) {
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    // Заканчивается воспроизведение. Переходим на следующий трек.
-                    offPreviousMP3ListRow();
-                    if (nextPos < adapter.getCount()) {
-                        try {
-                            LinearLayout ll1 = (LinearLayout) adapter
-                                    .getView(
-                                            // nextPos + 1,
-                                            adapter.getCount() - nextPos,
-                                            null,
-                                            (LinearLayout) savedActivityView.findViewById(R.id.mp3sLinearLayout));
-                            LinearLayout ll2 = null;
-                            if (ll1 != null) {
-                                ll2 = (LinearLayout) ll1.getChildAt(1);
-                            }
-                            ImageButton b = null;
-                            if (ll2 != null) {
-                                b = (ImageButton) ll2.getChildAt(0);
-                            }
-                            if (b != null) {
-                                b.performClick();
-                            }
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                            PlayerState.getInstance().setCurrentMP3Entity(null);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        PlayerState.getInstance().setCurrentMP3Entity(null);
-                    }
-                }
-            });
-        }
-    };
-
-    BASS.SYNCPROC PosSync = new BASS.SYNCPROC() {
-        public void SYNCPROC(int handle, int channel, int data, Object user) {
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                }
-            });
-        }
-    };
 
     public void playClick(View v) {
         updateWidget();
@@ -339,4 +301,78 @@ public class SavedFragment extends AbstractListFragment {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         getActivity().getApplicationContext().sendBroadcast(intent);
     }
+
+    private IPlayerEventListener eventListener = new IPlayerEventListener() {
+        @Override
+        public void onTitleChanged(String title) {
+
+        }
+
+        @Override
+        public void onAuthorChanged(String author) {
+
+        }
+
+        @Override
+        public void onPlayStateChanged(PlayState playState) {
+
+        }
+
+        @Override
+        public void onRecStateChanged(boolean isRec) {
+
+        }
+
+        @Override
+        public void onBitrateChanged(Bitrate bitrate) {
+
+        }
+
+        @Override
+        public void onBufferingProgress(long progress) {
+
+        }
+
+        @Override
+        public void onStop() {
+
+        }
+
+        @Override
+        public void endSync() {
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    // Заканчивается воспроизведение. Переходим на следующий трек.
+                    offPreviousMP3ListRow();
+                    if (nextPos < adapter.getCount()) {
+                        try {
+                            LinearLayout ll1 = (LinearLayout) adapter
+                                    .getView(
+                                            // nextPos + 1,
+                                            adapter.getCount() - nextPos,
+                                            null,
+                                            (LinearLayout) savedActivityView.findViewById(R.id.mp3sLinearLayout));
+                            LinearLayout ll2 = null;
+                            if (ll1 != null) {
+                                ll2 = (LinearLayout) ll1.getChildAt(1);
+                            }
+                            ImageButton b = null;
+                            if (ll2 != null) {
+                                b = (ImageButton) ll2.getChildAt(0);
+                            }
+                            if (b != null) {
+                                b.performClick();
+                            }
+                        } catch (ArrayIndexOutOfBoundsException ex) {
+                            PlayerState.getInstance().setCurrentMP3Entity(null);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        PlayerState.getInstance().setCurrentMP3Entity(null);
+                    }
+                }
+            });
+        }
+    };
 }

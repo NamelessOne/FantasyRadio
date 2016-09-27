@@ -457,6 +457,12 @@ public class RadioFragment extends Fragment {
         public void onStop() {
             //TODO
         }
+
+        @Override
+        public void endSync()
+        {
+
+        }
     };
 
     private void updateWidget() {

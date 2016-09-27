@@ -57,18 +57,6 @@ public class PlayerState {
         return CurrentSong;
     }
 
-    public void setRecArtist(String recArtist) {
-    }
-
-    public void setRecTitle(String recTitle) {
-    }
-
-    public void setRecTime(String recTime) {
-    }
-
-    public void setRecURL(String recURL) {
-    }
-
     public static PlayerState getInstance() {
         return instance;
     }

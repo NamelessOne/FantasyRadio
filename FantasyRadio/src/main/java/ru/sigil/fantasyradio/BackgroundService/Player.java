@@ -1,9 +1,7 @@
 package ru.sigil.fantasyradio.BackgroundService;
 
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 
 import com.un4seen.bass.BASS;
 import com.un4seen.bass.BASS_AAC;
@@ -498,9 +496,16 @@ public class Player implements IPlayer {
     /**
      * Выполняется после завершения проигрывания. В данный момент не используестя
      */
+
     private BASS.SYNCPROC EndSync = new BASS.SYNCPROC() {
         public void SYNCPROC(int handle, int channel, int data, Object user) {
-
+            for (IPlayerEventListener listener : eventListeners) {
+                try {
+                    listener.endSync();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     };
 
@@ -520,10 +525,6 @@ public class Player implements IPlayer {
                     //1111
                     fos = new FileOutputStream(recDirectory, true);
                     fos.write(ba);
-                    PlayerState.getInstance().setRecArtist(author);
-                    PlayerState.getInstance().setRecTime("");
-                    PlayerState.getInstance().setRecTitle(title);
-                    PlayerState.getInstance().setRecURL("");
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }

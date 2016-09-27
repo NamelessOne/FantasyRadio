@@ -291,5 +291,11 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
         public void onStop() {
             onUpdate(context);
         }
+
+        @Override
+        public void endSync()
+        {
+
+        }
     };
 }
