@@ -6,10 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 public class MP3Collection {
     private Context context;
@@ -32,63 +30,8 @@ public class MP3Collection {
         this.addToBase(mp3entity);
     }
 
-    public boolean addAll(Collection<? extends MP3Entity> arg0) {
-        getMp3entityes().addAll(arg0);
-        this.Save();
-        return true;
-    }
-
-    public boolean addAll(int arg0, Collection<? extends MP3Entity> arg1) {
-        getMp3entityes().addAll(arg0, arg1);
-        this.Save();
-        return true;
-    }
-
-    public void clear() {
-        getMp3entityes().clear();
-        this.Save();
-    }
-
-    public boolean contains(Object object) {
-        return getMp3entityes().contains(object);
-    }
-
-    public boolean containsAll(Collection<?> arg0) {
-        return getMp3entityes().containsAll(arg0);
-    }
-
     public MP3Entity get(int location) {
         return getMp3entityes().get(location);
-    }
-
-    public int indexOf(Object object) {
-        return getMp3entityes().indexOf(object);
-    }
-
-    public boolean isEmpty() {
-        return getMp3entityes().isEmpty();
-    }
-
-    public Iterator<MP3Entity> iterator() {
-        return getMp3entityes().iterator();
-    }
-
-    public int lastIndexOf(Object object) {
-        return getMp3entityes().lastIndexOf(object);
-    }
-
-    public ListIterator<MP3Entity> listIterator() {
-        return getMp3entityes().listIterator();
-    }
-
-    public ListIterator<MP3Entity> listIterator(int location) {
-        return getMp3entityes().listIterator(location);
-    }
-
-    public MP3Entity remove(int location) {
-        MP3Entity res = getMp3entityes().remove(location);
-        this.Save();
-        return res;
     }
 
     boolean remove(Object object) {
@@ -97,36 +40,8 @@ public class MP3Collection {
         return true;
     }
 
-    public boolean removeAll(Collection<?> arg0) {
-        getMp3entityes().removeAll(arg0);
-        this.Save();
-        return true;
-    }
-
-    public boolean retainAll(Collection<?> arg0) {
-        return getMp3entityes().retainAll(arg0);
-    }
-
-    public MP3Entity set(int location, MP3Entity object) {
-        MP3Entity res = getMp3entityes().set(location, object);
-        this.Save();
-        return res;
-    }
-
     public int size() {
         return getMp3entityes().size();
-    }
-
-    public List<MP3Entity> subList(int start, int end) {
-        return getMp3entityes().subList(start, end);
-    }
-
-    public Object[] toArray() {
-        return getMp3entityes().toArray();
-    }
-
-    public <T> T[] toArray(T[] array) {
-        return getMp3entityes().toArray(array);
     }
 
     private void removeFromBase(MP3Entity mp3entity) {
@@ -271,10 +186,6 @@ public class MP3Collection {
 
     List<MP3Entity> getMp3entityes() {
         return mp3entityes;
-    }
-
-    void setMp3entityes(List<MP3Entity> mp3entityes) {
-        this.mp3entityes = mp3entityes;
     }
 
     public void removeEntityByDirectory(String directory) {

@@ -16,7 +16,6 @@ import java.util.Set;
 
 import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.saved.MP3Saver;
-import ru.sigil.fantasyradio.utils.PlayerState;
 import ru.sigil.log.LogManager;
 
 /**

@@ -17,11 +17,6 @@ public class PlayerState {
     private PlayerState() {
     }
 
-    public static boolean isPlaying() {
-        //TODO
-        return true;
-    }
-
     public void setCurrentRadioEntity(RadioEntity newCurrentEntity) {
         currentRadioEntity = newCurrentEntity;
         if (newCurrentEntity != null) {

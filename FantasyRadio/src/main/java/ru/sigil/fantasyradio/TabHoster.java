@@ -94,7 +94,8 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onPause() {
-        if (player.currentState()== PlayState.PLAY) {
+        if (player.currentState()== PlayState.PLAY
+                || player.currentState()== PlayState.PLAY_FILE || player.currentState()== PlayState.BUFFERING) {
             ProgramNotification
                     .createNotification();
         } else {
@@ -111,7 +112,8 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && PlayerState.isPlaying()) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && player.currentState()== PlayState.PLAY
+                || player.currentState()== PlayState.PLAY_FILE || player.currentState()== PlayState.BUFFERING) {
             onPause();
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_MAIN);
