@@ -37,8 +37,9 @@ public abstract class ProgramNotification {
         notificationManager = (NotificationManager) getContext()
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(MAIN_NOTIFICATION_ID, notification);
-        changeSongName(PlayerState.getInstance().getCurrentSong(),
-                PlayerState.getInstance().getCurrentArtist());
+        changeSongName("", "");
+        //TODO changeSongName(player.getCurrentSong(),
+        //TODO        player.getCurrentArtist());
         // --------------------------------OLOLO----------------------------------
     }
 

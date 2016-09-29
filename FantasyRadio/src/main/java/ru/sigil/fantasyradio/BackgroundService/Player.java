@@ -31,7 +31,7 @@ public class Player implements IPlayer {
     private boolean rec = false;
     private String recDirectory;
     private MP3Saver mp3Saver;
-    private String currentMP3Entity;
+    private MP3Entity currentMP3Entity;
 
     private int chan;
 
@@ -131,8 +131,9 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public void playFile(String file) {
+    public void playFile(MP3Entity entity) {
         //TODO
+        String file = entity.getDirectory();
         BASS.BASS_StreamFree(getChan());
         // -------------------------------------------------
         int x;
@@ -148,6 +149,7 @@ public class Player implements IPlayer {
                     return;
             }
         }
+        currentMP3Entity = entity;
         setChan(x);
         BASS.BASS_ChannelPlay(getChan(), false);
         BASS.BASS_ChannelSetSync(getChan(), BASS.BASS_SYNC_END, 0,
@@ -277,6 +279,10 @@ public class Player implements IPlayer {
                 e.printStackTrace();
             }
         }
+    }
+
+    public MP3Entity getCurrentMP3Entity() {
+        return currentMP3Entity;
     }
 
     /**

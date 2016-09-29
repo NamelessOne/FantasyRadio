@@ -19,7 +19,6 @@ import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
-import ru.sigil.fantasyradio.utils.PlayerState;
 
 public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
 
@@ -82,7 +81,7 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         progressSeekBar.setTag(message.getDirectory());
         volumeSeekBar.setTag(message.getDirectory() + "volume");
         playBtn.setImageResource(R.drawable.play_states);
-        if (message == PlayerState.getInstance().getCurrentMP3Entity()) {
+        if (message == player.getCurrentMP3Entity()) {
             progressSeekBar.setVisibility(View.VISIBLE);
             volumeSeekBar.setVisibility(View.VISIBLE);
             //CurrentControls.setCurrentMP3SeekBar(progressSeekBar);

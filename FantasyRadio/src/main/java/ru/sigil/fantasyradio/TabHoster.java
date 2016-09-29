@@ -29,7 +29,6 @@ import ru.sigil.fantasyradio.saved.SavedFragment;
 import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.settings.SettingsActivity;
-import ru.sigil.fantasyradio.utils.PlayerState;
 import ru.sigil.fantasyradio.utils.ProgramNotification;
 import ru.sigil.log.LogManager;
 
@@ -171,7 +170,6 @@ public class TabHoster extends FragmentActivity {
                 return true;
             case R.id.exit:
                 player.stop();
-                PlayerState.getInstance().setCurrentRadioEntity(null);
                 //--------------
                 SharedPreferences settings = getPreferences(0);
                 if (!settings.getBoolean("gratitude", false)) {

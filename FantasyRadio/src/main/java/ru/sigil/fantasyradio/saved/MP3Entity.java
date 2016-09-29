@@ -40,4 +40,17 @@ public class MP3Entity {
     public void setDirectory(String directory) {
         this.directory = directory;
     }
+
+    /*@Override
+    public boolean equals(Object obj) {
+        return obj instanceof MP3Entity && !(((MP3Entity) obj).getDirectory() == null) && ((MP3Entity) obj).getDirectory().equals(getDirectory());
+    }
+
+    @Override
+    public int hashCode() {
+        if (getDirectory() != null)
+            return getDirectory().hashCode();
+        else
+            return super.hashCode();
+    }*/
 }

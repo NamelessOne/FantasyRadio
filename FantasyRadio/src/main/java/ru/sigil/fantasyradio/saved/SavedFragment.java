@@ -19,7 +19,6 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.un4seen.bass.BASS;
-import com.un4seen.bass.BASS_AAC;
 
 import java.io.File;
 import java.util.HashMap;
@@ -35,7 +34,6 @@ import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
-import ru.sigil.fantasyradio.utils.PlayerState;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 
 public class SavedFragment extends AbstractListFragment {
@@ -88,10 +86,8 @@ public class SavedFragment extends AbstractListFragment {
                     / BASS.BASS_ChannelGetLength(player.getChan(),
                     BASS.BASS_POS_BYTE);
             try {
-                if (PlayerState
-                        .getInstance().getCurrentMP3Entity() != null) {
-                    SeekBar sb = (SeekBar) getLv().findViewWithTag(PlayerState
-                            .getInstance().getCurrentMP3Entity().getDirectory());
+                if (player.currentState() == PlayState.PLAY_FILE) {
+                    SeekBar sb = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory());
                     if (sb != null) {
                         sb.setProgress((int) streamProgress);
                     }
@@ -161,11 +157,10 @@ public class SavedFragment extends AbstractListFragment {
     public void playClick(View v) {
         updateWidget();
         if (BASS.BASS_ChannelIsActive(player.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
-            if (PlayerState.getInstance().getCurrentMP3Entity() == v.getTag()) {
+            if (((MP3Entity)v.getTag()).getDirectory().equals((player.getCurrentMP3Entity()))) {
                 // Это была пауза.
                 BASS.BASS_ChannelPlay(player.getChan(), false);
-                ImageButton bv = (ImageButton) getLv().findViewWithTag(PlayerState
-                        .getInstance().getCurrentMP3Entity());
+                ImageButton bv = (ImageButton) getLv().findViewWithTag(player.getCurrentMP3Entity());
                 if (bv != null) {
                     bv.setImageResource(R.drawable.pause_states);
                 }
@@ -178,7 +173,7 @@ public class SavedFragment extends AbstractListFragment {
             e.printStackTrace();
         }
         if (player.currentState() == PlayState.PLAY) {
-            if (PlayerState.getInstance().getCurrentMP3Entity() == v.getTag()) {
+            if (player.getCurrentMP3Entity() == v.getTag()) {
                 //TODO !!!
                 BASS.BASS_ChannelPause(player.getChan());
                 ImageButton bv = (ImageButton) v;// !!!!!!!!!!!!!!!
@@ -186,10 +181,9 @@ public class SavedFragment extends AbstractListFragment {
             } else {
                 // Нажата кнопка плэй у другого трека
                 offPreviousMP3ListRow();
-                PlayerState.getInstance().setCurrentMP3Entity((MP3Entity) v.getTag());
                 nextPos = adapter
-                        .getPosition(PlayerState.getInstance().getCurrentMP3Entity()); // почему-то 0
-                player.playFile(((MP3Entity) v.getTag()).getDirectory());
+                        .getPosition(player.getCurrentMP3Entity()); // почему-то 0
+                player.playFile((MP3Entity) v.getTag());
                 onCurrentMP3ListRow();
             }
         } else {
@@ -198,7 +192,7 @@ public class SavedFragment extends AbstractListFragment {
                 //TODO скорее всего по событию сделать
             }
             nextPos = adapter.getPosition((MP3Entity) v.getTag());
-            player.playFile(((MP3Entity) v.getTag()).getDirectory());
+            player.playFile((MP3Entity) v.getTag());
             // -------------------------------------------------
             onCurrentMP3ListRow();
         }
@@ -221,9 +215,8 @@ public class SavedFragment extends AbstractListFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         player.getMp3Saver().getMp3c().removeEntityByDirectory(
                                 mp3EntityForDelete.getDirectory());
-                        if (PlayerState.getInstance().getCurrentMP3Entity() != null) {
-                            if (mp3EntityForDelete.getDirectory().equals(PlayerState
-                                    .getInstance().getCurrentMP3Entity().getDirectory())) {
+                        if (player.getCurrentMP3Entity() != null) {
+                            if (mp3EntityForDelete.getDirectory().equals(player.getCurrentMP3Entity().getDirectory())) {
                                 BASS.BASS_ChannelStop(player.getChan());
                             }
                         }
@@ -248,17 +241,14 @@ public class SavedFragment extends AbstractListFragment {
 
     private void offPreviousMP3ListRow() {
         try {
-            ImageButton oldB = (ImageButton) getLv().findViewWithTag(PlayerState
-                    .getInstance().getCurrentMP3Entity());
+            ImageButton oldB = (ImageButton) getLv().findViewWithTag(player.getCurrentMP3Entity());
             if (oldB != null) {
                 oldB.setImageResource(R.drawable.play_states);
             }
-            SeekBar sb = (SeekBar) getLv().findViewWithTag(PlayerState
-                    .getInstance().getCurrentMP3Entity().getDirectory());
+            SeekBar sb = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory());
             if (sb != null)
                 sb.setVisibility(View.INVISIBLE);
-            SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(PlayerState
-                    .getInstance().getCurrentMP3Entity().getDirectory() + "volume");
+            SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
             if (volumeSeekBar != null)
                 volumeSeekBar.setVisibility(View.INVISIBLE);
         } catch (Exception e1) {
@@ -268,21 +258,18 @@ public class SavedFragment extends AbstractListFragment {
 
     private void onCurrentMP3ListRow() {
         try {
-            ImageButton bv = (ImageButton) getLv().findViewWithTag(PlayerState
-                    .getInstance().getCurrentMP3Entity());
+            ImageButton bv = (ImageButton) getLv().findViewWithTag(player.getCurrentMP3Entity());
             if (bv != null) {
                 bv.setImageResource(R.drawable.pause_states);
             }
-            SeekBar sb = (SeekBar) getLv().findViewWithTag(PlayerState
-                    .getInstance().getCurrentMP3Entity().getDirectory());
+            SeekBar sb = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory());
             if (sb != null) {
                 sb.setVisibility(View.VISIBLE);
             }
             if (sb != null) {
                 sb.setProgress(0);
             }
-            SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(PlayerState
-                    .getInstance().getCurrentMP3Entity().getDirectory() + "volume");
+            SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
             if (volumeSeekBar != null) {
                 volumeSeekBar.setVisibility(View.VISIBLE);
             }
@@ -364,12 +351,12 @@ public class SavedFragment extends AbstractListFragment {
                                 b.performClick();
                             }
                         } catch (ArrayIndexOutOfBoundsException ex) {
-                            PlayerState.getInstance().setCurrentMP3Entity(null);
+                            player.stop();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     } else {
-                        PlayerState.getInstance().setCurrentMP3Entity(null);
+                        player.stop();
                     }
                 }
             });

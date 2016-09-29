@@ -36,9 +36,7 @@ import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
-import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
-import ru.sigil.fantasyradio.utils.PlayerState;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 
 public class RadioFragment extends Fragment {
@@ -382,7 +380,6 @@ public class RadioFragment extends Fragment {
                         }
                     }
             );
-            PlayerState.getInstance().setCurrentRadioEntity(re);
         }
 
         @Override
