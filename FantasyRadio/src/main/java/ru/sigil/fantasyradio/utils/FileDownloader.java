@@ -23,10 +23,9 @@ import ru.sigil.fantasyradio.R;
 /**
  * Служит для скачивания файлов из архива. Отображает прогресс в Notification.
  */
-public abstract class FileDownloader {
+public class FileDownloader {
 
     private final static int BUFFER_SIZE = 4096;
-    private static Context context;
     private static Notification notification;
     private static NotificationManager notificationManager;
     private final static int DOWNLOAD_NOTIFICATION_ID = 364;
@@ -38,8 +37,8 @@ public abstract class FileDownloader {
      * @param fileDir  Директория для сохранения. Например /mnt/sdcard/fantasyradio/mp3/
      * @param fileName Имя файла. Например 31-Aug-201310-Radio_Fantasy_archive.mp3
      */
-    public synchronized static void DownloadFile(String fileUrl,
-                                                 String fileDir, String fileName) {
+    public synchronized void DownloadFile(String fileUrl,
+                                                 String fileDir, String fileName, Context context) {
         Log.v("fileDir", fileDir);
         Log.v("fileUrl", fileUrl);
         Log.v("fileName", fileName);
@@ -104,17 +103,13 @@ public abstract class FileDownloader {
         }
     }
 
-    public static void setContext(Context context) {
-        FileDownloader.context = context;
-    }
-
     /**
      * Устанавливаети прогресс загрузки файла из архива
      *
      * @param progress прогресс загрузки в процентах (0 - 100)
      * @param fileName имя файла
      */
-    private static void setNotificationProgress(int progress, String fileName) {
+    private void setNotificationProgress(int progress, String fileName) {
         // ================================================
         if (notification.contentView != null) {
             notification.contentView.setProgressBar(R.id.status_progress, 100,

@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import javax.inject.Inject;
+
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.saved.MP3Entity;
 
 public class DownloadThread extends Thread {
@@ -19,6 +22,9 @@ public class DownloadThread extends Thread {
     private final static String[] ReservedChars = {"|", "\\", "?", "*", "<", "\"",
             ":", ">", "+", "[", "]", "/", "'", "%"};
 
+    @Inject
+    FileDownloader fileDownloader;
+
     public DownloadThread(String fileUrl, String fileDir, String fileName,
                           Context c, Handler h, MP3Entity entity) {
         this.fileDir = fileDir;
@@ -27,6 +33,7 @@ public class DownloadThread extends Thread {
         this.context = c;
         this.finishedHandler = h;
         mp3Entity = entity;
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
     }
 
     @Override
@@ -34,8 +41,7 @@ public class DownloadThread extends Thread {
         for (String s : ReservedChars) {
             fileName = fileName.replace(s, "_");
         }
-        FileDownloader.setContext(context);
-        FileDownloader.DownloadFile(fileUrl, fileDir, fileName);
+        fileDownloader.DownloadFile(fileUrl, fileDir, fileName, context);
         mp3Entity.setDirectory(fileDir + fileName);
         Message msg = new Message();
         Bundle b = new Bundle();

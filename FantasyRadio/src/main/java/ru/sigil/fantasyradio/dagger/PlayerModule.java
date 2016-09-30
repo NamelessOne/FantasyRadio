@@ -11,6 +11,7 @@ import ru.sigil.fantasyradio.BackgroundService.Player;
 import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.schedule.ScheduleEntityesCollection;
 import ru.sigil.fantasyradio.schedule.ScheduleParser;
+import ru.sigil.fantasyradio.utils.FileDownloader;
 
 /**
  * Created by NamelessOne
@@ -27,7 +28,7 @@ public class PlayerModule {
 
     @Provides
     @Singleton
-    MP3Saver provadesMP3Saver()
+    MP3Saver providesMP3Saver()
     {
         return new MP3Saver();
     }
@@ -41,14 +42,20 @@ public class PlayerModule {
 
     @Provides
     @Singleton
-    ScheduleEntityesCollection provadesScheduleEntityesCollection()
+    ScheduleEntityesCollection providesScheduleEntityesCollection()
     {
         return new ScheduleEntityesCollection();
     }
 
     @Provides
-    ScheduleParser provadesScheduleParser(ScheduleEntityesCollection scheduleEntityesCollection)
+    ScheduleParser providesScheduleParser(ScheduleEntityesCollection scheduleEntityesCollection)
     {
         return new ScheduleParser(scheduleEntityesCollection);
+    }
+
+    @Provides
+    FileDownloader providesFileDownloader()
+    {
+        return new FileDownloader();
     }
 }
