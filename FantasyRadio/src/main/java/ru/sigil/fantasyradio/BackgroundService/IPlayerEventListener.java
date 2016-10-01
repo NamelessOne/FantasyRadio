@@ -13,4 +13,5 @@ public interface IPlayerEventListener {
     void onBufferingProgress(long progress);
     void onStop();
     void endSync();
+    void onVolumeChanged(float volume);
 }

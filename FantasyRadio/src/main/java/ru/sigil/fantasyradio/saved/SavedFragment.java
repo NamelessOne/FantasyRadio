@@ -110,8 +110,7 @@ public class SavedFragment extends AbstractListFragment {
     }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         player.removeEventListener(eventListener);
         super.onDestroy();
     }
@@ -157,7 +156,7 @@ public class SavedFragment extends AbstractListFragment {
     public void playClick(View v) {
         updateWidget();
         if (BASS.BASS_ChannelIsActive(player.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
-            if (((MP3Entity)v.getTag()).getDirectory().equals((player.getCurrentMP3Entity()))) {
+            if (((MP3Entity) v.getTag()).getDirectory().equals((player.getCurrentMP3Entity()))) {
                 // Это была пауза.
                 BASS.BASS_ChannelPlay(player.getChan(), false);
                 ImageButton bv = (ImageButton) getLv().findViewWithTag(player.getCurrentMP3Entity());
@@ -358,6 +357,16 @@ public class SavedFragment extends AbstractListFragment {
                     } else {
                         player.stop();
                     }
+                }
+            });
+        }
+
+        @Override
+        public void onVolumeChanged(final float volume) {
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
+                    volumeSeekBar.setProgress((int) (volume * 100));
                 }
             });
         }

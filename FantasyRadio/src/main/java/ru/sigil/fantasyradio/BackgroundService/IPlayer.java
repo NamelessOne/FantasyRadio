@@ -56,4 +56,6 @@ public interface IPlayer {
     boolean isPaused();
 
     MP3Entity getCurrentMP3Entity();
+
+    void setVolume(float volume);
 }

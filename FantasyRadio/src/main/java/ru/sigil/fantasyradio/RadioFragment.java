@@ -238,7 +238,9 @@ public class RadioFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
                 if (fromUser)
-                    BASS.BASS_SetVolume(((float) progress) / 100);
+                {
+                    player.setVolume(((float) progress) / 100);
+                }
             }
 
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -459,6 +461,18 @@ public class RadioFragment extends Fragment {
         public void endSync()
         {
 
+        }
+
+        @Override
+        public void onVolumeChanged(final float volume) {
+            getActivity().runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            ((SeekBar) mainFragmentView.findViewById(R.id.volumeSeekBar)).setProgress((int) (volume * 100));
+                        }
+                    }
+            );
         }
     };
 

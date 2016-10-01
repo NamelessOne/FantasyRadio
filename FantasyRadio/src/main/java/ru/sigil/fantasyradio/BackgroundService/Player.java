@@ -285,6 +285,18 @@ public class Player implements IPlayer {
         return currentMP3Entity;
     }
 
+    @Override
+    public void setVolume(float volume) {
+        BASS.BASS_SetVolume(volume);
+        for (IPlayerEventListener listener : eventListeners) {
+            try {
+                listener.onVolumeChanged(volume);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Магия BASS.dll для AAC потока
      */

@@ -80,17 +80,31 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         playBtn.setOnClickListener(playCLickListener);
         progressSeekBar.setTag(message.getDirectory());
         volumeSeekBar.setTag(message.getDirectory() + "volume");
+
+        volumeSeekBar.setProgress((int) (player.getVolume() * 100));
+        volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                if (fromUser) {
+                    if (fromUser) player.setVolume(((float) progress) / 100);
+                }
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
         playBtn.setImageResource(R.drawable.play_states);
         if (message == player.getCurrentMP3Entity()) {
             progressSeekBar.setVisibility(View.VISIBLE);
             volumeSeekBar.setVisibility(View.VISIBLE);
-            //CurrentControls.setCurrentMP3SeekBar(progressSeekBar);
-            //CurrentControls.setCurrentVolumeSeekBar(volumeSeekBar);
-            if (player.currentState()== PlayState.PAUSE)
+            if (player.currentState() == PlayState.PAUSE)
                 playBtn.setImageResource(R.drawable.pause_states);
         } else {
             progressSeekBar.setVisibility(View.INVISIBLE);
-            volumeSeekBar.setVisibility(View.INVISIBLE);
             volumeSeekBar.setVisibility(View.INVISIBLE);
         }
         return row;

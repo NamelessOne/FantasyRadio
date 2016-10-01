@@ -297,5 +297,10 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
         {
 
         }
+
+        @Override
+        public void onVolumeChanged(float volume) {
+
+        }
     };
 }
