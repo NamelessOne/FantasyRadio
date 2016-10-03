@@ -54,53 +54,53 @@ public class Player implements IPlayer {
 
     @Override
     public void rec(boolean isActive) {
-            // -------------------------------------
-            if (!isActive) {
-                // А тут мы пишем инфу о записанном
-                // файле в базу
-                MP3Entity mp3Entity = new MP3Entity();
-                mp3Entity.setArtist(author);
-                mp3Entity.setTitle(title);
-                mp3Entity.setDirectory(recDirectory);
-                mp3Entity.setTime("");
-                mp3Saver.getMp3c().removeEntityByDirectory(mp3Entity.getDirectory());
-                mp3Saver.getMp3c().add(mp3Entity);
-                //----------------------------------------------------
-            } else {
-                File dir = new File(Environment.getExternalStorageDirectory()
-                        + "/fantasyradio/records/");
-                dir.mkdirs();
-                String fileName = title;
-                if (fileName == null)
-                    fileName = "rec";
-                if (fileName.length() < 2)
-                    fileName = "rec";
-                try {
-                    for (String s : RESERVED_CHARS) {
-                        fileName = fileName.replace(s, "_");
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        // -------------------------------------
+        if (!isActive) {
+            // А тут мы пишем инфу о записанном
+            // файле в базу
+            MP3Entity mp3Entity = new MP3Entity();
+            mp3Entity.setArtist(author);
+            mp3Entity.setTitle(title);
+            mp3Entity.setDirectory(recDirectory);
+            mp3Entity.setTime("");
+            mp3Saver.getMp3c().removeEntityByDirectory(mp3Entity.getDirectory());
+            mp3Saver.getMp3c().add(mp3Entity);
+            //----------------------------------------------------
+        } else {
+            File dir = new File(Environment.getExternalStorageDirectory()
+                    + "/fantasyradio/records/");
+            dir.mkdirs();
+            String fileName = title;
+            if (fileName == null)
+                fileName = "rec";
+            if (fileName.length() < 2)
+                fileName = "rec";
+            try {
+                for (String s : RESERVED_CHARS) {
+                    fileName = fileName.replace(s, "_");
                 }
-                try {
-                    fileName = new String(fileName.getBytes(), "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                File f = new File(dir.toString() + "/" + fileName);
-                try {
-                    if (!f.createNewFile()) {
-                        File f2 = new File(f.toString()
-                                + System.currentTimeMillis());
-                        f = f2;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                recDirectory = f.toString();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            // -------------------------------------
-            setRecActive(isActive);
+            try {
+                fileName = new String(fileName.getBytes(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            File f = new File(dir.toString() + "/" + fileName);
+            try {
+                if (!f.createNewFile()) {
+                    File f2 = new File(f.toString()
+                            + System.currentTimeMillis());
+                    f = f2;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            recDirectory = f.toString();
+        }
+        // -------------------------------------
+        setRecActive(isActive);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class Player implements IPlayer {
         this.chan = chan;
     }
 
-    public void playAAC(String url,  Bitrate bitrate) {
+    public void playAAC(String url, Bitrate bitrate) {
         try {
             setPlayState(PlayState.PLAY);
             setTitle("Соединение...");
@@ -141,12 +141,12 @@ public class Player implements IPlayer {
                 && (x = BASS.BASS_MusicLoad(file, 0, 0,
                 BASS.BASS_MUSIC_RAMP, 0)) == 0) {
             if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
-                    // whatever it is, it ain't playable
-                    int s = BASS.BASS_ErrorGetCode();
-                    setChan(x);
-                    //TODO Error тоже через событие
-                    //Error("Can't PLAY the file");
-                    return;
+                // whatever it is, it ain't playable
+                int s = BASS.BASS_ErrorGetCode();
+                setChan(x);
+                //TODO Error тоже через событие
+                //Error("Can't PLAY the file");
+                return;
             }
         }
         currentMP3Entity = entity;
@@ -158,20 +158,17 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public boolean isPaused()
-    {
+    public boolean isPaused() {
         //TODO по хорошему это должен быть state
-        return  BASS.BASS_ChannelIsActive(getChan()) == BASS.BASS_ACTIVE_PAUSED;
+        return BASS.BASS_ChannelIsActive(getChan()) == BASS.BASS_ACTIVE_PAUSED;
     }
 
     @Override
-    public void pause()
-    {
+    public void pause() {
         //TODO
     }
 
-    public Player(MP3Saver mp3Saver)
-    {
+    public Player(MP3Saver mp3Saver) {
         this.mp3Saver = mp3Saver;
         BASS.BASS_Free();
         BASS.BASS_Init(-1, 44100, 0);
@@ -294,6 +291,25 @@ public class Player implements IPlayer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    //TODO сделать методом интерфейса?
+    private long fileLength() {
+        try {
+            return BASS.BASS_ChannelGetLength(getChan(), BASS.BASS_POS_BYTE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public void setProgress(long progress) {
+        BASS.BASS_ChannelSetPosition(getChan(), (progress * fileLength()) / 100,
+                BASS.BASS_POS_BYTE);
+        if (!(BASS.BASS_ChannelIsActive(getChan()) == BASS.BASS_ACTIVE_PAUSED)) {
+            BASS.BASS_ChannelPlay(getChan(), false);
         }
     }
 

@@ -75,12 +75,24 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         messageMap.put("title", message.getTitle());
         deleteBtn.setTag(messageMap);
         deleteBtn.setOnClickListener(deleteCLickListener);
-        ImageButton playBtn = (ImageButton) row.findViewById(R.id.MP3buttonPlay);
+        final ImageButton playBtn = (ImageButton) row.findViewById(R.id.MP3buttonPlay);
         playBtn.setTag(message);
         playBtn.setOnClickListener(playCLickListener);
         progressSeekBar.setTag(message.getDirectory());
-        volumeSeekBar.setTag(message.getDirectory() + "volume");
+        progressSeekBar
+                .setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    public void onProgressChanged(SeekBar seekBar,
+                                                  int progress, boolean fromUser) {
+                    }
 
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        player.setProgress(seekBar.getProgress());
+                    }
+                });
+        volumeSeekBar.setTag(message.getDirectory() + "volume");
         volumeSeekBar.setProgress((int) (player.getVolume() * 100));
         volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress,

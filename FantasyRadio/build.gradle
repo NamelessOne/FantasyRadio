@@ -6,7 +6,7 @@ android {
     buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId "ru.sigil.fantasyradio"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 23
     }
 
