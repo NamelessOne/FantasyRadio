@@ -171,7 +171,7 @@ public class SavedFragment extends AbstractListFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (player.currentState() == PlayState.PLAY) {
+        if (player.currentState() == PlayState.PLAY || player.currentState() == PlayState.PLAY_FILE) {
             if (player.getCurrentMP3Entity() == v.getTag()) {
                 //TODO !!!
                 BASS.BASS_ChannelPause(player.getChan());
