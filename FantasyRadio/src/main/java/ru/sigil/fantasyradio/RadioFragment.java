@@ -125,9 +125,9 @@ public class RadioFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mainFragmentView = inflater.inflate(R.layout.activity_main, container, false);
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         player.addEventListener(eventListener);
-        mainFragmentView = inflater.inflate(R.layout.activity_main, container, false);
         //------------------------------------------------------------------------------------------
         ImageView streamButton = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
         streamButton.setOnClickListener(new OnClickListener() {
@@ -190,6 +190,88 @@ public class RadioFragment extends Fragment {
         return mainFragmentView;
     }
 
+    private void initView() {
+        SeekBar sb = (SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar);
+        sb.setProgress((int) (player.getVolume() * 100));
+        sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                if (fromUser) {
+                    player.setVolume(((float) progress) / 100);
+                }
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        switch (player.currentBitrate()) {
+            case aac_16:
+                mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
+                        getResources().getColor(R.color.bitrate_element_active));
+                break;
+            case mp3_32:
+                mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
+                        getResources().getColor(R.color.bitrate_element_active));
+                break;
+            case mp3_96:
+                mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
+                        getResources().getColor(R.color.bitrate_element_active));
+                break;
+            case aac_112:
+                mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
+                        getResources().getColor(R.color.bitrate_element_active));
+                break;
+        }
+
+        ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
+        if (player.isRecActive()) {
+            rib.setImageResource(R.drawable.rec_active);
+        } else {
+            rib.setImageResource(R.drawable.rec);
+        }
+        ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+        switch (player.currentState()) {
+            case PLAY:
+                if (player.currentArtist() != null && !player.currentArtist().isEmpty()) {
+                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                            .setText(player.currentArtist() + " - " + player.currentTitle());
+                } else {
+                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                            .setText(player.currentTitle());
+                }
+                iv.setImageResource(R.drawable.pause_states);
+                break;
+            case BUFFERING:
+                iv.setImageResource(R.drawable.pause_states);
+                break;
+            case PAUSE:
+            case PLAY_FILE:
+                ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                        .setText("");
+                iv.setImageResource(R.drawable.play_states);
+                break;
+            case STOP:
+                ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                        .setText("");
+                iv.setImageResource(R.drawable.play_states);
+                break;
+            default:
+                break;
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -232,68 +314,7 @@ public class RadioFragment extends Fragment {
 
     @Override
     public void onResume() {
-        SeekBar sb = (SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar);
-        sb.setProgress((int) (player.getVolume() * 100));
-        sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
-                if (fromUser)
-                {
-                    player.setVolume(((float) progress) / 100);
-                }
-            }
-
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        switch (player.currentBitrate()) {
-            case aac_16:
-                mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
-                        getResources().getColor(R.color.bitrate_element_active));
-                break;
-            case mp3_32:
-                mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
-                        getResources().getColor(R.color.bitrate_element_active));
-                break;
-            case mp3_96:
-                mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
-                        getResources().getColor(R.color.bitrate_element_active));
-                break;
-            case aac_112:
-                mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
-                        getResources().getColor(R.color.bitrate_element_active));
-                break;
-
-        }
-
-        //TODO--------------------------------------------------------------------------------------
-        if (player.currentState() != PlayState.STOP) {
-            ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
-            iv.setImageResource(R.drawable.pause_states);
-            ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
-            if (player.isRecActive()) {
-                rib.setImageResource(R.drawable.rec_active);
-            } else {
-                rib.setImageResource(R.drawable.rec);
-            }
-            TextView tv1 = (TextView) mainFragmentView.findViewById(R.id.textView1);
-            if (player.currentState() != PlayState.STOP) {
-                tv1.setText(player.currentTitle());
-            }
-        }
-        //------------------------------------------------------------------------------------------
+        initView();
         super.onResume();
     }
 
@@ -390,7 +411,7 @@ public class RadioFragment extends Fragment {
                     new Runnable() {
                         @Override
                         public void run() {
-                            if (author != null || !author.isEmpty()) {
+                            if (author != null && !author.isEmpty()) {
                                 ((TextView) mainFragmentView.findViewById(R.id.textView1))
                                         .setText(author + " - " + player.currentTitle());
                             } else {
@@ -403,19 +424,30 @@ public class RadioFragment extends Fragment {
         }
 
         @Override
-        public void onPlayStateChanged(PlayState state) {
-            ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
-            switch (state) {
-                case PLAY:
-                    iv.setImageResource(R.drawable.pause_states);
-                    break;
-                case PAUSE:
-                case STOP:
-                    iv.setImageResource(R.drawable.play_states);
-                    break;
-                default:
-                    break;
-            }
+        public void onPlayStateChanged(final PlayState state) {
+            getActivity().runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+                            switch (state) {
+                                case PLAY:
+                                case BUFFERING:
+                                    iv.setImageResource(R.drawable.pause_states);
+                                    break;
+                                case PAUSE:
+                                case PLAY_FILE:
+                                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                                            .setText("");
+                                case STOP:
+                                    iv.setImageResource(R.drawable.play_states);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+            );
         }
 
         @Override
@@ -458,8 +490,7 @@ public class RadioFragment extends Fragment {
         }
 
         @Override
-        public void endSync()
-        {
+        public void endSync() {
 
         }
 
@@ -469,7 +500,7 @@ public class RadioFragment extends Fragment {
                     new Runnable() {
                         @Override
                         public void run() {
-                            ((SeekBar) mainFragmentView.findViewById(R.id.volumeSeekBar)).setProgress((int) (volume * 100));
+                            ((SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar)).setProgress((int) (volume * 100));
                         }
                     }
             );

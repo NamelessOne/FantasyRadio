@@ -237,6 +237,9 @@ public class Player implements IPlayer {
                 e.printStackTrace();
             }
         }
+        //TODO ???
+        if (state != PlayState.PLAY && state != PlayState.BUFFERING)
+            setRecActive(false);
     }
 
     @Override
