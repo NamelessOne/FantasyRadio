@@ -156,9 +156,9 @@ public class SavedFragment extends AbstractListFragment {
     public void playClick(View v) {
         updateWidget();
         if (BASS.BASS_ChannelIsActive(player.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
-            if (((MP3Entity) v.getTag()).getDirectory().equals((player.getCurrentMP3Entity()))) {
+            if (player.getCurrentMP3Entity() == v.getTag()) {
                 // Это была пауза.
-                BASS.BASS_ChannelPlay(player.getChan(), false);
+                player.resume();
                 ImageButton bv = (ImageButton) getLv().findViewWithTag(player.getCurrentMP3Entity());
                 if (bv != null) {
                     bv.setImageResource(R.drawable.pause_states);
@@ -174,7 +174,7 @@ public class SavedFragment extends AbstractListFragment {
         if (player.currentState() == PlayState.PLAY || player.currentState() == PlayState.PLAY_FILE) {
             if (player.getCurrentMP3Entity() == v.getTag()) {
                 //TODO !!!
-                BASS.BASS_ChannelPause(player.getChan());
+                player.pause();
                 ImageButton bv = (ImageButton) v;// !!!!!!!!!!!!!!!
                 bv.setImageResource(R.drawable.play_states);
             } else {
@@ -216,7 +216,7 @@ public class SavedFragment extends AbstractListFragment {
                                 mp3EntityForDelete.getDirectory());
                         if (player.getCurrentMP3Entity() != null) {
                             if (mp3EntityForDelete.getDirectory().equals(player.getCurrentMP3Entity().getDirectory())) {
-                                BASS.BASS_ChannelStop(player.getChan());
+                                player.stop();
                             }
                         }
                         File f = new File(mp3EntityForDelete.getDirectory());

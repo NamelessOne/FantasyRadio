@@ -113,8 +113,9 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         if (message == player.getCurrentMP3Entity() && (player.currentState() == PlayState.PLAY_FILE || player.currentState() == PlayState.PAUSE)) {
             progressSeekBar.setVisibility(View.VISIBLE);
             volumeSeekBar.setVisibility(View.VISIBLE);
-            if (player.currentState() == PlayState.PAUSE)
+            if (player.currentState() == PlayState.PLAY_FILE) {
                 playBtn.setImageResource(R.drawable.pause_states);
+            }
         } else {
             progressSeekBar.setVisibility(View.INVISIBLE);
             volumeSeekBar.setVisibility(View.INVISIBLE);

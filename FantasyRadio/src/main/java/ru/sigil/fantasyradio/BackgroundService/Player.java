@@ -166,6 +166,8 @@ public class Player implements IPlayer {
     @Override
     public void pause() {
         //TODO
+        BASS.BASS_ChannelPause(getChan());
+        setPlayState(PlayState.PAUSE);
     }
 
     public Player(MP3Saver mp3Saver) {
@@ -179,6 +181,7 @@ public class Player implements IPlayer {
 
     @Override
     public void stop() {
+        //TODO BASS.BASS_ChannelStop(getChan()); ???
         BASS.BASS_StreamFree(getChan());
         setPlayState(PlayState.STOP);
         setAuthor("");
@@ -314,6 +317,12 @@ public class Player implements IPlayer {
         if (!(BASS.BASS_ChannelIsActive(getChan()) == BASS.BASS_ACTIVE_PAUSED)) {
             BASS.BASS_ChannelPlay(getChan(), false);
         }
+    }
+
+    @Override
+    public void resume() {
+        BASS.BASS_ChannelPlay(getChan(), false);
+        setPlayState(PlayState.PLAY_FILE);
     }
 
     /**
