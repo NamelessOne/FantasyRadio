@@ -50,12 +50,6 @@ public class SavedFragment extends AbstractListFragment {
         }
     };
     private Timer seekTimer = new Timer();
-    private Handler rewindMp3Handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            player.rewind(msg.arg1);
-        }
-    };
 
     public void notifyAdapter() {
         View.OnClickListener deleteClickListener = new View.OnClickListener() {

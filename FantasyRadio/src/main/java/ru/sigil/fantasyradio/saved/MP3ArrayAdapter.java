@@ -9,6 +9,8 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.un4seen.bass.BASS;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,17 +81,25 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         playBtn.setTag(message);
         playBtn.setOnClickListener(playCLickListener);
         progressSeekBar.setTag(message.getDirectory());
+        progressSeekBar.setProgress((int) (BASS.BASS_ChannelGetPosition(
+                player.getChan(), BASS.BASS_POS_BYTE)
+                * 100
+                / BASS.BASS_ChannelGetLength(player.getChan(),
+                BASS.BASS_POS_BYTE)));
         progressSeekBar
                 .setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     public void onProgressChanged(SeekBar seekBar,
                                                   int progress, boolean fromUser) {
+                        if (fromUser) {
+                            player.setProgress(progress);
+                        }
+
                     }
 
                     public void onStartTrackingTouch(SeekBar seekBar) {
                     }
 
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        player.setProgress(seekBar.getProgress());
                     }
                 });
         volumeSeekBar.setTag(message.getDirectory() + "volume");
@@ -98,7 +108,7 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
                 if (fromUser) {
-                    if (fromUser) player.setVolume(((float) progress) / 100);
+                    player.setVolume(((float) progress) / 100);
                 }
             }
 
