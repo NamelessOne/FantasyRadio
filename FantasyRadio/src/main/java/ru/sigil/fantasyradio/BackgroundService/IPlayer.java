@@ -64,4 +64,6 @@ public interface IPlayer {
     void setProgress(long position);
 
     void resume();
+
+    long getProgress();
 }

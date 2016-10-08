@@ -74,11 +74,7 @@ public class SavedFragment extends AbstractListFragment {
     private Handler mp3ProgressHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            long streamProgress = BASS.BASS_ChannelGetPosition(
-                    player.getChan(), BASS.BASS_POS_BYTE)
-                    * 100
-                    / BASS.BASS_ChannelGetLength(player.getChan(),
-                    BASS.BASS_POS_BYTE);
+            long streamProgress = player.getProgress();
             try {
                 if (player.currentState() == PlayState.PLAY_FILE) {
                     SeekBar sb = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory());
@@ -149,7 +145,7 @@ public class SavedFragment extends AbstractListFragment {
 
     public void playClick(View v) {
         updateWidget();
-        if (BASS.BASS_ChannelIsActive(player.getChan()) == BASS.BASS_ACTIVE_PAUSED) {
+        if (player.isPaused()) {
             if (player.getCurrentMP3Entity() == v.getTag()) {
                 // Это была пауза.
                 player.resume();

@@ -325,6 +325,15 @@ public class Player implements IPlayer {
         setPlayState(PlayState.PLAY_FILE);
     }
 
+    @Override
+    public long getProgress() {
+        return BASS.BASS_ChannelGetPosition(
+                getChan(), BASS.BASS_POS_BYTE)
+                * 100
+                / BASS.BASS_ChannelGetLength(getChan(),
+                BASS.BASS_POS_BYTE);
+    }
+
     /**
      * Магия BASS.dll для AAC потока
      */
