@@ -13,13 +13,16 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.un4seen.bass.BASS;
 
 import javax.inject.Inject;
 
+import ru.sigil.fantasyradio.BackgroundService.IPLayerErrorListener;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
@@ -55,6 +58,7 @@ public class TabHoster extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bootstrap.INSTANCE.getBootstrap().inject(this);
+        player.addErrorListener(playerErrorListener);
         setContentView(R.layout.tabs);
         // EasyTracker is now ready for use.
         ProgramNotification.setContext(getBaseContext());
@@ -64,7 +68,6 @@ public class TabHoster extends FragmentActivity {
         SharedPreferences settings = getPreferences(0);
         Settings.setSettings(settings);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         context = getApplicationContext();
@@ -93,8 +96,8 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onPause() {
-        if (player.currentState()== PlayState.PLAY
-                || player.currentState()== PlayState.PLAY_FILE || player.currentState()== PlayState.BUFFERING) {
+        if (player.currentState() == PlayState.PLAY
+                || player.currentState() == PlayState.PLAY_FILE || player.currentState() == PlayState.BUFFERING) {
             ProgramNotification
                     .createNotification();
         } else {
@@ -105,14 +108,15 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onDestroy() {
+        player.removeErrorListener(playerErrorListener);
         player.stop();
         super.onDestroy();
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && player.currentState()== PlayState.PLAY
-                || player.currentState()== PlayState.PLAY_FILE || player.currentState()== PlayState.BUFFERING) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && player.currentState() == PlayState.PLAY
+                || player.currentState() == PlayState.PLAY_FILE || player.currentState() == PlayState.BUFFERING) {
             onPause();
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_MAIN);
@@ -284,4 +288,23 @@ public class TabHoster extends FragmentActivity {
         SharedPreferences settings = getPreferences(0);
         return !settings.getBoolean("gratitude", false);
     }
+
+    private IPLayerErrorListener playerErrorListener = new IPLayerErrorListener() {
+        @Override
+        public void onError(String message, int errorCode) {
+            final String s = String.format("%s\n(error code: %d)", message, errorCode);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Toast toast = Toast.makeText(getApplicationContext(),
+                                s, Toast.LENGTH_SHORT);
+                        toast.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
 }

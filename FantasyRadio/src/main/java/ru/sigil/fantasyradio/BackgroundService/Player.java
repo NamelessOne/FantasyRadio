@@ -24,6 +24,7 @@ import ru.sigil.log.LogManager;
  */
 public class Player implements IPlayer {
     private final Set<IPlayerEventListener> eventListeners = new HashSet<>();
+    private final Set<IPLayerErrorListener> errorListeners = new HashSet<>();
     private String title;
     private String author;
     private Bitrate bitrate = Bitrate.aac_16;
@@ -142,10 +143,12 @@ public class Player implements IPlayer {
                 BASS.BASS_MUSIC_RAMP, 0)) == 0) {
             if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
                 // whatever it is, it ain't playable
-                int s = BASS.BASS_ErrorGetCode();
                 setChan(x);
-                //TODO Error тоже через событие
-                //Error("Can't PLAY the file");
+                for (IPLayerErrorListener listener: errorListeners) {
+                    listener.onError("Can't play the file", BASS.BASS_ErrorGetCode());
+                }
+                currentMP3Entity = entity;
+                setPlayState(PlayState.PAUSE); //TODO
                 return;
             }
         }
@@ -203,6 +206,16 @@ public class Player implements IPlayer {
     @Override
     public void removeEventListener(IPlayerEventListener listener) {
         eventListeners.remove(listener);
+    }
+
+    @Override
+    public void removeErrorListener(IPLayerErrorListener listener) {
+        errorListeners.remove(listener);
+    }
+
+    @Override
+    public void addErrorListener(IPLayerErrorListener listener) {
+        errorListeners.add(listener);
     }
 
     @Override

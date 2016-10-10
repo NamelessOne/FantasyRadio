@@ -25,6 +25,10 @@ public interface IPlayer {
 
     void removeEventListener(IPlayerEventListener listener);
 
+    void removeErrorListener(IPLayerErrorListener listener);
+
+    void addErrorListener(IPLayerErrorListener listener);
+
     void removeAllListeners();
 
     String currentTitle();

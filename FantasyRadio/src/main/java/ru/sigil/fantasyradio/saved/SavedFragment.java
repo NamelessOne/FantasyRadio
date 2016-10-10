@@ -122,26 +122,7 @@ public class SavedFragment extends AbstractListFragment {
         }
     }
 
-    /**
-     * Показываем сообщение об ошибке
-     *
-     * @param es Сообщение об ошибке
-     */
-    void Error(String es) {
-        // get error code in current thread for display in UI thread
-        String s = String.format("%s\n(error code: %d)", es,
-                BASS.BASS_ErrorGetCode());
-        getActivity().runOnUiThread(new RunnableParam(s) {
-            public void run() {
-                try {
-                    Toast toast = Toast.makeText(getActivity().getApplicationContext(),
-                            (String) param, Toast.LENGTH_SHORT);
-                    toast.show();
-                } catch (Exception e) {
-                }
-            }
-        });
-    }
+
 
     public void playClick(View v) {
         updateWidget();
