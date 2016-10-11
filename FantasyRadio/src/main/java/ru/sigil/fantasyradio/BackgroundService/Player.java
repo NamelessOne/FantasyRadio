@@ -148,7 +148,7 @@ public class Player implements IPlayer {
                     listener.onError("Can't play the file", BASS.BASS_ErrorGetCode());
                 }
                 currentMP3Entity = entity;
-                setPlayState(PlayState.PAUSE); //TODO
+                setPlayState(PlayState.STOP);
                 return;
             }
         }

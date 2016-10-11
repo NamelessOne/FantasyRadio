@@ -16,9 +16,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
-import android.widget.Toast;
-
-import com.un4seen.bass.BASS;
 
 import java.io.File;
 import java.util.HashMap;
@@ -111,17 +108,6 @@ public class SavedFragment extends AbstractListFragment {
         super.onResume();
     }
 
-    class RunnableParam implements Runnable {
-        Object param;
-
-        RunnableParam(Object p) {
-            param = p;
-        }
-
-        public void run() {
-        }
-    }
-
 
 
     public void playClick(View v) {
@@ -150,21 +136,16 @@ public class SavedFragment extends AbstractListFragment {
                 bv.setImageResource(R.drawable.play_states);
             } else {
                 // Нажата кнопка плэй у другого трека
-                offPreviousMP3ListRow();
                 nextPos = adapter
                         .getPosition(player.getCurrentMP3Entity()); // почему-то 0
                 player.playFile((MP3Entity) v.getTag());
-                onCurrentMP3ListRow();
+                adapter.notifyDataSetChanged();
             }
         } else {
-            if (player.isPaused()) {
-                offPreviousMP3ListRow();
-                //TODO скорее всего по событию сделать
-            }
             nextPos = adapter.getPosition((MP3Entity) v.getTag());
             player.playFile((MP3Entity) v.getTag());
             // -------------------------------------------------
-            onCurrentMP3ListRow();
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -207,47 +188,6 @@ public class SavedFragment extends AbstractListFragment {
                 });
         alertDialogBuilder.create().show();
         this.onResume();
-    }
-
-    private void offPreviousMP3ListRow() {
-        try {
-            ImageButton oldB = (ImageButton) getLv().findViewWithTag(player.getCurrentMP3Entity());
-            if (oldB != null) {
-                oldB.setImageResource(R.drawable.play_states);
-            }
-            SeekBar sb = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory());
-            if (sb != null)
-                sb.setVisibility(View.INVISIBLE);
-            SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
-            if (volumeSeekBar != null)
-                volumeSeekBar.setVisibility(View.INVISIBLE);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-    }
-
-    private void onCurrentMP3ListRow() {
-        try {
-            ImageButton bv = (ImageButton) getLv().findViewWithTag(player.getCurrentMP3Entity());
-            if (bv != null) {
-                bv.setImageResource(R.drawable.pause_states);
-            }
-            SeekBar sb = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory());
-            if (sb != null) {
-                sb.setVisibility(View.VISIBLE);
-            }
-            if (sb != null) {
-                sb.setProgress(0);
-            }
-            SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
-            if (volumeSeekBar != null) {
-                volumeSeekBar.setVisibility(View.VISIBLE);
-            }
-            //CurrentControls.setCurrentMP3SeekBar(sb);
-            //CurrentControls.setCurrentVolumeSeekBar(volumeSeekBar);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void updateWidget() {
@@ -300,7 +240,7 @@ public class SavedFragment extends AbstractListFragment {
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     // Заканчивается воспроизведение. Переходим на следующий трек.
-                    offPreviousMP3ListRow();
+                    adapter.notifyDataSetChanged();
                     if (nextPos < adapter.getCount()) {
                         try {
                             LinearLayout ll1 = (LinearLayout) adapter
