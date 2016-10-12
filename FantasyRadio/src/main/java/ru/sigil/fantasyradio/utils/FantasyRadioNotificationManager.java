@@ -5,41 +5,60 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
+import javax.inject.Inject;
+
+import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.TabHoster;
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 
-public abstract class ProgramNotification {
-    public static boolean isShown = false;
-    private static Context context;
-    public static int MAIN_NOTIFICATION_ID = 36484;
-    public static NotificationManager notificationManager;
-    private static Notification notification;
+public class FantasyRadioNotificationManager {
+    public boolean isShown = false;
+    private Context context;
+    public int MAIN_NOTIFICATION_ID = 36484;
+    public NotificationManager notificationManager;
+    private Notification notification;
+    @Inject
+    IPlayer player;
 
-    public static void createNotification() {
+    public FantasyRadioNotificationManager(Context context)
+    {
+        this.context = context;
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
+    }
+
+    public void createNotification() {
         isShown = true;
+        //---------------------------------------------
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.notification_icon)
+                        .setContentTitle(context.getString(R.string.app_name))
+                        .setContentText("");//TODO
+        //-----------------------------------------------
         notification = new Notification(R.drawable.notification_icon,
-                getContext().getString(R.string.app_name),
+                context.getString(R.string.app_name),
                 System.currentTimeMillis());
         // ----------------------OLOLO-------------------------------------
-        final Intent notifiacationIntent = new Intent(getContext(),
+        final Intent notifiacationIntent = new Intent(context,
                 TabHoster.class);
         notifiacationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         final PendingIntent contentIntent = PendingIntent.getActivity(
-                getContext(), 0, notifiacationIntent, 0);
+                context, 0, notifiacationIntent, 0);
         notification.flags = notification.flags
                 | Notification.FLAG_ONGOING_EVENT;
-        notification.contentView = new RemoteViews(getContext()
+        notification.contentView = new RemoteViews(context
                 .getPackageName(), R.layout.app_notification);
         notification.contentIntent = contentIntent;
-        notificationManager = (NotificationManager) getContext()
+        notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(MAIN_NOTIFICATION_ID, notification);
-        changeSongName("", "");
-        //TODO changeSongName(player.getCurrentSong(),
-        //TODO        player.getCurrentArtist());
+        changeSongName(player.currentTitle(),
+               player.currentArtist());
         // --------------------------------OLOLO----------------------------------
     }
 
@@ -49,7 +68,7 @@ public abstract class ProgramNotification {
      * @param song
      * @param artist
      */
-    public static void changeSongName(String song, String artist) {
+    public void changeSongName(String song, String artist) {
         if (isShown) {
             try {
                 if (artist == null)
@@ -67,13 +86,5 @@ public abstract class ProgramNotification {
                 e.printStackTrace();
             }
         }
-    }
-
-    private static Context getContext() {
-        return context;
-    }
-
-    public static void setContext(Context context) {
-        ProgramNotification.context = context;
     }
 }

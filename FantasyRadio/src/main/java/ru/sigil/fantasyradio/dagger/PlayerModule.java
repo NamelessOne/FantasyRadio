@@ -11,6 +11,7 @@ import ru.sigil.fantasyradio.BackgroundService.Player;
 import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.schedule.ScheduleEntityesCollection;
 import ru.sigil.fantasyradio.schedule.ScheduleParser;
+import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.fantasyradio.utils.FileDownloader;
 
 /**
@@ -57,5 +58,12 @@ public class PlayerModule {
     FileDownloader providesFileDownloader()
     {
         return new FileDownloader();
+    }
+
+    @Provides
+    @Singleton
+    FantasyRadioNotificationManager providesNotificationManager()
+    {
+        return new FantasyRadioNotificationManager(mApplication.getBaseContext());
     }
 }

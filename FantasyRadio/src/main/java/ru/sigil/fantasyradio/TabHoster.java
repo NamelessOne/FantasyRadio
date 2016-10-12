@@ -18,7 +18,6 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.un4seen.bass.BASS;
 
 import javax.inject.Inject;
 
@@ -32,7 +31,7 @@ import ru.sigil.fantasyradio.saved.SavedFragment;
 import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.settings.SettingsActivity;
-import ru.sigil.fantasyradio.utils.ProgramNotification;
+import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.log.LogManager;
 
 public class TabHoster extends FragmentActivity {
@@ -44,6 +43,8 @@ public class TabHoster extends FragmentActivity {
 
     @Inject
     IPlayer player;
+    @Inject
+    FantasyRadioNotificationManager notificationManager;
 
     private static int current_menu;
 
@@ -61,7 +62,6 @@ public class TabHoster extends FragmentActivity {
         player.addErrorListener(playerErrorListener);
         setContentView(R.layout.tabs);
         // EasyTracker is now ready for use.
-        ProgramNotification.setContext(getBaseContext());
         setCurrent_menu(R.menu.activity_main);
         player.getMp3Saver().setMp3c(new MP3Collection(getBaseContext()));
         player.getMp3Saver().getMp3c().Load();
@@ -98,7 +98,7 @@ public class TabHoster extends FragmentActivity {
     public void onPause() {
         if (player.currentState() == PlayState.PLAY
                 || player.currentState() == PlayState.PLAY_FILE || player.currentState() == PlayState.BUFFERING) {
-            ProgramNotification
+            notificationManager
                     .createNotification();
         } else {
             player.stop();
@@ -202,19 +202,16 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onResume() {
-        if (ProgramNotification.notificationManager != null) {
+        if (notificationManager.notificationManager != null) {
             try {
-                ProgramNotification.notificationManager
-                        .cancel(ProgramNotification.MAIN_NOTIFICATION_ID);
-                ProgramNotification.isShown = false;
+                notificationManager.notificationManager
+                        .cancel(notificationManager.MAIN_NOTIFICATION_ID);
+                notificationManager.isShown = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         super.onResume();
-        /*if(BuildConfig.FLAVOR.equals("free")) {
-            adView.resume();
-        }*/
     }
 
     public InterstitialAd getmInterstitialAd() {
