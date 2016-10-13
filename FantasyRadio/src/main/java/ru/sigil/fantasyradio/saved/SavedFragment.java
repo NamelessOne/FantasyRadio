@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 
@@ -36,7 +35,6 @@ import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 public class SavedFragment extends AbstractListFragment {
     private MP3Entity mp3EntityForDelete;
     private MP3ArrayAdapter adapter;
-    private int nextPos;
     private View savedActivityView;
     @Inject
     IPlayer player;
@@ -136,13 +134,10 @@ public class SavedFragment extends AbstractListFragment {
                 bv.setImageResource(R.drawable.play_states);
             } else {
                 // Нажата кнопка плэй у другого трека
-                nextPos = adapter
-                        .getPosition(player.getCurrentMP3Entity()); // почему-то 0
                 player.playFile((MP3Entity) v.getTag());
                 adapter.notifyDataSetChanged();
             }
         } else {
-            nextPos = adapter.getPosition((MP3Entity) v.getTag());
             player.playFile((MP3Entity) v.getTag());
             // -------------------------------------------------
             adapter.notifyDataSetChanged();
@@ -212,7 +207,7 @@ public class SavedFragment extends AbstractListFragment {
 
         @Override
         public void onPlayStateChanged(PlayState playState) {
-
+            adapter.notifyDataSetChanged();
         }
 
         @Override
@@ -240,34 +235,8 @@ public class SavedFragment extends AbstractListFragment {
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     // Заканчивается воспроизведение. Переходим на следующий трек.
-                    adapter.notifyDataSetChanged();
-                    if (nextPos < adapter.getCount()) {
-                        try {
-                            LinearLayout ll1 = (LinearLayout) adapter
-                                    .getView(
-                                            // nextPos + 1,
-                                            adapter.getCount() - nextPos,
-                                            null,
-                                            (LinearLayout) savedActivityView.findViewById(R.id.mp3sLinearLayout));
-                            LinearLayout ll2 = null;
-                            if (ll1 != null) {
-                                ll2 = (LinearLayout) ll1.getChildAt(1);
-                            }
-                            ImageButton b = null;
-                            if (ll2 != null) {
-                                b = (ImageButton) ll2.getChildAt(0);
-                            }
-                            if (b != null) {
-                                b.performClick();
-                            }
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                            player.stop();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        player.stop();
-                    }
+                    //adapter.notifyDataSetChanged();
+                    adapter.playNext();
                 }
             });
         }

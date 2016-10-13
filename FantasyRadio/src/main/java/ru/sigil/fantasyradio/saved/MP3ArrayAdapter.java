@@ -50,6 +50,22 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         return this.MP3s.get(getCount() - index - 1);// !!!!!!!!!!!!!
     }
 
+    private MP3Entity getNext(MP3Entity entity) {
+        int currentIndex = MP3s.size() - 1 - MP3s.indexOf(entity);
+        if (currentIndex < 0 || currentIndex + 1 == MP3s.size()) {
+            return null;
+        }
+        return getItem(currentIndex + 1);
+    }
+
+    public void playNext() {
+        MP3Entity next = getNext(player.getCurrentMP3Entity());
+        player.stop();
+        if (next != null) {
+            player.playFile(next);
+        }
+    }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
         if (row == null) {
