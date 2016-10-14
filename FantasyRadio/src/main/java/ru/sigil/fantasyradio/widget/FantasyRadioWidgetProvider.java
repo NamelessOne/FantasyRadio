@@ -105,8 +105,6 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                     getPendingSelfIntent(context,
                             ACTION_STOP_CLICK)
             );
-            remoteViews.setTextViewText(R.id.widget_author, widgetAuthor);
-            remoteViews.setTextViewText(R.id.widget_title, widgetTitle);
             //-----------------------------------------------------------
             restoreDefaultBitrateColors(remoteViews);
             switch (player.currentBitrate()) {
@@ -140,11 +138,16 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
                     remoteViews.setViewVisibility(R.id.widget_play, View.GONE);
                     remoteViews.setViewVisibility(R.id.widget_stop, View.VISIBLE);
                     break;
-                case STOP:
+                default: //TODO case STOP:???
+                    widgetAuthor = "";
+                    widgetTitle = "";
                     remoteViews.setViewVisibility(R.id.widget_play, View.VISIBLE);
                     remoteViews.setViewVisibility(R.id.widget_stop, View.GONE);
                     break;
+
             }
+            remoteViews.setTextViewText(R.id.widget_author, widgetAuthor);
+            remoteViews.setTextViewText(R.id.widget_title, widgetTitle);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
     }

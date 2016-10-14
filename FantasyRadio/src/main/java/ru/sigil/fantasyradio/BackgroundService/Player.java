@@ -134,6 +134,8 @@ public class Player implements IPlayer {
     @Override
     public void playFile(MP3Entity entity) {
         //TODO
+        setAuthor(entity.getArtist() == null ? "" : entity.getArtist());
+        setTitle(entity.getTitle() == null ? "" : entity.getArtist());
         String file = entity.getDirectory();
         BASS.BASS_StreamFree(getChan());
         // -------------------------------------------------
