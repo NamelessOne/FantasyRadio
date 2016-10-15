@@ -99,7 +99,7 @@ public class TabHoster extends FragmentActivity {
         if (player.currentState() == PlayState.PLAY
                 || player.currentState() == PlayState.PLAY_FILE || player.currentState() == PlayState.BUFFERING) {
             notificationManager
-                    .createNotification();
+                    .createNotification(player.currentTitle(), player.currentArtist(), player.currentState());
         } else {
             player.stop();
         }

@@ -3,6 +3,7 @@ package ru.sigil.fantasyradio.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import ru.sigil.fantasyradio.FantasyRadioNotificationReceiver;
 import ru.sigil.fantasyradio.MyApp;
 import ru.sigil.fantasyradio.RadioFragment;
 import ru.sigil.fantasyradio.TabHoster;
@@ -29,7 +30,7 @@ public interface PlayerComponent {
     void inject(ScheduleFragment scheduleFragment);
     void inject(MP3ArrayAdapter mp3ArrayAdapter);
     void inject(DownloadThread downloadThread);
-    void inject(FantasyRadioNotificationManager notificationManager);
+    void inject(FantasyRadioNotificationReceiver fantasyRadioNotificationReceiver);
 
     final class Initializer {
         private Initializer() {

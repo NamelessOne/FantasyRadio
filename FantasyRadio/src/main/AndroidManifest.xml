@@ -75,5 +75,6 @@
                 android:resource="@xml/example_appwidget_info" />
         </receiver>
         <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
+        <receiver android:name=".FantasyRadioNotificationReceiver" />
     </application>
 </manifest>
