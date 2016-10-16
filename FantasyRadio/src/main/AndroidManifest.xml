@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.sigil.fantasyradio"
-    android:installLocation="auto"
     android:hardwareAccelerated="false"
+    android:installLocation="auto"
     android:versionCode="127"
     android:versionName="1.27">
 
@@ -67,13 +67,15 @@
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".widget.FantasyRadioWidgetProvider" >
+        <receiver android:name=".widget.FantasyRadioWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/example_appwidget_info" />
         </receiver>
+
         <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
         <receiver android:name=".FantasyRadioNotificationReceiver" />
     </application>

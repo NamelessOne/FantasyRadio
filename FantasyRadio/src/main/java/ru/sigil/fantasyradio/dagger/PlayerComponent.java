@@ -12,7 +12,6 @@ import ru.sigil.fantasyradio.saved.MP3ArrayAdapter;
 import ru.sigil.fantasyradio.saved.SavedFragment;
 import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.utils.DownloadThread;
-import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 
 /**
@@ -23,13 +22,21 @@ import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 @Component(modules = PlayerModule.class)
 public interface PlayerComponent {
     void inject(RadioFragment radioFragment);
+
     void inject(SavedFragment savedFragment);
+
     void inject(FantasyRadioWidgetProvider fantasyRadioWidgetProvider);
+
     void inject(ArchieveFragment archieveFragment);
+
     void inject(TabHoster tabHoster);
+
     void inject(ScheduleFragment scheduleFragment);
+
     void inject(MP3ArrayAdapter mp3ArrayAdapter);
+
     void inject(DownloadThread downloadThread);
+
     void inject(FantasyRadioNotificationReceiver fantasyRadioNotificationReceiver);
 
     final class Initializer {
