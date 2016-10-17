@@ -13,6 +13,7 @@ import ru.sigil.fantasyradio.BackgroundService.Bitrate;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
+import ru.sigil.fantasyradio.utils.BitrtesResolver;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 
 /**
@@ -26,6 +27,8 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
     IPlayer player;
     @Inject
     FantasyRadioNotificationManager notificationManager;
+    @Inject
+    BitrtesResolver bitratesResolver;
 
     public FantasyRadioNotificationReceiver() {
         Bootstrap.INSTANCE.getBootstrap().inject(this);
@@ -36,8 +39,7 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
         String action = intent.getStringExtra(FantasyRadioNotificationManager.ACTION);
         if (FantasyRadioNotificationManager.PAUSE.equals(action)) {
             //TODO
-            switch (player.currentState())
-            {
+            switch (player.currentState()) {
                 case PLAY:
                 case BUFFERING:
                     player.stop();
@@ -48,26 +50,15 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
             notificationManager.createNotification(player.currentTitle(), player.currentArtist(), PlayState.STOP/*player.currentState()*/);
         } else {
             //TODO
-            switch (player.currentState())
-            {
-                case STOP :
-                    player.play(bitratesMap.get(player.currentBitrate()) ,player.currentBitrate());
+            switch (player.currentState()) {
+                case STOP:
+                    String url = bitratesResolver.getUrl(player.currentBitrate());
+                    player.play(url, player.currentBitrate());
                     break;
                 case PAUSE:
                     player.resume();
             }
             notificationManager.createNotification(player.currentTitle(), player.currentArtist(), PlayState.PLAY/*player.currentState()*/);
         }
-    }
-
-    //TODO сделать нормальный резолвер и инжектировать
-    private static final Map<Bitrate, String> bitratesMap;
-    static
-    {
-        bitratesMap = new HashMap<>();
-        bitratesMap.put(Bitrate.aac_16, "http://fantasyradioru.no-ip.biz:8016");
-        bitratesMap.put(Bitrate.mp3_32, "http://fantasyradioru.no-ip.biz:8008");
-        bitratesMap.put(Bitrate.mp3_96, "http://fantasyradioru.no-ip.biz:8002/live");
-        bitratesMap.put(Bitrate.aac_112, "http://fantasyradioru.no-ip.biz:8000");
     }
 }

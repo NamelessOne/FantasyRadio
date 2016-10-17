@@ -11,6 +11,7 @@ import ru.sigil.fantasyradio.BackgroundService.Player;
 import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.schedule.ScheduleEntityesCollection;
 import ru.sigil.fantasyradio.schedule.ScheduleParser;
+import ru.sigil.fantasyradio.utils.BitrtesResolver;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.fantasyradio.utils.FileDownloader;
 
@@ -29,41 +30,40 @@ public class PlayerModule {
 
     @Provides
     @Singleton
-    MP3Saver providesMP3Saver()
-    {
+    MP3Saver providesMP3Saver() {
         return new MP3Saver();
     }
 
     @Provides
     @Singleton
-    IPlayer providesPlayer(MP3Saver mp3Saver)
-    {
+    IPlayer providesPlayer(MP3Saver mp3Saver) {
         return new Player(mp3Saver);
     }
 
     @Provides
     @Singleton
-    ScheduleEntityesCollection providesScheduleEntityesCollection()
-    {
+    ScheduleEntityesCollection providesScheduleEntityesCollection() {
         return new ScheduleEntityesCollection();
     }
 
     @Provides
-    ScheduleParser providesScheduleParser(ScheduleEntityesCollection scheduleEntityesCollection)
-    {
+    ScheduleParser providesScheduleParser(ScheduleEntityesCollection scheduleEntityesCollection) {
         return new ScheduleParser(scheduleEntityesCollection);
     }
 
     @Provides
-    FileDownloader providesFileDownloader()
-    {
+    FileDownloader providesFileDownloader() {
         return new FileDownloader();
     }
 
     @Provides
     @Singleton
-    FantasyRadioNotificationManager providesNotificationManager()
-    {
+    FantasyRadioNotificationManager providesNotificationManager() {
         return new FantasyRadioNotificationManager(mApplication.getBaseContext());
+    }
+
+    @Provides
+    BitrtesResolver providesBitratesResolver() {
+        return new BitrtesResolver(mApplication.getBaseContext());
     }
 }
