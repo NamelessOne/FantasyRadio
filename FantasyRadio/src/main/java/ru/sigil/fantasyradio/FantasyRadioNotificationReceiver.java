@@ -4,16 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Inject;
 
-import ru.sigil.fantasyradio.BackgroundService.Bitrate;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
-import ru.sigil.fantasyradio.utils.BitrtesResolver;
+import ru.sigil.fantasyradio.utils.BitratesResolver;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 
 /**
@@ -28,7 +24,7 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
     @Inject
     FantasyRadioNotificationManager notificationManager;
     @Inject
-    BitrtesResolver bitratesResolver;
+    BitratesResolver bitratesResolver;
 
     public FantasyRadioNotificationReceiver() {
         Bootstrap.INSTANCE.getBootstrap().inject(this);
@@ -53,7 +49,17 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
             switch (player.currentState()) {
                 case STOP:
                     String url = bitratesResolver.getUrl(player.currentBitrate());
-                    player.play(url, player.currentBitrate());
+                    switch (player.currentBitrate())
+                    {
+                        case aac_16:
+                        case aac_112:
+                            player.playAAC(url, player.currentBitrate());
+                            break;
+                        case mp3_32:
+                        case mp3_96:
+                        default:
+                            player.play(url, player.currentBitrate());
+                    }
                     break;
                 case PAUSE:
                     player.resume();

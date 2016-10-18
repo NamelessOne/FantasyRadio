@@ -11,7 +11,7 @@ import ru.sigil.fantasyradio.BackgroundService.Player;
 import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.schedule.ScheduleEntityesCollection;
 import ru.sigil.fantasyradio.schedule.ScheduleParser;
-import ru.sigil.fantasyradio.utils.BitrtesResolver;
+import ru.sigil.fantasyradio.utils.BitratesResolver;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.fantasyradio.utils.FileDownloader;
 
@@ -63,7 +63,7 @@ public class PlayerModule {
     }
 
     @Provides
-    BitrtesResolver providesBitratesResolver() {
-        return new BitrtesResolver(mApplication.getBaseContext());
+    BitratesResolver providesBitratesResolver() {
+        return new BitratesResolver(mApplication.getBaseContext());
     }
 }

@@ -11,6 +11,7 @@ public interface IPlayer {
     String[] RESERVED_CHARS = {"|", "\\", "?", "*", "<", "\"",
             ":", ">", "+", "[", "]", "/", "'", "%"};
 
+    //TODO унифицировать play и playAAC
     void play(String URL, Bitrate bitrate);
 
     void playAAC(String URL, Bitrate bitrate);
