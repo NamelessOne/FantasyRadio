@@ -43,7 +43,7 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
                 case PLAY_FILE:
                     player.pause();
             }
-            notificationManager.createNotification(player.currentTitle(), player.currentArtist(), PlayState.STOP/*player.currentState()*/);
+            notificationManager.updateNotification(player.currentTitle(), player.currentArtist(), PlayState.STOP/*player.currentState()*/);
         } else {
             //TODO
             switch (player.currentState()) {
@@ -64,7 +64,7 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
                 case PAUSE:
                     player.resume();
             }
-            notificationManager.createNotification(player.currentTitle(), player.currentArtist(), PlayState.PLAY/*player.currentState()*/);
+            notificationManager.updateNotification(player.currentTitle(), player.currentArtist(), PlayState.PLAY/*player.currentState()*/);
         }
     }
 }

@@ -204,9 +204,8 @@ public class TabHoster extends FragmentActivity {
     public void onResume() {
         if (notificationManager.notificationManager != null) {
             try {
-                notificationManager.notificationManager
-                        .cancel(notificationManager.MAIN_NOTIFICATION_ID);
-                notificationManager.isShown = false;
+
+                notificationManager.cancel();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -56,6 +56,10 @@ public class Player implements IPlayer {
     @Override
     public void rec(boolean isActive) {
         // -------------------------------------
+        if(currentState()!=PlayState.PLAY && currentState()!=PlayState.BUFFERING)
+        {
+            return;
+        }
         if (!isActive) {
             // А тут мы пишем инфу о записанном
             // файле в базу

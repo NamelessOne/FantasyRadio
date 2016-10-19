@@ -12,6 +12,7 @@ import ru.sigil.fantasyradio.saved.MP3ArrayAdapter;
 import ru.sigil.fantasyradio.saved.SavedFragment;
 import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.utils.DownloadThread;
+import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 
 /**
@@ -38,6 +39,8 @@ public interface PlayerComponent {
     void inject(DownloadThread downloadThread);
 
     void inject(FantasyRadioNotificationReceiver fantasyRadioNotificationReceiver);
+
+    void inject(FantasyRadioNotificationManager fantasyRadioNotificationManager);
 
     final class Initializer {
         private Initializer() {
