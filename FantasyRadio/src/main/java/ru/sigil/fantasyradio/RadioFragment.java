@@ -485,11 +485,6 @@ public class RadioFragment extends Fragment {
         }
 
         @Override
-        public void onStop() {
-            //TODO
-        }
-
-        @Override
         public void endSync() {
 
         }

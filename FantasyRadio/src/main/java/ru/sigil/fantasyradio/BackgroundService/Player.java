@@ -192,16 +192,9 @@ public class Player implements IPlayer {
     public void stop() {
         //TODO BASS.BASS_ChannelStop(getChan()); ???
         BASS.BASS_StreamFree(getChan());
-        setPlayState(PlayState.STOP);
         setAuthor("");
         setTitle("");
-        for (IPlayerEventListener listener : eventListeners) {
-            try {
-                listener.onStop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        setPlayState(PlayState.STOP);
     }
 
     @Override

@@ -128,11 +128,6 @@ public class FantasyRadioNotificationManager {
         }
 
         @Override
-        public void onStop() {
-            updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
-        }
-
-        @Override
         public void endSync() {
             updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
         }

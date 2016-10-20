@@ -226,11 +226,6 @@ public class SavedFragment extends AbstractListFragment {
         }
 
         @Override
-        public void onStop() {
-
-        }
-
-        @Override
         public void endSync() {
             getActivity().runOnUiThread(new Runnable() {
                 public void run() {
