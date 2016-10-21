@@ -41,6 +41,7 @@ public class FantasyRadioNotificationManager {
             int icon;
             PendingIntent pIntent;
             Intent intent;
+            boolean notCancelable;
             switch (currentState) {
                 case BUFFERING:
                 case PLAY:
@@ -50,6 +51,7 @@ public class FantasyRadioNotificationManager {
                     intent.putExtra(ACTION, PAUSE);
                     pIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
                     icon = R.drawable.ic_media_pause;
+                    notCancelable = true;
                     break;
                 case PAUSE:
                 case STOP:
@@ -59,6 +61,7 @@ public class FantasyRadioNotificationManager {
                     intent.putExtra(ACTION, PLAY);
                     pIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
                     icon = R.drawable.ic_media_play;
+                    notCancelable = false;
                     break;
             }
 
@@ -66,8 +69,8 @@ public class FantasyRadioNotificationManager {
                     .setContentTitle(context.getString(R.string.app_name))
                     .setContentText(getText(currentTitle, currentArtist))
                     .setSmallIcon(R.drawable.notification_icon)
-                    //.setContentIntent(pIntent)
-                    //.setAutoCancel(true)
+                    .setAutoCancel(false)
+                    .setOngoing(notCancelable)
                     .addAction(icon, "", pIntent).build();
 
             notificationManager =
