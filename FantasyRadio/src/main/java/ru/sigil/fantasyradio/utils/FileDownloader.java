@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -37,7 +38,7 @@ public class FileDownloader {
      * @param fileDir  Директория для сохранения. Например /mnt/sdcard/fantasyradio/mp3/
      * @param fileName Имя файла. Например 31-Aug-201310-Radio_Fantasy_archive.mp3
      */
-    public synchronized void DownloadFile(String fileUrl,
+    public synchronized boolean DownloadFile(String fileUrl,
                                                  String fileDir, String fileName, Context context) {
         Log.v("fileDir", fileDir);
         Log.v("fileUrl", fileUrl);
@@ -98,9 +99,11 @@ public class FileDownloader {
             fos.close();
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         } finally {
             notificationManager.cancel(DOWNLOAD_NOTIFICATION_ID);// !!!
         }
+        return true;
     }
 
     /**

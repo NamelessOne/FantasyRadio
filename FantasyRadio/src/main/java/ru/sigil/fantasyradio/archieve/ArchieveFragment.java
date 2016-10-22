@@ -134,8 +134,8 @@ public class ArchieveFragment extends AbstractListFragment {
         protected void onPreExecute() {
             super.onPreExecute();
             if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_REFRESH) {
-                if (((TabHoster)getActivity()).getmInterstitialAd().isLoaded()) {
-                    ((TabHoster)getActivity()).getmInterstitialAd().show();
+                if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
+                    ((TabHoster) getActivity()).getmInterstitialAd().show();
                 }
             }
             try {
@@ -183,7 +183,7 @@ public class ArchieveFragment extends AbstractListFragment {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            if(getActivity()!=null) {
+            if (getActivity() != null) {
                 adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
                         ArchieveEntityesCollection.getEntityes(), downloadClickListener);
                 getLv().setAdapter(adapter);
@@ -224,34 +224,27 @@ public class ArchieveFragment extends AbstractListFragment {
         Toast toast = Toast.makeText(getActivity().getBaseContext(),
                 getString(R.string.download_started), Toast.LENGTH_LONG);
         toast.show();
-        // -----------------------------------------------------------------------
-        /*try {
-            LinearLayout rl = (LinearLayout) v.getParent();
-            ProgressBar pb = null;
-            if (rl != null) {
-                pb = (ProgressBar) rl.getChildAt(1);
-            }
-            if (pb != null) {
-                pb.setVisibility(View.VISIBLE);
-            }
-            v.setVisibility(View.GONE);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         DownladedEntityes.getDownloadedEntityes().add(entity.getURL());
-        // -----------------------------------------------------------------------
         DownloadThread dt = new DownloadThread(entity.getURL(),
                 Environment.getExternalStorageDirectory() + Settings.getSaveDir(),
                 formattedDate + entity.getFileName(), getActivity().getBaseContext(),
-                downloadFinishedHandler, mp3Entity);
+                downloadFinishedHandler, mp3Entity, errorHandler);
         dt.start();
-        // ----------------------------
     }
+
+    private Handler errorHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Toast toast = Toast.makeText(getActivity().getBaseContext(),
+                    "Ошибка при сохранении файла", Toast.LENGTH_LONG);
+            toast.show();
+        }
+    };
 
     private Handler downloadFinishedHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if(getActivity()!=null) {
+            if (getActivity() != null) {
                 Toast toast = Toast.makeText(getActivity().getBaseContext(),
                         getString(R.string.download_finished), Toast.LENGTH_LONG);
                 toast.show();

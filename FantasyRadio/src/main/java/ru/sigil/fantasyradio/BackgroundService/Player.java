@@ -95,12 +95,13 @@ public class Player implements IPlayer {
             File f = new File(dir.toString() + "/" + fileName);
             try {
                 if (!f.createNewFile()) {
-                    File f2 = new File(f.toString()
+                    f = new File(f.toString()
                             + System.currentTimeMillis());
-                    f = f2;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                error("Не удалось создать файл для записи", -1);
+                return;
             }
             recDirectory = f.toString();
         }
@@ -150,9 +151,7 @@ public class Player implements IPlayer {
             if ((x = BASS_AAC.BASS_AAC_StreamCreateFile(file, 0, 0, 0)) == 0) {
                 // whatever it is, it ain't playable
                 setChan(x);
-                for (IPLayerErrorListener listener: errorListeners) {
-                    listener.onError("Can't play the file", BASS.BASS_ErrorGetCode());
-                }
+                error("Can't play the file", BASS.BASS_ErrorGetCode());
                 currentMP3Entity = entity;
                 setPlayState(PlayState.STOP);
                 return;
@@ -164,6 +163,12 @@ public class Player implements IPlayer {
         BASS.BASS_ChannelSetSync(getChan(), BASS.BASS_SYNC_END, 0,
                 EndSync, null);
         setPlayState(PlayState.PLAY_FILE);
+    }
+
+    private void error(String message, int code) {
+        for (IPLayerErrorListener listener: errorListeners) {
+            listener.onError(message, code);
+        }
     }
 
     @Override
