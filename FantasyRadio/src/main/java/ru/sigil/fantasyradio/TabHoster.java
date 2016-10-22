@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
@@ -49,11 +50,9 @@ public class TabHoster extends FragmentActivity {
     private static int current_menu;
 
     private void requestNewInterstitial() {
-        if (!isFirstLaunch()) {
             AdRequest adRequest = new AdRequest.Builder()
                     .build();
             getmInterstitialAd().loadAd(adRequest);
-        }
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -215,6 +214,10 @@ public class TabHoster extends FragmentActivity {
 
     public InterstitialAd getmInterstitialAd() {
         return mInterstitialAd;
+    }
+
+    public void fabButtonClick(View view) {
+        openOptionsMenu();
     }
 
     /**
