@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 
 import javax.inject.Inject;
 
@@ -65,7 +66,9 @@ public class FantasyRadioNotificationManager {
                     break;
             }
 
-            Notification notification = new Notification.Builder(context)
+            Notification notification = new NotificationCompat.Builder(context)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
                     .setContentTitle(context.getString(R.string.app_name))
                     .setContentText(getText(currentTitle, currentArtist))
                     .setSmallIcon(R.drawable.notification_icon)
