@@ -1,41 +1,44 @@
-<LinearLayout
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_gravity="center"
-              android:background="@color/program_background"
-              android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/program_background"
+    android:orientation="vertical">
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="@color/main_background"
-            android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:background="@color/main_background">
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="5dp"
                 android:weightSum="300">
 
-            <ImageView
+                <ImageView
                     android:id="@+id/streamButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="40"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/play_states"/>
+                    android:src="@drawable/play_states" />
 
-            <TextView
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="10"/>
+                    android:layout_weight="10" />
 
-            <ImageView
+                <ImageView
                     android:id="@+id/recordButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -43,27 +46,27 @@
                     android:layout_weight="30"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/rec"/>
+                    android:src="@drawable/rec" />
 
-            <TextView
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="10"/>
+                    android:layout_weight="10" />
 
-            <TextView
+                <TextView
                     android:id="@+id/textView1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="210"/>
-        </LinearLayout>
+                    android:layout_weight="210" />
+            </LinearLayout>
 
-        <View
+            <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
                 android:layout_margin="5dp"
-                android:background="@android:color/white"/>
+                android:background="@android:color/white" />
 
-        <LinearLayout
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
@@ -71,29 +74,29 @@
                 android:padding="5dp"
                 android:weightSum="300">
 
-            <TextView
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="205"
-                    android:text="@string/stream_quality"/>
+                    android:text="@string/stream_quality" />
 
-            <SeekBar
+                <SeekBar
                     android:id="@+id/mainVolumeSeekBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_weight="95"
                     android:progressDrawable="@drawable/sb_progress"
-                    android:thumb="@drawable/progress_control"/>
-        </LinearLayout>
+                    android:thumb="@drawable/progress_control" />
+            </LinearLayout>
 
-        <LinearLayout
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="10dp">
 
-            <TextView
+                <TextView
                     android:id="@+id/bitrateText0"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -101,9 +104,9 @@
                     android:clickable="true"
                     android:padding="5dp"
                     android:tag="0"
-                    android:text="@string/stream_AAC16"/>
+                    android:text="@string/stream_AAC16" />
 
-            <TextView
+                <TextView
                     android:id="@+id/bitrateText1"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -111,19 +114,19 @@
                     android:clickable="true"
                     android:padding="5dp"
                     android:tag="1"
-                    android:text="@string/stream_MP332"/>
+                    android:text="@string/stream_MP332" />
 
-            <TextView
-                android:id="@+id/bitrateText4"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/bitrate_element"
-                android:clickable="true"
-                android:padding="5dp"
-                android:tag="4"
-                android:text="@string/stream_MP396"/>
+                <TextView
+                    android:id="@+id/bitrateText4"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/bitrate_element"
+                    android:clickable="true"
+                    android:padding="5dp"
+                    android:tag="4"
+                    android:text="@string/stream_MP396" />
 
-            <TextView
+                <TextView
                     android:id="@+id/bitrateText3"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -131,34 +134,46 @@
                     android:clickable="true"
                     android:padding="5dp"
                     android:tag="3"
-                    android:text="@string/stream_AAC112"/>
+                    android:text="@string/stream_AAC112" />
 
-        </LinearLayout>
+            </LinearLayout>
 
-        <TextView
+            <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"
-                android:text="@string/sleep_timer"/>
+                android:text="@string/sleep_timer" />
 
-        <LinearLayout
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp">
 
-            <CheckBox
+                <CheckBox
                     android:id="@+id/checkBox1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
-            <TextView
+                <TextView
                     android:id="@+id/tvChangeTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
-                    android:paddingLeft="5dp"/>
+                    android:paddingLeft="5dp" />
+            </LinearLayout>
+
         </LinearLayout>
-    </LinearLayout>
+        <!-- Your FAB implementation -->
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_margin="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/fab"/>
+    </RelativeLayout>
 </LinearLayout>

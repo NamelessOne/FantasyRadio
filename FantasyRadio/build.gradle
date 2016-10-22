@@ -8,6 +8,8 @@ android {
         applicationId "ru.sigil.fantasyradio"
         minSdkVersion 16
         targetSdkVersion 23
+        //TODO удалить после отказа от поддержки Android 4
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -48,6 +50,10 @@ android {
 dependencies {
     compile 'joda-time:joda-time:2.9.2'
     compile 'com.google.android.gms:play-services:8.3.0'
+    compile "com.android.support:appcompat-v7:23.2.1"
+    compile "com.android.support:design:23.2.1"
+    compile 'com.gordonwong:material-sheet-fab:1.2.1'
+    compile 'com.android.support:multidex:1.0.1'
     //TODO специальный даунгрейд
     compile 'ch.acra:acra:4.5.0'
     compile files('libs/universal-image-loader-1.9.5.jar')

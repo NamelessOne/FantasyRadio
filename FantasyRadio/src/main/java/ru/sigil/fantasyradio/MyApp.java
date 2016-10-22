@@ -2,6 +2,7 @@ package ru.sigil.fantasyradio;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDexApplication;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
@@ -19,7 +20,7 @@ import ru.sigil.log.LogManager;
 
 @ReportsCrashes(formKey = "", formUri = "http://fantasyradionotifications-sigil.rhcloud.com/crash", logcatArguments = {
         "-t", "50"})
-public class MyApp extends Application {
+public class MyApp extends MultiDexApplication {
     private float vol = (float) 0.5;
 
     @Override
