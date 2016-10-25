@@ -5,15 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 
-import com.un4seen.bass.BASS;
+import javax.inject.Inject;
 
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
+import ru.sigil.fantasyradio.dagger.Bootstrap;
 
 public class AlarmReceiever extends BroadcastReceiver {
 
     private static Handler sleepHandler;
-    //TODO @Inject
-    private IPlayer player;
+    @Inject
+    IPlayer player;
+
+    public AlarmReceiever()
+    {
+        super();
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
+    }
 
     /**
      * Глушим звук и выключаем прогу
@@ -23,8 +30,8 @@ public class AlarmReceiever extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        BASS.BASS_ChannelStop(player.getChan());
         try {
+            player.stop();
             sleepHandler.sendEmptyMessage(0);
         } catch (NullPointerException e) {
             e.printStackTrace();
