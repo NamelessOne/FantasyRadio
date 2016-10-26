@@ -107,8 +107,11 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onDestroy() {
-        player.removeErrorListener(playerErrorListener);
-        player.stop();
+        if(player!=null)
+        {
+            player.removeErrorListener(playerErrorListener);
+            player.stop();
+        }
         super.onDestroy();
     }
 
