@@ -52,8 +52,6 @@ public interface IPlayer {
 
     float getVolume();
 
-    void rewind(int offset);
-
     void rec(boolean isActive);
 
     MP3Saver getMp3Saver();
@@ -63,8 +61,6 @@ public interface IPlayer {
     MP3Entity getCurrentMP3Entity();
 
     void setVolume(float volume);
-
-    //long fileLength();
 
     void setProgress(long position);
 

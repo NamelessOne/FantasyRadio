@@ -31,7 +31,6 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="30"
         android:adjustViewBounds="true"
-        android:onClick="downloadClick"
         android:scaleType="fitCenter"
         android:src="@drawable/download_states" />
 

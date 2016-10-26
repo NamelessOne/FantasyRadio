@@ -1,6 +1,7 @@
 package ru.sigil.fantasyradio.saved;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,8 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         }
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
+    @NonNull
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
         if (row == null) {
             // ROW INFLATION

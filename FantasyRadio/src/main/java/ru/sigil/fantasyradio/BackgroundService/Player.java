@@ -45,15 +45,6 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public void rewind(int offset) {
-        BASS.BASS_ChannelSetPosition(getChan(), offset,
-                BASS.BASS_POS_BYTE);
-        if (!(BASS.BASS_ChannelIsActive(getChan()) == BASS.BASS_ACTIVE_PAUSED)) {
-            BASS.BASS_ChannelPlay(getChan(), false);
-        }
-    }
-
-    @Override
     public void rec(boolean isActive) {
         // -------------------------------------
         if(currentState()!=PlayState.PLAY && currentState()!=PlayState.BUFFERING)
@@ -387,7 +378,6 @@ public class Player implements IPlayer {
             if (chan != 0) {
                 handler.postDelayed(timer, 50);
             } // start prebuffer
-            int v = BASS.BASS_ErrorGetCode();
             // monitoring
         }
     }

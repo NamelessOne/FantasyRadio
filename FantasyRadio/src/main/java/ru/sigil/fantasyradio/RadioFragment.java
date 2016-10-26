@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,8 +26,6 @@ import android.widget.TimePicker;
 import com.un4seen.bass.BASS;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -52,14 +51,14 @@ public class RadioFragment extends Fragment {
     private static final int AD_SHOW_PROBABILITY_URL = 4;
     private static final int AD_SHOW_PROBABILITY_PLAY = 5;
 
-    private static final Map<Integer, Bitrate> bitratesMap;
+    private static final SparseArray<Bitrate> bitrates;
 
     static {
-        bitratesMap = new HashMap<>();
-        bitratesMap.put(0, Bitrate.aac_16);
-        bitratesMap.put(1, Bitrate.mp3_32);
-        bitratesMap.put(3, Bitrate.aac_112);
-        bitratesMap.put(4, Bitrate.mp3_96);
+        bitrates = new SparseArray<>();
+        bitrates.put(0, Bitrate.aac_16);
+        bitrates.put(1, Bitrate.mp3_32);
+        bitrates.put(3, Bitrate.aac_112);
+        bitrates.put(4, Bitrate.mp3_96);
     }
 
     @Inject
@@ -303,7 +302,7 @@ public class RadioFragment extends Fragment {
             v.setBackgroundColor(getResources().getColor(
                     R.color.bitrate_element_active));
             //TODO
-            player.setBitrate(bitratesMap.get(Integer.valueOf(v.getTag().toString())));
+            player.setBitrate(bitrates.get(Integer.valueOf(v.getTag().toString())));
             if (player.currentState() == PlayState.PLAY) {
                 ImageView b = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
                 b.performClick();

@@ -5,9 +5,6 @@
     <color name="bitrate_element">#5b5b5b</color>
     <color name="main_background">#434242</color>
     <color name="tab_active">#0c648c</color>
-    <color name="tab">#008dd2</color>
-    <color name="tab_line">#4ea7d3</color>
-    <color name="active_tab_line">#215a71</color>
     <color name="refresh_border">#124E67</color>
     <color name="refresh_background_active">#008DD2</color>
     <color name="refresh_border_active">#124E67</color>
@@ -17,8 +14,6 @@
     <color name="widget_quality_active_background">#0C648C</color>
     <color name="widget_background">#D9DADA</color>
     <color name="widget_text">#434242</color>
-    <color name="widget_line">#434242</color>
-    <color name="widget_quality_active_text">#EBECEC</color>
 
     <string name="username">Логин</string>
     <string name="enter">Войти</string>
@@ -34,7 +29,6 @@
     <string name="about_link">fantasyradio.ru\n</string>
     <string name="rate">Оценить приложние.</string>
     <string name="no_thanks">Нет, спасибо.</string>
-    <string name="registration_link"><a href="http://fantasyradio.ru/index.php/registratsiya">зарегистрироваться.</a></string>
     <string name="versiontext">Версия</string>
     <string name="title_activity_main">Радио фантастики</string>
     <string name="connecting">Соединение…</string>

@@ -76,13 +76,6 @@ public class ArchieveFragment extends AbstractListFragment {
     public void refreshClick(View v) {
         //Сначала логинимся
         ad.setTitle(getString(R.string.enter));  // заголовок
-        /*
-        try {
-            GoogleAnalytics.getInstance(this).sendEvent("Clicks", "ArchieveClicks", "EnterToaArchieveClick", null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        */
         LayoutInflater factory = LayoutInflater.from(getActivity());
         final View textEntryView = factory.inflate(R.layout.login_dialog, null);
         ad.setTitle(R.string.enter)
