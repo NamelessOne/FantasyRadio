@@ -1,6 +1,5 @@
 package ru.sigil.fantasyradio.utils;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TabActivity;
@@ -8,9 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -27,9 +25,9 @@ import ru.sigil.fantasyradio.R;
 public class FileDownloader {
 
     private final static int BUFFER_SIZE = 4096;
-    private static Notification notification;
-    private static NotificationManager notificationManager;
+    private NotificationManager notificationManager;
     private final static int DOWNLOAD_NOTIFICATION_ID = 364;
+    private NotificationCompat.Builder builder;
 
     /**
      * Скачиваем файл с сервера
@@ -48,19 +46,20 @@ public class FileDownloader {
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         final PendingIntent contentIntent = PendingIntent.getActivity(context,
                 0, intent, 0);
-        notification = new Notification(R.drawable.clocks,
-                context.getString(R.string.download_started),
-                System.currentTimeMillis());
-        notification.flags = notification.flags
-                | Notification.FLAG_ONGOING_EVENT;
-        notification.contentView = new RemoteViews(context.getPackageName(),
-                R.layout.progress_bar);
-        notification.contentIntent = contentIntent;
-        notification.contentView.setProgressBar(R.id.status_progress, 100, 0,
-                false);
+        //---------------------------------------------------
+        builder = new NotificationCompat.Builder(context)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+                .setContentTitle(context.getString(R.string.download_started))
+                .setContentText(fileName)
+                .setSmallIcon(R.drawable.clocks)
+                .setAutoCancel(false);
+                //.setOngoing(false)
+        //-------------------------------------------------
+        //-----------------------------------------------------
         notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(DOWNLOAD_NOTIFICATION_ID, notification);// !!!
+        notificationManager.notify(DOWNLOAD_NOTIFICATION_ID, builder.build());// !!!
         Bundle bundle = new Bundle();
         bundle.putString("title", fileName);
         Message titleMsg = new Message();
@@ -91,11 +90,11 @@ public class FileDownloader {
                 fos.write(baf, 0, length);
                 if (x % 1000 == 0) {
                     progress = currentLength / (contentLength / 100);
-                    setNotificationProgress(progress, fileName);
+                    setNotificationProgress(progress);
                 }
                 x++;
             }
-            setNotificationProgress(100, fileName);
+            setNotificationProgress(100);
             fos.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,16 +109,10 @@ public class FileDownloader {
      * Устанавливаети прогресс загрузки файла из архива
      *
      * @param progress прогресс загрузки в процентах (0 - 100)
-     * @param fileName имя файла
      */
-    private void setNotificationProgress(int progress, String fileName) {
-        // ================================================
-        if (notification.contentView != null) {
-            notification.contentView.setProgressBar(R.id.status_progress, 100,
-                    progress, false);
-        }
-        notification.contentView.setTextViewText(R.id.text_progress, fileName);
-        notificationManager.notify(DOWNLOAD_NOTIFICATION_ID, notification);
+    private void setNotificationProgress(int progress) {
+        builder.setProgress(100,progress,false);
+        notificationManager.notify(DOWNLOAD_NOTIFICATION_ID, builder.build());
     }
 
 }

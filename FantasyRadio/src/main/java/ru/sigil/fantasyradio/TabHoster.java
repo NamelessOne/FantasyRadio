@@ -50,9 +50,9 @@ public class TabHoster extends FragmentActivity {
     private static int current_menu;
 
     private void requestNewInterstitial() {
-            AdRequest adRequest = new AdRequest.Builder()
-                    .build();
-            getmInterstitialAd().loadAd(adRequest);
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+        getmInterstitialAd().loadAd(adRequest);
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -107,11 +107,8 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onDestroy() {
-        if(player!=null)
-        {
-            player.removeErrorListener(playerErrorListener);
-            player.stop();
-        }
+        player.removeErrorListener(playerErrorListener);
+        //player.stop();
         super.onDestroy();
     }
 

@@ -36,7 +36,7 @@
     <string name="second_tab_text">Программа</string>
     <string name="third_tab_text">Архив</string>
     <string name="fourth_tab_text">Сохраненное</string>
-    <string name="download_started">Загрузка начинается</string>
+    <string name="download_started">Загрузка</string>
     <string name="settings">Настройки</string>
     <string name="nnew">Новая папка</string>
     <string name="select">Выбрать</string>

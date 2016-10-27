@@ -228,9 +228,11 @@ public class ArchieveFragment extends AbstractListFragment {
     private Handler errorHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Toast toast = Toast.makeText(getActivity().getBaseContext(),
-                    "Ошибка при сохранении файла", Toast.LENGTH_LONG);
-            toast.show();
+            if (getActivity() != null) {
+                Toast toast = Toast.makeText(getActivity().getBaseContext(),
+                        "Ошибка при сохранении файла", Toast.LENGTH_LONG);
+                toast.show();
+            }
         }
     };
 

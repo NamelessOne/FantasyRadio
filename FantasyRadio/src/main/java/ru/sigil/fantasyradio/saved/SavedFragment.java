@@ -95,7 +95,7 @@ public class SavedFragment extends AbstractListFragment {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         player.removeEventListener(eventListener);
         super.onDestroy();
     }

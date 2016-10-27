@@ -273,8 +273,8 @@ public class RadioFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         player.removeEventListener(eventListener);
+        super.onDestroyView();
     }
 
     /**
