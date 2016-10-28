@@ -78,35 +78,6 @@ public class MP3Collection {
         }
     }
 
-    private void Save() {
-        synchronized (saveSync) {
-            SQLiteDatabase mDatabase = getContext().openOrCreateDatabase(
-                    "MP3Base", 0, null);
-            ContentValues cv = new ContentValues();
-            try {
-                mDatabase.execSQL("DROP TABLE IF EXISTS MP3ENTITYES");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            mDatabase
-                    .execSQL("CREATE TABLE IF NOT EXISTS MP3ENTITYES (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                            + "TITLE VARCHAR(300),"
-                            + "ARTIST VARCHAR(300),"
-                            + "TIME VARCHAR(300)," + "DIRECTORY VARCHAR(300))");
-            Iterator<MP3Entity> iter = getMp3entityes().iterator();
-            //noinspection WhileLoopReplaceableByForEach
-            while (iter.hasNext()) {
-                MP3Entity Mp3Entity = iter.next();
-                cv.put("TITLE", Mp3Entity.getTitle());
-                cv.put("ARTIST", Mp3Entity.getArtist());
-                cv.put("TIME", Mp3Entity.getTime());
-                cv.put("DIRECTORY", Mp3Entity.getDirectory());
-                mDatabase.insert("MP3ENTITYES", null, cv);
-            }
-            mDatabase.close();
-        }
-    }
-
     public void Load() {
         SQLiteDatabase mDatabase = getContext().openOrCreateDatabase("MP3Base",
                 0, null);
@@ -114,7 +85,7 @@ public class MP3Collection {
         // Make the query.
         try {
             Cursor managedCursor = mDatabase.query("MP3ENTITYES", null, null,
-                    null, null, null, null);
+                    null, null, null, "_id DESC");
             for (managedCursor.moveToFirst(); !managedCursor.isAfterLast(); managedCursor
                     .moveToNext()) {
                 MP3Entity Mp3Entity = new MP3Entity();
@@ -134,46 +105,6 @@ public class MP3Collection {
         } finally {
             mDatabase.close();
         }
-    }
-
-    public String[] getTitles() {
-        String[] res = new String[getMp3entityes().toArray().length];
-        MP3Entity mp3Entity;
-        for (int i = 0; i < getMp3entityes().toArray().length; i++) {
-            mp3Entity = (MP3Entity) getMp3entityes().toArray()[i];
-            res[i] = mp3Entity.getTitle();
-        }
-        return res;
-    }
-
-    public String[] getArtists() {
-        String[] res = new String[getMp3entityes().toArray().length];
-        MP3Entity mp3Entity;
-        for (int i = 0; i < getMp3entityes().toArray().length; i++) {
-            mp3Entity = (MP3Entity) getMp3entityes().toArray()[i];
-            res[i] = mp3Entity.getArtist();
-        }
-        return res;
-    }
-
-    public String[] getTimes() {
-        String[] res = new String[getMp3entityes().toArray().length];
-        MP3Entity mp3Entity;
-        for (int i = 0; i < getMp3entityes().toArray().length; i++) {
-            mp3Entity = (MP3Entity) getMp3entityes().toArray()[i];
-            res[i] = mp3Entity.getTime();
-        }
-        return res;
-    }
-
-    public String[] getDirectories() {
-        String[] res = new String[getMp3entityes().toArray().length];
-        MP3Entity mp3Entity;
-        for (int i = 0; i < getMp3entityes().toArray().length; i++) {
-            mp3Entity = (MP3Entity) getMp3entityes().toArray()[i];
-            res[i] = mp3Entity.getDirectory();
-        }
-        return res;
     }
 
     void setContext(Context context) {

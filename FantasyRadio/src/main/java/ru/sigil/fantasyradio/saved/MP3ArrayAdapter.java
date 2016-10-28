@@ -25,8 +25,6 @@ import ru.sigil.fantasyradio.dagger.Bootstrap;
 
 public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
 
-    public static int width;
-
     @Inject
     public IPlayer player;
 
@@ -47,13 +45,9 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         return this.MP3s.size();
     }
 
-    public MP3Entity getItem(int index) {
-        return this.MP3s.get(getCount() - index - 1);// !!!!!!!!!!!!!
-    }
-
     private MP3Entity getNext(MP3Entity entity) {
-        int currentIndex = MP3s.size() - 1 - MP3s.indexOf(entity);
-        if (currentIndex < 0 || currentIndex + 1 == MP3s.size()) {
+        int currentIndex = MP3s.indexOf(entity);
+        if (currentIndex == -1 || currentIndex + 1 == MP3s.size()) {
             return null;
         }
         return getItem(currentIndex + 1);
