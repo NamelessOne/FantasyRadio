@@ -8,7 +8,7 @@ import dagger.Module;
 import dagger.Provides;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.Player;
-import ru.sigil.fantasyradio.saved.MP3Saver;
+import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.schedule.ScheduleEntityesCollection;
 import ru.sigil.fantasyradio.schedule.ScheduleParser;
 import ru.sigil.fantasyradio.utils.BitratesResolver;
@@ -30,14 +30,14 @@ public class PlayerModule {
 
     @Provides
     @Singleton
-    MP3Saver providesMP3Saver() {
-        return new MP3Saver();
+    MP3Collection providesMP3Collection() {
+        return new MP3Collection(mApplication.getBaseContext());
     }
 
     @Provides
     @Singleton
-    IPlayer providesPlayer(MP3Saver mp3Saver) {
-        return new Player(mp3Saver);
+    IPlayer providesPlayer(MP3Collection mp3Collection) {
+        return new Player(mp3Collection);
     }
 
     @Provides

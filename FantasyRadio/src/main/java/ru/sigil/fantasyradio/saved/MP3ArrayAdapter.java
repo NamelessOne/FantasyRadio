@@ -1,20 +1,18 @@
 package ru.sigil.fantasyradio.saved;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.un4seen.bass.BASS;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -23,65 +21,52 @@ import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 
-public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
+public class MP3ArrayAdapter extends CursorAdapter {
 
     @Inject
     public IPlayer player;
 
-    private List<MP3Entity> MP3s = new ArrayList<>();
+    private Cursor mCursor;
     private View.OnClickListener deleteCLickListener;
     private View.OnClickListener playCLickListener;
 
-    public MP3ArrayAdapter(Context context, int textViewResourceId,
-                           List<MP3Entity> objects, View.OnClickListener deleteClickListener, View.OnClickListener playClickListener) {
-        super(context, textViewResourceId, objects);
+    public MP3ArrayAdapter(Context context, Cursor cursor, View.OnClickListener deleteClickListener,
+                           View.OnClickListener playClickListener) {
+        super(context, cursor, 0);
         Bootstrap.INSTANCE.getBootstrap().inject(this);
-        this.MP3s = objects;
+        mCursor = cursor;
         this.deleteCLickListener = deleteClickListener;
         this.playCLickListener = playClickListener;
     }
 
     public int getCount() {
-        return this.MP3s.size();
+        return mCursor.getCount();
     }
 
-    private MP3Entity getNext(MP3Entity entity) {
-        int currentIndex = MP3s.indexOf(entity);
-        if (currentIndex == -1 || currentIndex + 1 == MP3s.size()) {
-            return null;
-        }
-        return getItem(currentIndex + 1);
+    // The newView method is used to inflate a new view and return it,
+    // you don't bind any data to the view at this point.
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        return LayoutInflater.from(context).inflate(R.layout.mp3_list_item_layout, parent, false);
     }
 
-    public void playNext() {
-        MP3Entity next = getNext(player.getCurrentMP3Entity());
-        player.stop();
-        if (next != null) {
-            player.playFile(next);
-        }
-    }
+    // The bindView method is used to bind all data to a given view
+    // such as setting the text on a TextView.
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
 
-    @NonNull
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        View row = convertView;
-        if (row == null) {
-            // ROW INFLATION
-            LayoutInflater inflater = (LayoutInflater) this.getContext()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            row = inflater
-                    .inflate(R.layout.mp3_list_item_layout, parent, false);
-        }
-        // Get item
-        MP3Entity message = getItem(position);
-        TextView messageArtistView = null;
-        if (row != null) {
-            messageArtistView = (TextView) row.findViewById(R.id.MP3artist);
-        }
-        SeekBar progressSeekBar = (SeekBar) row.findViewById(R.id.MP3SeekBar1);
-        SeekBar volumeSeekBar = (SeekBar) row.findViewById(R.id.volumeSeekBar);
+        MP3Entity message = new MP3Entity();
+        message.setArtist(cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.ARTIST)));
+        message.setDirectory(cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.DIRECTORY)));
+        message.setTime(cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.TIME)));
+        message.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.TITLE)));
+
+        TextView messageArtistView = (TextView) view.findViewById(R.id.MP3artist);
+        SeekBar progressSeekBar = (SeekBar) view.findViewById(R.id.MP3SeekBar1);
+        SeekBar volumeSeekBar = (SeekBar) view.findViewById(R.id.volumeSeekBar);
         messageArtistView.setText(message.getArtist() + " / "
                 + message.getTime() + " / " + message.getTitle());
-        ImageButton deleteBtn = (ImageButton) row.findViewById(R.id.deleteMP3Button);
+        ImageButton deleteBtn = (ImageButton) view.findViewById(R.id.deleteMP3Button);
         HashMap<String, String> messageMap = new HashMap<>();
         messageMap.put("artist", message.getArtist());
         messageMap.put("directory", message.getDirectory());
@@ -89,7 +74,7 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         messageMap.put("title", message.getTitle());
         deleteBtn.setTag(messageMap);
         deleteBtn.setOnClickListener(deleteCLickListener);
-        final ImageButton playBtn = (ImageButton) row.findViewById(R.id.MP3buttonPlay);
+        final ImageButton playBtn = (ImageButton) view.findViewById(R.id.MP3buttonPlay);
         playBtn.setTag(message);
         playBtn.setOnClickListener(playCLickListener);
         progressSeekBar.setTag(message.getDirectory());
@@ -105,7 +90,6 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
                         if (fromUser) {
                             player.setProgress(progress);
                         }
-
                     }
 
                     public void onStartTrackingTouch(SeekBar seekBar) {
@@ -132,7 +116,8 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
         });
 
         playBtn.setImageResource(R.drawable.play_states);
-        if (message == player.getCurrentMP3Entity() && (player.currentState() == PlayState.PLAY_FILE || player.currentState() == PlayState.PAUSE)) {
+        if (player.getCurrentMP3Entity()!=null && message.getDirectory().equals(player.getCurrentMP3Entity().getDirectory()) &&
+                (player.currentState() == PlayState.PLAY_FILE || player.currentState() == PlayState.PAUSE)) {
             progressSeekBar.setVisibility(View.VISIBLE);
             volumeSeekBar.setVisibility(View.VISIBLE);
             if (player.currentState() == PlayState.PLAY_FILE) {
@@ -142,6 +127,5 @@ public class MP3ArrayAdapter extends ArrayAdapter<MP3Entity> {
             progressSeekBar.setVisibility(View.INVISIBLE);
             volumeSeekBar.setVisibility(View.INVISIBLE);
         }
-        return row;
     }
 }

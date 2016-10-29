@@ -15,6 +15,7 @@ import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.FantasyRadioNotificationReceiver;
 import ru.sigil.fantasyradio.R;
+import ru.sigil.fantasyradio.TabHoster;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -65,6 +66,11 @@ public class FantasyRadioNotificationManager {
                     notCancelable = false;
                     break;
             }
+            Intent notificationIntent = new Intent(context, TabHoster.class);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent tabHosterIntent = PendingIntent.getActivity(context, 0,
+                    notificationIntent, 0);
 
             Notification notification = new NotificationCompat.Builder(context)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -73,6 +79,7 @@ public class FantasyRadioNotificationManager {
                     .setContentText(getText(currentTitle, currentArtist))
                     .setSmallIcon(R.drawable.notification_icon)
                     .setAutoCancel(false)
+                    .setContentIntent(tabHosterIntent)
                     .setOngoing(notCancelable)
                     .addAction(icon, "", pIntent).build();
 

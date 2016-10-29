@@ -35,8 +35,8 @@ import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.TabHoster;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.exceptions.WrongLoginOrPasswordException;
+import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.saved.MP3Entity;
-import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.utils.DownladedEntityes;
 import ru.sigil.fantasyradio.utils.DownloadThread;
@@ -48,7 +48,7 @@ public class ArchieveFragment extends AbstractListFragment {
     private Random random;
     private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
     @Inject
-    MP3Saver mp3Saver;
+    MP3Collection mp3Collection;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -254,9 +254,8 @@ public class ArchieveFragment extends AbstractListFragment {
             mp3Entity.setTitle(b.getString("title"));
             mp3Entity.setDirectory(b.getString("directory"));
             mp3Entity.setTime(b.getString("time"));
-            mp3Saver.getMp3c()
-                    .removeEntityByDirectory(mp3Entity.getDirectory());
-            mp3Saver.getMp3c().add(mp3Entity);
+            mp3Collection.removeFromBase(mp3Entity);
+            mp3Collection.addToBase(mp3Entity);
             DownladedEntityes.getDownloadedEntityes()
                     .remove(b.getString("URL"));
             try {

@@ -62,8 +62,6 @@ public class TabHoster extends FragmentActivity {
         setContentView(R.layout.tabs);
         // EasyTracker is now ready for use.
         setCurrent_menu(R.menu.activity_main);
-        player.getMp3Saver().setMp3c(new MP3Collection(getBaseContext()));
-        player.getMp3Saver().getMp3c().Load();
         SharedPreferences settings = getPreferences(0);
         Settings.setSettings(settings);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
