@@ -51,9 +51,8 @@ public class MP3Collection {
     public Cursor getCursor() {
         // Make the query.
         try {
-            Cursor managedCursor = mDatabase.query("MP3ENTITYES", null, null,
+            return mDatabase.query("MP3ENTITYES", null, null,
                     null, null, null, "_id DESC");
-            return managedCursor;
         } catch (Exception e) {
             e.printStackTrace();
         }

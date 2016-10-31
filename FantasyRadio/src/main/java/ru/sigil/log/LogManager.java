@@ -11,7 +11,7 @@ public class LogManager {
 
     private static final String AppTAG = "FantasyRadio";
     private static final String TAG = LogManager.class.getSimpleName();
-    private static final Collection<ICustomLogger> loggers = new LinkedList<ICustomLogger>();
+    private static final Collection<ICustomLogger> loggers = new LinkedList<>();
 
     public static boolean isDebug = true;
 
