@@ -147,8 +147,8 @@ public class SavedFragment extends AbstractListFragment {
     public void deleteClick(View v) {// Тут удаляем mp3
         HashMap<String, String> messageMap;
         messageMap = (HashMap<String, String>) v.getTag();
-        mp3EntityForDelete = new MP3Entity(messageMap.get("artist"), messageMap.get("directory"),
-                messageMap.get("time"), messageMap.get("title"));
+        mp3EntityForDelete = new MP3Entity(messageMap.get("artist"), messageMap.get("title"),
+                messageMap.get("directory"), messageMap.get("time"));
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder
                 .setTitle(getString(R.string.are_you_sure_want_delete));
