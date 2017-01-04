@@ -1,7 +1,7 @@
 package ru.sigil.fantasyradio.BackgroundService;
 
+import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.saved.MP3Entity;
-import ru.sigil.fantasyradio.saved.MP3Saver;
 
 /**
  * Created by NamelessOne
@@ -53,8 +53,6 @@ public interface IPlayer {
     float getVolume();
 
     void rec(boolean isActive);
-
-    MP3Saver getMp3Saver();
 
     boolean isPaused();
 

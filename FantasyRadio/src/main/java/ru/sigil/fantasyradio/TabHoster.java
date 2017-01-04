@@ -1,6 +1,5 @@
 package ru.sigil.fantasyradio;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -37,9 +36,7 @@ import ru.sigil.log.LogManager;
 
 public class TabHoster extends FragmentActivity {
     private static final String TAG = TabHoster.class.getSimpleName();
-    Context context;
     public SectionsPagerAdapter mSectionsPagerAdapter;
-    ViewPager mViewPager;
     private InterstitialAd mInterstitialAd;
 
     @Inject
@@ -62,14 +59,11 @@ public class TabHoster extends FragmentActivity {
         setContentView(R.layout.tabs);
         // EasyTracker is now ready for use.
         setCurrent_menu(R.menu.activity_main);
-        player.getMp3Saver().setMp3c(new MP3Collection(getBaseContext()));
-        player.getMp3Saver().getMp3c().Load();
         SharedPreferences settings = getPreferences(0);
         Settings.setSettings(settings);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        context = getApplicationContext();
         if (BuildConfig.FLAVOR.equals("free")) {
             if (getmInterstitialAd() == null) {
                 mInterstitialAd = new InterstitialAd(this);

@@ -8,11 +8,11 @@ import android.widget.ListView;
 public class AbstractListFragment extends Fragment {
     private ListView lv;
 
-    public ListView getLv() {
+    protected ListView getLv() {
         return lv;
     }
 
-    public void setLv(ListView lv) {
+    protected void setLv(ListView lv) {
         this.lv = lv;
     }
 }

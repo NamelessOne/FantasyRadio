@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -58,8 +59,10 @@ public class ScheduleFragment extends Fragment {
                 refreshClick(v);
             }
         });
-
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity().getBaseContext()).build();
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+            .cacheOnDisk(true).build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity().getBaseContext())
+                .defaultDisplayImageOptions(defaultOptions).build();
         ImageLoader.getInstance().init(config);
         lv = (ExpandableListView) scheduleFragmentView.findViewById(R.id.ScheduleListView);
         if (arr.size() > 0) {

@@ -41,11 +41,6 @@ public class FileDownloader {
         Log.v("fileDir", fileDir);
         Log.v("fileUrl", fileUrl);
         Log.v("fileName", fileName);
-        final Intent intent = new Intent(context, TabActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        final PendingIntent contentIntent = PendingIntent.getActivity(context,
-                0, intent, 0);
         //---------------------------------------------------
         builder = new NotificationCompat.Builder(context)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

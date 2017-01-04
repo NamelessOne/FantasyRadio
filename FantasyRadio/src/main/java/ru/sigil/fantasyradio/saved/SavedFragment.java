@@ -37,6 +37,8 @@ public class SavedFragment extends AbstractListFragment {
     private MP3ArrayAdapter adapter;
     private View savedActivityView;
     @Inject
+    MP3Collection mp3Collection;
+    @Inject
     IPlayer player;
 
     private TimerTask seekTask = new TimerTask() {
@@ -60,8 +62,8 @@ public class SavedFragment extends AbstractListFragment {
             }
         };
         adapter = new MP3ArrayAdapter(getActivity().getBaseContext(),
-                R.layout.mp3_list_item_layout, player.getMp3Saver().getMp3c()
-                .getMp3entityes(), deleteClickListener, playClickListener
+                mp3Collection.getCursor(),
+                deleteClickListener, playClickListener
         );
         getLv().setAdapter(adapter);
     }
@@ -107,17 +109,13 @@ public class SavedFragment extends AbstractListFragment {
     }
 
 
-
     public void playClick(View v) {
         updateWidget();
         if (player.isPaused()) {
-            if (player.getCurrentMP3Entity() == v.getTag()) {
+            if (player.getCurrentMP3Entity() != null && v.getTag() != null
+                    && player.getCurrentMP3Entity().getDirectory().equals(((MP3Entity)v.getTag()).getDirectory())) {
                 // Это была пауза.
                 player.resume();
-                ImageButton bv = (ImageButton) getLv().findViewWithTag(player.getCurrentMP3Entity());
-                if (bv != null) {
-                    bv.setImageResource(R.drawable.pause_states);
-                }
                 return;
             }
         }
@@ -127,7 +125,8 @@ public class SavedFragment extends AbstractListFragment {
             e.printStackTrace();
         }
         if (player.currentState() == PlayState.PLAY || player.currentState() == PlayState.PLAY_FILE) {
-            if (player.getCurrentMP3Entity() == v.getTag()) {
+            if (player.getCurrentMP3Entity() != null && v.getTag() != null
+                    && player.getCurrentMP3Entity().getDirectory().equals(((MP3Entity)v.getTag()).getDirectory())) {
                 //TODO !!!
                 player.pause();
                 ImageButton bv = (ImageButton) v;// !!!!!!!!!!!!!!!
@@ -159,8 +158,8 @@ public class SavedFragment extends AbstractListFragment {
         alertDialogBuilder.setPositiveButton(getString(R.string.yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        player.getMp3Saver().getMp3c().removeEntityByDirectory(
-                                mp3EntityForDelete.getDirectory());
+                        mp3Collection.removeFromBase(
+                                mp3EntityForDelete);
                         if (player.getCurrentMP3Entity() != null) {
                             if (mp3EntityForDelete.getDirectory().equals(player.getCurrentMP3Entity().getDirectory())) {
                                 player.stop();
@@ -231,7 +230,11 @@ public class SavedFragment extends AbstractListFragment {
                 public void run() {
                     // Заканчивается воспроизведение. Переходим на следующий трек.
                     //adapter.notifyDataSetChanged();
-                    adapter.playNext();
+                    MP3Entity next = mp3Collection.getNext(player.getCurrentMP3Entity());
+                    player.stop();
+                    if (next != null) {
+                        player.playFile(next);
+                    }
                 }
             });
         }

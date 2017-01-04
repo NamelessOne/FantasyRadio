@@ -41,7 +41,7 @@ public class SettingsActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        GoogleAnalytics.getInstance(this).reportActivityStop(this);  ;  // Add this method.
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);  // Add this method.
     }
 
 

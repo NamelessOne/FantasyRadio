@@ -14,8 +14,8 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
+import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.saved.MP3Entity;
-import ru.sigil.fantasyradio.saved.MP3Saver;
 import ru.sigil.log.LogManager;
 
 /**
@@ -31,8 +31,9 @@ public class Player implements IPlayer {
     private PlayState playState = PlayState.STOP;
     private boolean rec = false;
     private String recDirectory;
-    private MP3Saver mp3Saver;
     private MP3Entity currentMP3Entity;
+    //TODO вынести наружу, делать через Event
+    private MP3Collection mp3Collection;
 
     private int chan;
 
@@ -59,8 +60,8 @@ public class Player implements IPlayer {
             mp3Entity.setTitle(title);
             mp3Entity.setDirectory(recDirectory);
             mp3Entity.setTime("");
-            mp3Saver.getMp3c().removeEntityByDirectory(mp3Entity.getDirectory());
-            mp3Saver.getMp3c().add(mp3Entity);
+            mp3Collection.removeFromBase(mp3Entity);
+            mp3Collection.addToBase(mp3Entity);
             //----------------------------------------------------
         } else {
             File dir = new File(Environment.getExternalStorageDirectory()
@@ -98,11 +99,6 @@ public class Player implements IPlayer {
         }
         // -------------------------------------
         setRecActive(isActive);
-    }
-
-    @Override
-    public MP3Saver getMp3Saver() {
-        return mp3Saver;
     }
 
     @Override
@@ -175,8 +171,8 @@ public class Player implements IPlayer {
         setPlayState(PlayState.PAUSE);
     }
 
-    public Player(MP3Saver mp3Saver) {
-        this.mp3Saver = mp3Saver;
+    public Player(MP3Collection mp3Collection) {
+        this.mp3Collection = mp3Collection;
         BASS.BASS_Free();
         BASS.BASS_Init(-1, 44100, 0);
         BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);

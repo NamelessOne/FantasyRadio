@@ -16,8 +16,8 @@ import java.util.Map;
 import ru.sigil.fantasyradio.exceptions.WrongLoginOrPasswordException;
 
 public abstract class ArchieveParser {
-    public static Map<String, String> cookies = new HashMap<>();
-    public static Map<String, String> parameters = new HashMap<>();
+    private static Map<String, String> cookies = new HashMap<>();
+    private static Map<String, String> parameters = new HashMap<>();
 
     /**
      * Парсим аудиоархив на fantasyradio.ru
