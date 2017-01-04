@@ -6,9 +6,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import ru.sigil.fantasyradio.BackgroundService.IPlayer;
-import ru.sigil.fantasyradio.BackgroundService.ITrackFactory;
-import ru.sigil.fantasyradio.BackgroundService.Player;
+import ru.sigil.bassplayerlib.IPlayer;
+import ru.sigil.bassplayerlib.ITrackFactory;
+import ru.sigil.bassplayerlib.Player;
 import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.schedule.ScheduleEntityesCollection;
 import ru.sigil.fantasyradio.schedule.ScheduleParser;

@@ -7,7 +7,7 @@ import android.os.Handler;
 
 import javax.inject.Inject;
 
-import ru.sigil.fantasyradio.BackgroundService.IPlayer;
+import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 
 public class AlarmReceiever extends BroadcastReceiver {

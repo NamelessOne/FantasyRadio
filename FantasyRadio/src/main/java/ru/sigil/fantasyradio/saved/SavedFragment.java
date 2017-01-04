@@ -23,12 +23,12 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
+import ru.sigil.bassplayerlib.Bitrate;
+import ru.sigil.bassplayerlib.IPlayer;
+import ru.sigil.bassplayerlib.IPlayerEventListener;
+import ru.sigil.bassplayerlib.ITrack;
+import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.AbstractListFragment;
-import ru.sigil.fantasyradio.BackgroundService.Bitrate;
-import ru.sigil.fantasyradio.BackgroundService.IPlayer;
-import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
-import ru.sigil.fantasyradio.BackgroundService.ITrack;
-import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;

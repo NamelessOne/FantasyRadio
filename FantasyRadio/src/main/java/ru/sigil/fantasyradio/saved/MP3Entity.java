@@ -1,6 +1,6 @@
 package ru.sigil.fantasyradio.saved;
 
-import ru.sigil.fantasyradio.BackgroundService.ITrack;
+import ru.sigil.bassplayerlib.ITrack;
 
 /**
  * Сохранённая mp3. Содержит название, исполнителя, время(в виде строки) и директорию.

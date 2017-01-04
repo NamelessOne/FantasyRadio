@@ -5,8 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import ru.sigil.fantasyradio.BackgroundService.ITrack;
-import ru.sigil.fantasyradio.BackgroundService.ITracksCollection;
+import ru.sigil.bassplayerlib.ITrack;
+import ru.sigil.bassplayerlib.ITracksCollection;
 
 public class MP3Collection implements ITracksCollection {
     public static final String ARTIST = "ARTIST";

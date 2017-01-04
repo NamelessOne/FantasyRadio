@@ -21,9 +21,9 @@ import com.google.android.gms.ads.InterstitialAd;
 
 import javax.inject.Inject;
 
-import ru.sigil.fantasyradio.BackgroundService.IPLayerErrorListener;
-import ru.sigil.fantasyradio.BackgroundService.IPlayer;
-import ru.sigil.fantasyradio.BackgroundService.PlayState;
+import ru.sigil.bassplayerlib.IPLayerErrorListener;
+import ru.sigil.bassplayerlib.IPlayer;
+import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.saved.MP3Collection;

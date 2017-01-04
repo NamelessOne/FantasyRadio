@@ -30,10 +30,10 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
-import ru.sigil.fantasyradio.BackgroundService.Bitrate;
-import ru.sigil.fantasyradio.BackgroundService.IPlayer;
-import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
-import ru.sigil.fantasyradio.BackgroundService.PlayState;
+import ru.sigil.bassplayerlib.Bitrate;
+import ru.sigil.bassplayerlib.IPlayer;
+import ru.sigil.bassplayerlib.IPlayerEventListener;
+import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;

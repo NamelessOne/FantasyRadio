@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.sigil.fantasyradio.BackgroundService.Bitrate;
+import ru.sigil.bassplayerlib.Bitrate;
 import ru.sigil.fantasyradio.R;
 
 /**
