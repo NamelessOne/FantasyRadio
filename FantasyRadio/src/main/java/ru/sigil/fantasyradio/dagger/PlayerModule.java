@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
+import ru.sigil.fantasyradio.BackgroundService.ITrackFactory;
 import ru.sigil.fantasyradio.BackgroundService.Player;
 import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.schedule.ScheduleEntityesCollection;
@@ -14,6 +15,7 @@ import ru.sigil.fantasyradio.schedule.ScheduleParser;
 import ru.sigil.fantasyradio.utils.BitratesResolver;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.fantasyradio.utils.FileDownloader;
+import ru.sigil.fantasyradio.utils.TrackFactory;
 
 /**
  * Created by NamelessOne
@@ -29,6 +31,11 @@ public class PlayerModule {
     }
 
     @Provides
+    ITrackFactory providesTrackFactory() {
+        return new TrackFactory();
+    }
+
+    @Provides
     @Singleton
     MP3Collection providesMP3Collection() {
         return new MP3Collection(mApplication.getBaseContext());
@@ -36,8 +43,8 @@ public class PlayerModule {
 
     @Provides
     @Singleton
-    IPlayer providesPlayer(MP3Collection mp3Collection) {
-        return new Player(mp3Collection);
+    IPlayer providesPlayer(MP3Collection mp3Collection, ITrackFactory trackFactory) {
+        return new Player(mp3Collection, trackFactory);
     }
 
     @Provides

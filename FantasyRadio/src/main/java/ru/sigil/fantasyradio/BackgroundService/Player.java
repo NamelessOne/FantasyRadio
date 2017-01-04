@@ -14,10 +14,6 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
-import ru.sigil.fantasyradio.saved.MP3Collection;
-import ru.sigil.fantasyradio.saved.MP3Entity;
-import ru.sigil.log.LogManager;
-
 /**
  * Created by NamelessOne
  * on 17.09.2016.
@@ -31,9 +27,10 @@ public class Player implements IPlayer {
     private PlayState playState = PlayState.STOP;
     private boolean rec = false;
     private String recDirectory;
-    private MP3Entity currentMP3Entity;
+    private ITrackFactory trackFactory;
+    private ITrack currentMP3Entity;
     //TODO вынести наружу, делать через Event
-    private MP3Collection mp3Collection;
+    private ITracksCollection mp3Collection;
 
     private int chan;
 
@@ -55,13 +52,9 @@ public class Player implements IPlayer {
         if (!isActive) {
             // А тут мы пишем инфу о записанном
             // файле в базу
-            MP3Entity mp3Entity = new MP3Entity();
-            mp3Entity.setArtist(author);
-            mp3Entity.setTitle(title);
-            mp3Entity.setDirectory(recDirectory);
-            mp3Entity.setTime("");
-            mp3Collection.removeFromBase(mp3Entity);
-            mp3Collection.addToBase(mp3Entity);
+            ITrack mp3Entity = trackFactory.createTrack(author, title, recDirectory, "");
+            mp3Collection.remove(mp3Entity);
+            mp3Collection.add(mp3Entity);
             //----------------------------------------------------
         } else {
             File dir = new File(Environment.getExternalStorageDirectory()
@@ -124,7 +117,7 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public void playFile(MP3Entity entity) {
+    public void playFile(ITrack entity) {
         //TODO
         setAuthor(entity.getArtist() == null ? "" : entity.getArtist());
         setTitle(entity.getTitle() == null ? "" : entity.getArtist());
@@ -171,8 +164,9 @@ public class Player implements IPlayer {
         setPlayState(PlayState.PAUSE);
     }
 
-    public Player(MP3Collection mp3Collection) {
+    public Player(ITracksCollection mp3Collection, ITrackFactory trackFactory) {
         this.mp3Collection = mp3Collection;
+        this.trackFactory = trackFactory;
         BASS.BASS_Free();
         BASS.BASS_Init(-1, 44100, 0);
         BASS.BASS_SetConfig(BASS.BASS_CONFIG_NET_PLAYLIST, 1);
@@ -256,7 +250,6 @@ public class Player implements IPlayer {
     }
 
     public void setBitrate(Bitrate bitrate) {
-        LogManager.e("Radio", "bitrate = " + bitrate);
         this.bitrate = bitrate;
     }
 
@@ -288,7 +281,7 @@ public class Player implements IPlayer {
         }
     }
 
-    public MP3Entity getCurrentMP3Entity() {
+    public ITrack getCurrentMP3Entity() {
         return currentMP3Entity;
     }
 

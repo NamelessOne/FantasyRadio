@@ -27,6 +27,7 @@ import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.BackgroundService.Bitrate;
 import ru.sigil.fantasyradio.BackgroundService.IPlayer;
 import ru.sigil.fantasyradio.BackgroundService.IPlayerEventListener;
+import ru.sigil.fantasyradio.BackgroundService.ITrack;
 import ru.sigil.fantasyradio.BackgroundService.PlayState;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
@@ -146,19 +147,15 @@ public class SavedFragment extends AbstractListFragment {
     public void deleteClick(View v) {// Тут удаляем mp3
         HashMap<String, String> messageMap;
         messageMap = (HashMap<String, String>) v.getTag();
-        MP3Entity mp3entity = new MP3Entity();
-        mp3entity.setArtist(messageMap.get("artist"));
-        mp3entity.setDirectory(messageMap.get("directory"));
-        mp3entity.setTime(messageMap.get("time"));
-        mp3entity.setTitle(messageMap.get("title"));
-        mp3EntityForDelete = mp3entity;
+        mp3EntityForDelete = new MP3Entity(messageMap.get("artist"), messageMap.get("directory"),
+                messageMap.get("time"), messageMap.get("title"));
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder
                 .setTitle(getString(R.string.are_you_sure_want_delete));
         alertDialogBuilder.setPositiveButton(getString(R.string.yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        mp3Collection.removeFromBase(
+                        mp3Collection.remove(
                                 mp3EntityForDelete);
                         if (player.getCurrentMP3Entity() != null) {
                             if (mp3EntityForDelete.getDirectory().equals(player.getCurrentMP3Entity().getDirectory())) {
@@ -230,7 +227,7 @@ public class SavedFragment extends AbstractListFragment {
                 public void run() {
                     // Заканчивается воспроизведение. Переходим на следующий трек.
                     //adapter.notifyDataSetChanged();
-                    MP3Entity next = mp3Collection.getNext(player.getCurrentMP3Entity());
+                    ITrack next = mp3Collection.getNext(player.getCurrentMP3Entity());
                     player.stop();
                     if (next != null) {
                         player.playFile(next);

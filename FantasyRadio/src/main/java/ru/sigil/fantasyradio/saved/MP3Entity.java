@@ -1,13 +1,29 @@
 package ru.sigil.fantasyradio.saved;
 
+import ru.sigil.fantasyradio.BackgroundService.ITrack;
+
 /**
  * Сохранённая mp3. Содержит название, исполнителя, время(в виде строки) и директорию.
  */
-public class MP3Entity {
+public class MP3Entity implements ITrack {
     private String title;
     private String artist;
     private String time;
     private String directory;
+
+    /**
+     * @param artist Исполнитель
+     * @param title Название
+     * @param directory Директория
+     * @param time Время (пока не используется)
+     */
+    public MP3Entity(String artist, String title, String directory, String time)
+    {
+        setArtist(artist);
+        setDirectory(directory);
+        setTitle(title);
+        setTime(time);
+    }
 
     public String getTitle() {
         return title;

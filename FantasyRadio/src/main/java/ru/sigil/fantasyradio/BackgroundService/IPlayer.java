@@ -1,8 +1,5 @@
 package ru.sigil.fantasyradio.BackgroundService;
 
-import ru.sigil.fantasyradio.saved.MP3Collection;
-import ru.sigil.fantasyradio.saved.MP3Entity;
-
 /**
  * Created by NamelessOne
  * on 17.09.2016.
@@ -16,7 +13,7 @@ public interface IPlayer {
 
     void playAAC(String URL, Bitrate bitrate);
 
-    void playFile(MP3Entity file);
+    void playFile(ITrack file);
 
     void pause();
 
@@ -56,7 +53,7 @@ public interface IPlayer {
 
     boolean isPaused();
 
-    MP3Entity getCurrentMP3Entity();
+    ITrack getCurrentMP3Entity();
 
     void setVolume(float volume);
 

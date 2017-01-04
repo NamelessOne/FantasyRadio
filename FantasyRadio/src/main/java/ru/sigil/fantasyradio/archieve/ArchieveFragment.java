@@ -208,12 +208,9 @@ public class ArchieveFragment extends AbstractListFragment {
         String formattedDate = df.format(c.getTime());
         ArchieveEntity entity = (ArchieveEntity) v.getTag();
         Log.v("downloadClick", entity.getURL());
-        MP3Entity mp3Entity = new MP3Entity();
-        mp3Entity.setArtist(entity.getName());
-        mp3Entity.setTime(entity.getTime());
-        mp3Entity.setTitle(entity.getName());
-        mp3Entity.setDirectory(Environment.getExternalStorageDirectory()
-                + Settings.getSaveDir() + formattedDate + entity.getFileName());
+        MP3Entity mp3Entity = new MP3Entity(entity.getName(), entity.getName(),
+                Environment.getExternalStorageDirectory() + Settings.getSaveDir() + formattedDate + entity.getFileName(),
+                entity.getTime());
         Toast toast = Toast.makeText(getActivity().getBaseContext(),
                 getString(R.string.download_started), Toast.LENGTH_LONG);
         toast.show();
@@ -246,16 +243,15 @@ public class ArchieveFragment extends AbstractListFragment {
             }
             //А тут мы пишем инфу о скачанном
             // файле в базу
-            MP3Entity mp3Entity = new MP3Entity();
+            String artist = "";
             Bundle b = msg.getData();
             if (b != null) {
-                mp3Entity.setArtist(b.getString("artist"));
+                artist = b.getString("artist");
             }
-            mp3Entity.setTitle(b.getString("title"));
-            mp3Entity.setDirectory(b.getString("directory"));
-            mp3Entity.setTime(b.getString("time"));
-            mp3Collection.removeFromBase(mp3Entity);
-            mp3Collection.addToBase(mp3Entity);
+            MP3Entity mp3Entity = new MP3Entity(artist, b.getString("title"), b.getString("directory"),
+                    b.getString("time"));
+            mp3Collection.remove(mp3Entity);
+            mp3Collection.add(mp3Entity);
             DownladedEntityes.getDownloadedEntityes()
                     .remove(b.getString("URL"));
             try {

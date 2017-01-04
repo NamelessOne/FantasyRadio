@@ -55,11 +55,10 @@ public class MP3ArrayAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        MP3Entity message = new MP3Entity();
-        message.setArtist(cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.ARTIST)));
-        message.setDirectory(cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.DIRECTORY)));
-        message.setTime(cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.TIME)));
-        message.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.TITLE)));
+        MP3Entity message = new MP3Entity(cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.ARTIST)),
+                cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.TITLE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.DIRECTORY)),
+                cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.TIME)));
 
         TextView messageArtistView = (TextView) view.findViewById(R.id.MP3artist);
         SeekBar progressSeekBar = (SeekBar) view.findViewById(R.id.MP3SeekBar1);

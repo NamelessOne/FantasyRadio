@@ -5,7 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-public class MP3Collection {
+import ru.sigil.fantasyradio.BackgroundService.ITrack;
+import ru.sigil.fantasyradio.BackgroundService.ITracksCollection;
+
+public class MP3Collection implements ITracksCollection {
     public static final String ARTIST = "ARTIST";
     public static final String TITLE = "TITLE";
     public static final String TIME = "TIME";
@@ -21,7 +24,7 @@ public class MP3Collection {
                 "MP3Base", 0, null);
     }
 
-    public void removeFromBase(MP3Entity mp3entity) {
+    public void remove(ITrack mp3entity) {
         synchronized (saveSync) {
             try {
                 mDatabase.delete("MP3ENTITYES",
@@ -32,7 +35,7 @@ public class MP3Collection {
         }
     }
 
-    public void addToBase(MP3Entity mp3entity) {
+    public void add(ITrack mp3entity) {
         synchronized (saveSync) {
             ContentValues cv = new ContentValues();
             mDatabase
@@ -59,7 +62,7 @@ public class MP3Collection {
         return null;
     }
 
-    public MP3Entity getNext(MP3Entity entity) {
+    public MP3Entity getNext(ITrack entity) {
         // Make the query.
         if (entity == null)
             return null;
@@ -69,15 +72,11 @@ public class MP3Collection {
                         + DIRECTORY + " = '" + entity.getDirectory() + "')", null, null, null, "_id DESC");
                 if (managedCursor != null) {
                     if (managedCursor.moveToFirst()) {
-                        MP3Entity mp3Entity = new MP3Entity();
-                        mp3Entity.setTitle(managedCursor.getString(managedCursor
-                                .getColumnIndex(TITLE)));
-                        mp3Entity.setArtist(managedCursor.getString(managedCursor
-                                .getColumnIndex(ARTIST)));
-                        mp3Entity.setTime(managedCursor.getString(managedCursor
-                                .getColumnIndex(TIME)));
-                        mp3Entity.setDirectory(managedCursor.getString(managedCursor
-                                .getColumnIndex(DIRECTORY)));
+                        MP3Entity mp3Entity = new MP3Entity(managedCursor.getString(
+                                managedCursor.getColumnIndex(ARTIST)),
+                                managedCursor.getString(managedCursor.getColumnIndex(TITLE)),
+                                managedCursor.getString(managedCursor.getColumnIndex(DIRECTORY)),
+                                managedCursor.getString(managedCursor.getColumnIndex(TIME)));
                         return mp3Entity;
                     }
                 }
