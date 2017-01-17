@@ -11,7 +11,6 @@ import ru.sigil.bassplayerlib.ITrackFactory;
 import ru.sigil.bassplayerlib.Player;
 import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.schedule.ScheduleEntityesCollection;
-import ru.sigil.fantasyradio.schedule.ScheduleParser;
 import ru.sigil.fantasyradio.utils.BitratesResolver;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.fantasyradio.utils.FileDownloader;
@@ -29,6 +28,12 @@ public class PlayerModule {
     public PlayerModule(Application application) {
         mApplication = application;
     }
+
+    //@Provides
+    //@Singleton
+    //Context provideBaseContext() {
+    //    return mApplication.getBaseContext();
+    //}
 
     @Provides
     ITrackFactory providesTrackFactory() {
@@ -51,11 +56,6 @@ public class PlayerModule {
     @Singleton
     ScheduleEntityesCollection providesScheduleEntityesCollection() {
         return new ScheduleEntityesCollection();
-    }
-
-    @Provides
-    ScheduleParser providesScheduleParser(ScheduleEntityesCollection scheduleEntityesCollection) {
-        return new ScheduleParser(scheduleEntityesCollection);
     }
 
     @Provides
