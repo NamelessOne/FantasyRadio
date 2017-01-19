@@ -49,6 +49,12 @@ public class SavedFragment extends AbstractListFragment {
     };
     private Timer seekTimer = new Timer();
 
+    public SavedFragment()
+    {
+        Bootstrap.INSTANCE.getBootstrap().inject(this);
+        player.addEventListener(endSyncEventListener);
+    }
+
     public void notifyAdapter() {
         View.OnClickListener deleteClickListener = new View.OnClickListener() {
             @Override
@@ -90,7 +96,6 @@ public class SavedFragment extends AbstractListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         savedActivityView = inflater.inflate(R.layout.mp3s, container, false);
-        Bootstrap.INSTANCE.getBootstrap().inject(this);
         player.addEventListener(eventListener);
         //CurrentControls.setRewindMP3Handler(rewindMp3Handler);
         setLv((ListView) savedActivityView.findViewById(R.id.MP3ListView));
@@ -190,6 +195,59 @@ public class SavedFragment extends AbstractListFragment {
         getActivity().getApplicationContext().sendBroadcast(intent);
     }
 
+    //TODO по хорошему, должно быть статическим. Придумать лучшее решение
+    private IPlayerEventListener endSyncEventListener = new IPlayerEventListener() {
+        @Override
+        public void onTitleChanged(String title) {
+
+        }
+
+        @Override
+        public void onAuthorChanged(String author) {
+
+        }
+
+        @Override
+        public void onPlayStateChanged(PlayState playState) {
+
+        }
+
+        @Override
+        public void onRecStateChanged(boolean isRec) {
+
+        }
+
+        @Override
+        public void onBitrateChanged(Bitrate bitrate) {
+
+        }
+
+        @Override
+        public void onBufferingProgress(long progress) {
+
+        }
+
+        @Override
+        public void endSync() {
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    // Заканчивается воспроизведение. Переходим на следующий трек.
+                    //adapter.notifyDataSetChanged();
+                    ITrack next = mp3Collection.getNext(player.getCurrentMP3Entity());
+                    player.stop();
+                    if (next != null) {
+                        player.playFile(next);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onVolumeChanged(float volume) {
+
+        }
+    };
+
     private IPlayerEventListener eventListener = new IPlayerEventListener() {
         @Override
         public void onTitleChanged(String title) {
@@ -223,17 +281,7 @@ public class SavedFragment extends AbstractListFragment {
 
         @Override
         public void endSync() {
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    // Заканчивается воспроизведение. Переходим на следующий трек.
-                    //adapter.notifyDataSetChanged();
-                    ITrack next = mp3Collection.getNext(player.getCurrentMP3Entity());
-                    player.stop();
-                    if (next != null) {
-                        player.playFile(next);
-                    }
-                }
-            });
+
         }
 
         @Override

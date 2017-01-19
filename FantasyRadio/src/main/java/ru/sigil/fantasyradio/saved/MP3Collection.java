@@ -5,9 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import ru.sigil.bassplayerlib.ITrack;
 import ru.sigil.bassplayerlib.ITracksCollection;
 
+@Singleton
 public class MP3Collection implements ITracksCollection {
     public static final String ARTIST = "ARTIST";
     public static final String TITLE = "TITLE";
@@ -18,6 +22,7 @@ public class MP3Collection implements ITracksCollection {
     private final Object saveSync = new Object();
     private SQLiteDatabase mDatabase;
 
+    @Inject
     public MP3Collection(Context c) {
         context = c;
         mDatabase = context.openOrCreateDatabase(

@@ -5,6 +5,8 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import ru.sigil.bassplayerlib.Bitrate;
 import ru.sigil.fantasyradio.R;
 
@@ -17,6 +19,7 @@ public class BitratesResolver {
     //TODO сделать нормальный резолвер и инжектировать
     private final Map<Bitrate, String> bitratesMap;
 
+    @Inject
     public BitratesResolver(Context context)
     {
         bitratesMap = new HashMap<>();

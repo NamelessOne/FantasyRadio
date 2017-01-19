@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import ru.sigil.bassplayerlib.Bitrate;
 import ru.sigil.bassplayerlib.IPlayer;
@@ -16,10 +17,10 @@ import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.FantasyRadioNotificationReceiver;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.TabHoster;
-import ru.sigil.fantasyradio.dagger.Bootstrap;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
+@Singleton
 public class FantasyRadioNotificationManager {
     public static final String ACTION = "ACTION";
     public static final String PAUSE = "PAUSE";
@@ -29,12 +30,12 @@ public class FantasyRadioNotificationManager {
     public final int MAIN_NOTIFICATION_ID = 36484;
     //public final int NOTIFICATION_RECEIVER_REQUEST_CODE = 76008;
     public NotificationManager notificationManager;
-    @Inject
     IPlayer player;
 
-    public FantasyRadioNotificationManager(Context context) {
+    @Inject
+    public FantasyRadioNotificationManager(Context context, IPlayer player) {
         this.context = context;
-        Bootstrap.INSTANCE.getBootstrap().inject(this);
+        this.player = player;
         player.addEventListener(eventListener);
     }
 
@@ -48,7 +49,6 @@ public class FantasyRadioNotificationManager {
                 case BUFFERING:
                 case PLAY:
                 case PLAY_FILE:
-                    //TODO
                     intent = new Intent(context, FantasyRadioNotificationReceiver.class);
                     intent.putExtra(ACTION, PAUSE);
                     pIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -58,7 +58,6 @@ public class FantasyRadioNotificationManager {
                 case PAUSE:
                 case STOP:
                 default:
-                    //TODO
                     intent = new Intent(context, FantasyRadioNotificationReceiver.class);
                     intent.putExtra(ACTION, PLAY);
                     pIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_CANCEL_CURRENT);

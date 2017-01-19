@@ -1,10 +1,7 @@
 package ru.sigil.fantasyradio.utils;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TabActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
@@ -16,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+
+import javax.inject.Inject;
 
 import ru.sigil.fantasyradio.R;
 
@@ -29,6 +28,11 @@ public class FileDownloader {
     private final static int DOWNLOAD_NOTIFICATION_ID = 364;
     private NotificationCompat.Builder builder;
 
+    @Inject
+    public FileDownloader()
+    {
+
+    }
     /**
      * Скачиваем файл с сервера
      *
