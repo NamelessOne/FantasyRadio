@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "ru.sigil.fantasyradio"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 25
         //TODO удалить после отказа от поддержки Android 4
         multiDexEnabled true
         //ndk {
@@ -54,8 +54,8 @@ dependencies {
     compile 'joda-time:joda-time:2.9.2'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.google.android.gms:play-services:8.3.0'
-    compile "com.android.support:appcompat-v7:23.2.1"
-    compile "com.android.support:design:23.2.1"
+    compile "com.android.support:appcompat-v7:25.2.0"
+    compile "com.android.support:design:25.2.0"
     compile 'com.gordonwong:material-sheet-fab:1.2.1'
     compile 'com.android.support:multidex:1.0.1'
     //TODO специальный даунгрейд

@@ -27,6 +27,11 @@ public class MP3Collection implements ITracksCollection {
         context = c;
         mDatabase = context.openOrCreateDatabase(
                 "MP3Base", 0, null);
+        mDatabase
+                .execSQL("CREATE TABLE IF NOT EXISTS MP3ENTITYES (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        + TITLE + " VARCHAR(300),"
+                        + ARTIST + " VARCHAR(300),"
+                        + TIME + " VARCHAR(300)," + "DIRECTORY VARCHAR(300))");
     }
 
     public void remove(ITrack mp3entity) {
@@ -43,11 +48,6 @@ public class MP3Collection implements ITracksCollection {
     public void add(ITrack mp3entity) {
         synchronized (saveSync) {
             ContentValues cv = new ContentValues();
-            mDatabase
-                    .execSQL("CREATE TABLE IF NOT EXISTS MP3ENTITYES (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                            + TITLE + " VARCHAR(300),"
-                            + ARTIST + " VARCHAR(300),"
-                            + TIME + " VARCHAR(300)," + "DIRECTORY VARCHAR(300))");
             cv.put(TITLE, mp3entity.getTitle());
             cv.put(ARTIST, mp3entity.getArtist());
             cv.put(TIME, mp3entity.getTime());

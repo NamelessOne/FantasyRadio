@@ -1,13 +1,19 @@
 package ru.sigil.fantasyradio;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,7 +32,6 @@ import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
-import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.saved.SavedFragment;
 import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.settings.Settings;
@@ -38,6 +43,7 @@ public class TabHoster extends FragmentActivity {
     private static final String TAG = TabHoster.class.getSimpleName();
     public SectionsPagerAdapter mSectionsPagerAdapter;
     private InterstitialAd mInterstitialAd;
+    private final int MY_PERMISSIONS_REQUEST = 1;
 
     @Inject
     IPlayer player;
@@ -52,11 +58,40 @@ public class TabHoster extends FragmentActivity {
         getmInterstitialAd().loadAd(adRequest);
     }
 
+    private void requestPermissionWithRationale() {
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.permissions_request_title))
+                .setMessage(getString(R.string.permissions_request))
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with delete
+                        requestMyPermissions();
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    private void requestMyPermissions()
+    {
+        ActivityCompat.requestPermissions(this,
+                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE},
+                MY_PERMISSIONS_REQUEST);
+    }
+
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         player.addErrorListener(playerErrorListener);
         setContentView(R.layout.tabs);
+        //-------------------------------------------------------
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionWithRationale();
+        }
+        //-------------------------------------------------------
         // EasyTracker is now ready for use.
         setCurrent_menu(R.menu.activity_main);
         SharedPreferences settings = getPreferences(0);
