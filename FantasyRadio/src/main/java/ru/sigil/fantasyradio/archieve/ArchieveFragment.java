@@ -49,6 +49,8 @@ public class ArchieveFragment extends AbstractListFragment {
     private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
     @Inject
     MP3Collection mp3Collection;
+    @Inject
+    ArchieveGetter archieveGetter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -152,7 +154,7 @@ public class ArchieveFragment extends AbstractListFragment {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                ArchieveParser.ParseArchieve(login, password);
+                archieveGetter.ParseArchieve(login, password);
             } catch (WrongLoginOrPasswordException e) {
                 //сообщение о неправильном логине/пароле
                 getActivity().runOnUiThread(new Runnable() {

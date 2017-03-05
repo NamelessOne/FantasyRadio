@@ -50,6 +50,7 @@ public class TabHoster extends FragmentActivity {
     @Inject
     FantasyRadioNotificationManager notificationManager;
 
+
     private static int current_menu;
 
     private void requestNewInterstitial() {
@@ -157,7 +158,7 @@ public class TabHoster extends FragmentActivity {
         if ((keyCode == KeyEvent.KEYCODE_BACK) && !settings.getBoolean("gratitude", false)) {
             SharedPreferences.Editor editor = settings.edit();
             editor.putBoolean("gratitude", true);
-            editor.commit();
+            editor.apply();
             Intent i = new Intent(getApplicationContext(), Gratitude.class);
             startActivity(i);
             return true;

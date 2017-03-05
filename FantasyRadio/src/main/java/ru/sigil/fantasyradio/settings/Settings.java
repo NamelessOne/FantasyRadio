@@ -14,6 +14,7 @@ public class Settings {
     private static String saveDir;
     private static String login;
     private static String password;
+    private static boolean gratitude;
 
     public static SharedPreferences getSettings() {
         return settings;
@@ -28,6 +29,7 @@ public class Settings {
         setSaveDir(settings.getString("saveDir", "/fantasyradio/mp3/"));
         setLogin(settings.getString("login", ""));
         setPassword(settings.getString("password", ""));
+        setGratitude(settings.getBoolean("gratitude", false));
         Settings.settings = settings;
     }
 
@@ -35,7 +37,7 @@ public class Settings {
         return saveDir;
     }
 
-    public static void setSaveDir(String saveDir) {
+    private static void setSaveDir(String saveDir) {
         Settings.saveDir = saveDir;
     }
 
@@ -43,7 +45,17 @@ public class Settings {
         return login;
     }
 
-    public static void setLogin(String login) {
+    public static boolean getGratitude() {
+        return gratitude;
+    }
+
+    private static void setGratitude(boolean gratitude)
+    {
+        Settings.gratitude = gratitude;
+    }
+
+
+    private static void setLogin(String login) {
         Settings.login = login;
     }
 
@@ -51,7 +63,7 @@ public class Settings {
         return password;
     }
 
-    public static void setPassword(String password) {
+    private static void setPassword(String password) {
         Settings.password = password;
     }
 
@@ -91,6 +103,14 @@ public class Settings {
         SharedPreferences.Editor editor = Settings.getSettings().edit();
         editor.putString("login", getLogin());
         editor.putString("password", getPassword());
+        editor.commit();
+    }
+
+    public static void saveGratitude(boolean gratitude)
+    {
+        setGratitude(gratitude);
+        SharedPreferences.Editor editor = Settings.getSettings().edit();
+        editor.putBoolean("gratitude", getGratitude());
         editor.commit();
     }
 }
