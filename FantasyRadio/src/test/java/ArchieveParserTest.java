@@ -1,6 +1,7 @@
 import org.jsoup.Connection;
 import org.junit.Test;
 
+
 import ru.sigil.fantasyradio.archieve.ArchieveParser;
 import ru.sigil.fantasyradio.exceptions.WrongLoginOrPasswordException;
 
@@ -12,7 +13,7 @@ import static org.mockito.Mockito.when;
  * namelessone on 04.03.17.
  */
 
-public class ExampleUnitTest {
+public class ArchieveParserTest {
     @Test(expected = WrongLoginOrPasswordException.class)
     public void ArchieveParser_Throws_WrongLoginOrPasswordException_When_LoginOrPasswordIncorrect() throws Exception {
         Connection.Response mockedResponse = mock(Connection.Response.class);
