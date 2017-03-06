@@ -28,21 +28,26 @@ public class MyApp extends MultiDexApplication {
         super.onCreate();
         Bootstrap.INSTANCE.setup(this);
         GoogleAnalytics.getInstance(this).newTracker("UA-43435942-1").enableAutoActivityTracking(true);
-        PhoneStateListener phoneStateListener = new PhoneStateListener() {
-            @Override
-            public void onCallStateChanged(int state, String incomingNumber) {
-                if (state == TelephonyManager.CALL_STATE_RINGING) {
-                    vol = BASS.BASS_GetVolume();
-                    BASS.BASS_SetVolume(0);
-                } else if (state == TelephonyManager.CALL_STATE_IDLE) {
-                    BASS.BASS_SetVolume(vol);
+        try {
+            PhoneStateListener phoneStateListener = new PhoneStateListener() {
+                @Override
+                public void onCallStateChanged(int state, String incomingNumber) {
+                    if (state == TelephonyManager.CALL_STATE_RINGING) {
+                        vol = BASS.BASS_GetVolume();
+                        BASS.BASS_SetVolume(0);
+                    } else if (state == TelephonyManager.CALL_STATE_IDLE) {
+                        BASS.BASS_SetVolume(vol);
+                    }
+                    super.onCallStateChanged(state, incomingNumber);
                 }
-                super.onCallStateChanged(state, incomingNumber);
+            };
+            TelephonyManager mgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+            if (mgr != null) {
+                mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
             }
-        };
-        TelephonyManager mgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        if (mgr != null) {
-            mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        }catch (Exception e) {
+            //TODO лучше бы знать про это событие
+            e.printStackTrace();
         }
         LogManager.addLogger(new DefaultLogger());
     }

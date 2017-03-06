@@ -51,7 +51,7 @@ public class FileDownloader {
                 .setCategory(NotificationCompat.CATEGORY_PROGRESS)
                 .setContentTitle(context.getString(R.string.download_started))
                 .setContentText(fileName)
-                .setSmallIcon(R.drawable.clocks)
+                .setSmallIcon(R.drawable.download)
                 .setAutoCancel(false);
                 //.setOngoing(false)
         //-------------------------------------------------
