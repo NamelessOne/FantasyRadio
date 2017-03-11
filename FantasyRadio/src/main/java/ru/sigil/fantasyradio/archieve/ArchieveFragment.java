@@ -24,7 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -47,6 +49,7 @@ public class ArchieveFragment extends AbstractListFragment {
     private AlertDialog.Builder ad;
     private Random random;
     private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
+    private List<ArchieveEntity> archieveEntityes = new ArrayList<>();
     @Inject
     MP3Collection mp3Collection;
     @Inject
@@ -67,11 +70,9 @@ public class ArchieveFragment extends AbstractListFragment {
         });
         ad = new AlertDialog.Builder(getActivity());
         setLv((ListView) archieveActivityView.findViewById(R.id.ArchieveListView));
-        if (ArchieveEntityesCollection.getEntityes().size() > 0) {
-            adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
-                    ArchieveEntityesCollection.getEntityes(), downloadClickListener);
-            getLv().setAdapter(adapter);
-        }
+        adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
+                archieveEntityes, downloadClickListener);
+        getLv().setAdapter(adapter);
         return archieveActivityView;
     }
 
@@ -154,7 +155,7 @@ public class ArchieveFragment extends AbstractListFragment {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                archieveGetter.ParseArchieve(login, password);
+                archieveEntityes = archieveGetter.ParseArchieve(login, password);
             } catch (WrongLoginOrPasswordException e) {
                 //сообщение о неправильном логине/пароле
                 getActivity().runOnUiThread(new Runnable() {
@@ -180,7 +181,7 @@ public class ArchieveFragment extends AbstractListFragment {
             super.onPostExecute(result);
             if (getActivity() != null) {
                 adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
-                        ArchieveEntityesCollection.getEntityes(), downloadClickListener);
+                        archieveEntityes, downloadClickListener);
                 getLv().setAdapter(adapter);
             }
             if (progress.isShowing()) {

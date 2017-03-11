@@ -19,7 +19,9 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,18 +29,18 @@ public class ScheduleParser {
     private static final String URL = "https://www.googleapis.com/calendar/v3/calendars/fantasyradioru@gmail.com/events?key=AIzaSyDam413Hzm4l8GOEEg-NF8w8wdAbUsKEjM&maxResults=50&singleEvents=true&orderBy=startTime";
     //https://www.googleapis.com/calendar/v3/calendars/fantasyradioru@gmail.com/events?key=AIzaSyDam413Hzm4l8GOEEg-NF8w8wdAbUsKEjM&maxResults=50&singleEvents=true&orderBy=startTime&timeMin=2014-01-01T00:00:00Z&timeMax=2018-03-24T23:59:59Z
     /**
-     * Парсим расписание. Результат в добавляется в ScheduleEntityesCollection.
+     * Парсим расписание.
      */
 
-    private ScheduleEntityesCollection scheduleEntityesCollection;
-
     @Inject
-    public ScheduleParser(ScheduleEntityesCollection scheduleEntityesCollection)
+    public ScheduleParser()
     {
-        this.scheduleEntityesCollection = scheduleEntityesCollection;
+
     }
 
-    public synchronized  void ParseSchedule() {
+    //Это должен быть не параметр, а возвращаемое значение
+    public synchronized List<ScheduleEntity> ParseSchedule() {
+        List<ScheduleEntity> scheduleEntityesCollection = new ArrayList<>();
         try {
             // -----------------------------------------------
             LocalDate ld = LocalDate.now();
@@ -47,7 +49,6 @@ public class ScheduleParser {
             String urlMax = "&timeMax=" + fmt.print(ld.plusDays(3))
                     + "00:00:00.000Z";
             // -----------------------------------------------
-            scheduleEntityesCollection.getEntityes().clear();
             // -------------------------------------
             JSONObject jsObject = getJSONFromUrl(URL + urlMin + urlMax);
             //JSONObject feedObject = jsObject.getJSONObject("feed");
@@ -78,15 +79,16 @@ public class ScheduleParser {
                     se.setStartDate(parser2.parseDateTime(startDate));
                     se.setEndDate(parser2.parseDateTime(endDate));
 
-                    scheduleEntityesCollection.getEntityes().add(se);
+                    scheduleEntityesCollection.add(se);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-            Collections.reverse(scheduleEntityesCollection.getEntityes());
+            Collections.reverse(scheduleEntityesCollection);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return scheduleEntityesCollection;
     }
 
     private static JSONObject getJSONFromUrl(String url) {

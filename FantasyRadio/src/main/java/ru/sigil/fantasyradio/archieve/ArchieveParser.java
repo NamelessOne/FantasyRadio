@@ -9,6 +9,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -26,7 +28,8 @@ public class ArchieveParser {
 
     }
 
-    public void Parse(Connection.Response res, Map<String, String> cookies) throws IOException, WrongLoginOrPasswordException {
+    public List<ArchieveEntity> Parse(Connection.Response res, Map<String, String> cookies) throws IOException, WrongLoginOrPasswordException {
+        List<ArchieveEntity> archieveEntityes = new ArrayList<>();
         if (!res.body().contains("Имя пользователя и пароль не совпадают или у вас еще нет учетной записи на сайте")) { //Проверка на на правильность логина/пароля
             Document doc = Jsoup.parse(Jsoup
                     .connect("http://fantasyradio.ru/index.php/component/content/article/2-uncategorised/14-stranitsa-2").cookies(cookies).userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:5.0) Gecko/20100101 Firefox/5.0")
@@ -50,10 +53,11 @@ public class ArchieveParser {
                 ae.setURL(mp3Elems.get(i).attr("value").substring(x + 1));
                 ae.setTime(trElems.get(i).getElementsByTag("td").get(0).text());
                 ae.setName(trElems.get(i).getElementsByTag("td").get(1).text());
-                ArchieveEntityesCollection.getEntityes().add(ae);
+                archieveEntityes.add(ae);
             }
         } else {//TODO Залогиниться не удалось, TT. Кидаем Exception=)
             throw new WrongLoginOrPasswordException();
         }
+        return archieveEntityes;
     }
 }

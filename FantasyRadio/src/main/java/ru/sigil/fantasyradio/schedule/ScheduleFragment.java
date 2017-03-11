@@ -20,6 +20,7 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -37,8 +38,7 @@ public class ScheduleFragment extends Fragment {
     ArrayList<ArrayList<ScheduleEntity>> arr = new ArrayList<>();
     private Random random;
     private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
-    @Inject
-    ScheduleEntityesCollection scheduleEntityesCollection;
+    private List<ScheduleEntity> scheduleEntityesCollection = new ArrayList<>();
     @Inject
     ScheduleParser scheduleParser;
 
@@ -111,7 +111,7 @@ public class ScheduleFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            scheduleParser.ParseSchedule();
+            scheduleEntityesCollection = scheduleParser.ParseSchedule();
             return null;
         }
 
@@ -128,7 +128,7 @@ public class ScheduleFragment extends Fragment {
                 ArrayList<ScheduleEntity> arr2 = new ArrayList<>();
                 LocalDate ld = LocalDate.now();
                 ld = ld.plusDays(i);
-                for (Iterator<ScheduleEntity> it = scheduleEntityesCollection.getEntityes().iterator(); it.hasNext(); ) {
+                for (Iterator<ScheduleEntity> it = scheduleEntityesCollection.iterator(); it.hasNext(); ) {
                     ScheduleEntity scheduleEntity = it.next();
                     if (scheduleEntity.getStartDate()!=null&&scheduleEntity.getStartDate().getDayOfYear() == ld
                             .getDayOfYear()) {

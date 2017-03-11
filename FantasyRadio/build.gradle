@@ -53,7 +53,6 @@ android {
 }
 
 dependencies {
-    //TODO специальный даунгрейд
     compile files('libs/universal-image-loader-1.9.5.jar')
     compile files('libs/jsoup-1.8.3.jar')
     compile project(':bassplayerlib')
