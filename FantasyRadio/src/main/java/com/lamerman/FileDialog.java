@@ -26,8 +26,6 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-
 
 public class FileDialog extends ListActivity {
     // @see https://code.google.com/p/android-file-dialog/issues/detail?id=3
@@ -70,13 +68,11 @@ public class FileDialog extends ListActivity {
     @Override
     public void onStart() {
         super.onStart();
-        GoogleAnalytics.getInstance(this).reportActivityStart(this);   // Add this method.
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        GoogleAnalytics.getInstance(this).reportActivityStop(this);   // Add this method.
     }
 
     /**

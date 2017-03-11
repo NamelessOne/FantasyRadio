@@ -52,7 +52,7 @@ public class FantasyRadioNotificationManager {
                     intent = new Intent(context, FantasyRadioNotificationReceiver.class);
                     intent.putExtra(ACTION, PAUSE);
                     pIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
-                    icon = R.drawable.ic_media_pause;
+                    icon = android.R.drawable.ic_media_pause;
                     notCancelable = true;
                     break;
                 case PAUSE:
@@ -61,7 +61,7 @@ public class FantasyRadioNotificationManager {
                     intent = new Intent(context, FantasyRadioNotificationReceiver.class);
                     intent.putExtra(ACTION, PLAY);
                     pIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
-                    icon = R.drawable.ic_media_play;
+                    icon = android.R.drawable.ic_media_play;
                     notCancelable = false;
                     break;
             }

@@ -1,13 +1,10 @@
 package ru.sigil.fantasyradio;
 
-import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
 import com.un4seen.bass.BASS;
 
 import org.acra.ACRA;
@@ -27,7 +24,6 @@ public class MyApp extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         Bootstrap.INSTANCE.setup(this);
-        GoogleAnalytics.getInstance(this).newTracker("UA-43435942-1").enableAutoActivityTracking(true);
         try {
             PhoneStateListener phoneStateListener = new PhoneStateListener() {
                 @Override
@@ -59,16 +55,5 @@ public class MyApp extends MultiDexApplication {
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
         ErrorReporter.getInstance().checkReportsOnApplicationStart();
-    }
-
-    private Tracker mTracker = null;
-
-    synchronized public Tracker getTracker() {
-        if (mTracker == null) {
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-            mTracker = analytics.newTracker(R.xml.analytics);
-        }
-
-        return mTracker;
     }
 }

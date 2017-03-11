@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-
-import com.google.android.gms.analytics.GoogleAnalytics;
-
 /**
  * Окошко "О программе"
  */
@@ -36,12 +33,10 @@ public class About extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        GoogleAnalytics.getInstance(this).reportActivityStart(this);  // Add this method.
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        GoogleAnalytics.getInstance(this).reportActivityStop(this);    // Add this method.
     }
 }

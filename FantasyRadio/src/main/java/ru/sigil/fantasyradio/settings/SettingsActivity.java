@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.lamerman.FileDialog;
 
 import ru.sigil.fantasyradio.R;
@@ -35,13 +34,11 @@ public class SettingsActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        GoogleAnalytics.getInstance(this).reportActivityStart(this);    // Add this method.
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        GoogleAnalytics.getInstance(this).reportActivityStop(this);  // Add this method.
     }
 
 

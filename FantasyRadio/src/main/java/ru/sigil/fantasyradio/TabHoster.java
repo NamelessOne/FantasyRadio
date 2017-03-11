@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import javax.inject.Inject;
 
@@ -44,6 +45,7 @@ public class TabHoster extends FragmentActivity {
     public SectionsPagerAdapter mSectionsPagerAdapter;
     private InterstitialAd mInterstitialAd;
     private final int MY_PERMISSIONS_REQUEST = 1;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Inject
     IPlayer player;
@@ -86,6 +88,8 @@ public class TabHoster extends FragmentActivity {
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         player.addErrorListener(playerErrorListener);
         setContentView(R.layout.tabs);
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //-------------------------------------------------------
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED

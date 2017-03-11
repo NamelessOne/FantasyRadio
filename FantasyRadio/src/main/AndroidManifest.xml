@@ -2,8 +2,8 @@
     package="ru.sigil.fantasyradio"
     android:hardwareAccelerated="false"
     android:installLocation="auto"
-    android:versionCode="131"
-    android:versionName="1.31">
+    android:versionCode="132"
+    android:versionName="1.32">
 
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -60,13 +60,6 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
 
         <receiver android:name=".utils.AlarmReceiever" />
-        <receiver
-            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
         <receiver android:name=".widget.FantasyRadioWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -76,7 +69,6 @@
                 android:resource="@xml/example_appwidget_info" />
         </receiver>
 
-        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
         <receiver android:name=".FantasyRadioNotificationReceiver" />
     </application>
 </manifest>
