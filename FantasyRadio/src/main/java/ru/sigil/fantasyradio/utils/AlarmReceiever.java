@@ -14,7 +14,7 @@ public class AlarmReceiever extends BroadcastReceiver {
 
     private static Handler sleepHandler;
     @Inject
-    IPlayer player;
+    IPlayer<RadioStream> player;
 
     public AlarmReceiever()
     {

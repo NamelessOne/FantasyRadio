@@ -11,6 +11,8 @@ import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.ITrackFactory;
 import ru.sigil.bassplayerlib.Player;
 import ru.sigil.fantasyradio.saved.MP3Collection;
+import ru.sigil.fantasyradio.utils.RadioStream;
+import ru.sigil.fantasyradio.utils.RadioStreamFactory;
 import ru.sigil.fantasyradio.utils.TrackFactory;
 
 /**
@@ -34,8 +36,8 @@ public class PlayerModule {
 
     @Provides
     @Singleton
-    IPlayer providesPlayer(MP3Collection mp3Collection, ITrackFactory trackFactory) {
-        return new Player(mp3Collection, trackFactory);
+    IPlayer<RadioStream> providesPlayer(MP3Collection mp3Collection, ITrackFactory trackFactory, RadioStreamFactory radioStreamFactory) {
+        return new Player<>(mp3Collection, trackFactory, radioStreamFactory.createDefaultStream()); //TODO дефолтный битрейт (с фабрики получать)
     }
 
     @Provides

@@ -30,12 +30,14 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
-import ru.sigil.bassplayerlib.Bitrate;
 import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.IPlayerEventListener;
 import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
+import ru.sigil.fantasyradio.utils.Bitrate;
+import ru.sigil.fantasyradio.utils.RadioStream;
+import ru.sigil.fantasyradio.utils.RadioStreamFactory;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 
 public class RadioFragment extends Fragment {
@@ -62,7 +64,9 @@ public class RadioFragment extends Fragment {
     }
 
     @Inject
-    IPlayer player;
+    IPlayer<RadioStream> player;
+    @Inject
+    RadioStreamFactory radioStreamFactory;
 
     private Random random;
 
@@ -104,17 +108,16 @@ public class RadioFragment extends Fragment {
             }
         }
         if (player.currentState() != PlayState.PLAY) {
-            if (player.currentBitrate() == Bitrate.aac_16) {
-                player.playAAC(getString(R.string.stream_url_AAC16), Bitrate.aac_16);
-            }
-            if (player.currentBitrate() == Bitrate.aac_112) {
-                player.playAAC(getString(R.string.stream_url_AAC112), Bitrate.aac_112);
-            }
-            if (player.currentBitrate() == Bitrate.mp3_32) {
-                player.play(getString(R.string.stream_url_MP332), Bitrate.mp3_32);
-            }
-            if (player.currentBitrate() == Bitrate.mp3_96) {
-                player.play(getString(R.string.stream_url_MP396), Bitrate.mp3_96);
+            RadioStream stream = radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate());
+            switch (player.currentStream().getBitrate()) {
+                case aac_16:
+                case aac_112:
+                    player.playAAC(stream);
+                    break;
+                case mp3_32:
+                case mp3_96:
+                    player.play(stream);
+                    break;
             }
         } else {
             player.stop();
@@ -215,7 +218,7 @@ public class RadioFragment extends Fragment {
                 getResources().getColor(R.color.bitrate_element));
         mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
                 getResources().getColor(R.color.bitrate_element));
-        switch (player.currentBitrate()) {
+        switch (player.currentStream().getBitrate()) {
             case aac_16:
                 mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
                         getResources().getColor(R.color.bitrate_element_active));
@@ -301,8 +304,8 @@ public class RadioFragment extends Fragment {
                     getResources().getColor(R.color.bitrate_element));
             v.setBackgroundColor(getResources().getColor(
                     R.color.bitrate_element_active));
-            //TODO
-            player.setBitrate(bitrates.get(Integer.valueOf(v.getTag().toString())));
+            //TODO фабричный метод
+            player.setStream(radioStreamFactory.createStreamWithBitrate(bitrates.get(Integer.valueOf(v.getTag().toString()))));
             if (player.currentState() == PlayState.PLAY) {
                 ImageView b = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
                 b.performClick();
@@ -387,7 +390,7 @@ public class RadioFragment extends Fragment {
         showDialog(TIME_DIALOG_ID);
     }
 
-    private final IPlayerEventListener eventListener = new IPlayerEventListener() {
+    private final IPlayerEventListener eventListener = new IPlayerEventListener<RadioStream>() {
         @Override
         public void onTitleChanged(final String title) {
             RadioEntity re = new RadioEntity();
@@ -467,7 +470,7 @@ public class RadioFragment extends Fragment {
         }
 
         @Override
-        public void onBitrateChanged(Bitrate bitrate) {
+        public void onStreamChanged(RadioStream stream) {
 
         }
 

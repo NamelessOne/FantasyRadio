@@ -7,21 +7,18 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import ru.sigil.bassplayerlib.Bitrate;
 import ru.sigil.fantasyradio.R;
 
 /**
  * Created by
- * namelessone on 17.10.16.
+ * namelessone on 11.03.17.
  */
 
-public class BitratesResolver {
-    //TODO сделать нормальный резолвер и инжектировать
+public class RadioStreamFactory {
     private final Map<Bitrate, String> bitratesMap;
 
     @Inject
-    public BitratesResolver(Context context)
-    {
+    public RadioStreamFactory(Context context) {
         bitratesMap = new HashMap<>();
         bitratesMap.put(Bitrate.aac_16, context.getString(R.string.stream_url_AAC16));
         bitratesMap.put(Bitrate.mp3_32, context.getString(R.string.stream_url_MP332));
@@ -29,8 +26,11 @@ public class BitratesResolver {
         bitratesMap.put(Bitrate.aac_112, context.getString(R.string.stream_url_AAC112));
     }
 
-    public String getUrl(Bitrate bitrate)
-    {
-        return bitratesMap.get(bitrate);
+    public RadioStream createDefaultStream() {
+        return createStreamWithBitrate(Bitrate.aac_16);
+    }
+
+    public RadioStream createStreamWithBitrate(Bitrate bitrate) {
+        return new RadioStream(bitrate, bitratesMap.get(bitrate));
     }
 }

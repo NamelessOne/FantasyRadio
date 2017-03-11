@@ -9,8 +9,9 @@ import javax.inject.Inject;
 import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
-import ru.sigil.fantasyradio.utils.BitratesResolver;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
+import ru.sigil.fantasyradio.utils.RadioStream;
+import ru.sigil.fantasyradio.utils.RadioStreamFactory;
 
 /**
  * Created by namelessone
@@ -20,11 +21,11 @@ import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
 
     @Inject
-    IPlayer player;
+    IPlayer<RadioStream> player;
     @Inject
     FantasyRadioNotificationManager notificationManager;
     @Inject
-    BitratesResolver bitratesResolver;
+    RadioStreamFactory radioStreamFactory;
 
     public FantasyRadioNotificationReceiver() {
         Bootstrap.INSTANCE.getBootstrap().inject(this);
@@ -48,17 +49,16 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
             //TODO
             switch (player.currentState()) {
                 case STOP:
-                    String url = bitratesResolver.getUrl(player.currentBitrate());
-                    switch (player.currentBitrate())
+                    switch (player.currentStream().getBitrate())
                     {
                         case aac_16:
                         case aac_112:
-                            player.playAAC(url, player.currentBitrate());
+                            player.playAAC(radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate()));
                             break;
                         case mp3_32:
                         case mp3_96:
                         default:
-                            player.play(url, player.currentBitrate());
+                            player.play(radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate()));
                     }
                     break;
                 case PAUSE:

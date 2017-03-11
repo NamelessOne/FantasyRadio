@@ -20,11 +20,12 @@ import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
+import ru.sigil.fantasyradio.utils.RadioStream;
 
 public class MP3ArrayAdapter extends CursorAdapter {
 
     @Inject
-    public IPlayer player;
+    public IPlayer<RadioStream> player;
 
     private Cursor mCursor;
     private View.OnClickListener deleteCLickListener;

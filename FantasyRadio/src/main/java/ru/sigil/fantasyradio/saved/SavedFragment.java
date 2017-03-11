@@ -23,7 +23,6 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
-import ru.sigil.bassplayerlib.Bitrate;
 import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.IPlayerEventListener;
 import ru.sigil.bassplayerlib.ITrack;
@@ -31,6 +30,8 @@ import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
+import ru.sigil.fantasyradio.utils.Bitrate;
+import ru.sigil.fantasyradio.utils.RadioStream;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 
 public class SavedFragment extends AbstractListFragment {
@@ -40,7 +41,7 @@ public class SavedFragment extends AbstractListFragment {
     @Inject
     MP3Collection mp3Collection;
     @Inject
-    IPlayer player;
+    IPlayer<RadioStream> player;
 
     private TimerTask seekTask = new TimerTask() {
         public void run() {
@@ -105,7 +106,7 @@ public class SavedFragment extends AbstractListFragment {
     @Override
     public void onDestroyView() {
         player.removeEventListener(eventListener);
-        super.onDestroy();
+        super.onDestroyView();
     }
 
     @Override
@@ -196,7 +197,7 @@ public class SavedFragment extends AbstractListFragment {
     }
 
     //TODO по хорошему, должно быть статическим. Придумать лучшее решение
-    private IPlayerEventListener endSyncEventListener = new IPlayerEventListener() {
+    private IPlayerEventListener endSyncEventListener = new IPlayerEventListener<RadioStream>() {
         @Override
         public void onTitleChanged(String title) {
 
@@ -218,7 +219,7 @@ public class SavedFragment extends AbstractListFragment {
         }
 
         @Override
-        public void onBitrateChanged(Bitrate bitrate) {
+        public void onStreamChanged(RadioStream stream) {
 
         }
 
@@ -248,7 +249,7 @@ public class SavedFragment extends AbstractListFragment {
         }
     };
 
-    private IPlayerEventListener eventListener = new IPlayerEventListener() {
+    private IPlayerEventListener eventListener = new IPlayerEventListener<RadioStream>() {
         @Override
         public void onTitleChanged(String title) {
 
@@ -270,7 +271,7 @@ public class SavedFragment extends AbstractListFragment {
         }
 
         @Override
-        public void onBitrateChanged(Bitrate bitrate) {
+        public void onStreamChanged(RadioStream stream) {
 
         }
 

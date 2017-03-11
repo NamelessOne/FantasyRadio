@@ -10,7 +10,6 @@ import android.support.v4.app.NotificationCompat;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import ru.sigil.bassplayerlib.Bitrate;
 import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.IPlayerEventListener;
 import ru.sigil.bassplayerlib.PlayState;
@@ -30,10 +29,10 @@ public class FantasyRadioNotificationManager {
     public final int MAIN_NOTIFICATION_ID = 36484;
     //public final int NOTIFICATION_RECEIVER_REQUEST_CODE = 76008;
     public NotificationManager notificationManager;
-    IPlayer player;
+    private IPlayer<RadioStream> player;
 
     @Inject
-    public FantasyRadioNotificationManager(Context context, IPlayer player) {
+    public FantasyRadioNotificationManager(Context context, IPlayer<RadioStream> player) {
         this.context = context;
         this.player = player;
         player.addEventListener(eventListener);
@@ -110,7 +109,7 @@ public class FantasyRadioNotificationManager {
     }
 
     //TODO эта штука должна быть в Receiver'е?
-    private IPlayerEventListener eventListener = new IPlayerEventListener() {
+    private IPlayerEventListener eventListener = new IPlayerEventListener<RadioStream>() {
         @Override
         public void onTitleChanged(String title) {
             updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
@@ -131,7 +130,7 @@ public class FantasyRadioNotificationManager {
         }
 
         @Override
-        public void onBitrateChanged(Bitrate bitrate) {
+        public void onStreamChanged(RadioStream stream) {
         }
 
         @Override

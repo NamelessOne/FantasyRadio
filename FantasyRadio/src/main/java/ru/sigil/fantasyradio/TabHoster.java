@@ -38,6 +38,7 @@ import ru.sigil.fantasyradio.schedule.ScheduleFragment;
 import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.settings.SettingsActivity;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
+import ru.sigil.fantasyradio.utils.RadioStream;
 import ru.sigil.log.LogManager;
 
 public class TabHoster extends FragmentActivity {
@@ -48,7 +49,7 @@ public class TabHoster extends FragmentActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
 
     @Inject
-    IPlayer player;
+    IPlayer<RadioStream> player;
     @Inject
     FantasyRadioNotificationManager notificationManager;
 
