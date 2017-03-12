@@ -16,8 +16,6 @@ import ru.sigil.fantasyradio.R;
 
 class ArchieveListAdapter extends ArrayAdapter<ArchieveEntity> {
 
-    public static int width;
-
     private List<ArchieveEntity> entities = new ArrayList<>();
     private View.OnClickListener downloadClickListener;
 

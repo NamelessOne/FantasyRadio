@@ -42,18 +42,12 @@ public class SettingsActivity extends Activity {
     }
 
 
-    private View.OnClickListener CancelClickListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            finish();
-        }
-    };
-    private View.OnClickListener SaveClickListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            EditText et = (EditText) findViewById(R.id.settingsMP3SaveFolder);
-            String s = et.getText().toString();
-            Settings.saveSaveDir(s);
-            finish();
-        }
+    private View.OnClickListener CancelClickListener = v -> finish();
+    private View.OnClickListener SaveClickListener = v -> {
+        EditText et = (EditText) findViewById(R.id.settingsMP3SaveFolder);
+        String s = et.getText().toString();
+        Settings.saveSaveDir(s);
+        finish();
     };
 
     public void SelectDirClick(@SuppressWarnings("UnusedParameters") View v) {

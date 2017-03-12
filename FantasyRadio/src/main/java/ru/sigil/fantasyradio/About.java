@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 /**
  * Окошко "О программе"
  */
@@ -16,15 +17,13 @@ public class About extends Activity {
         try {
             tv.append(getString(R.string.versiontext) + " "
                     + this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName);
-        }catch(Exception e){}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         tv.setOnClickListener(CloseClickListener);
     }
 
-    private View.OnClickListener CloseClickListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            stop();
-        }
-    };
+    private View.OnClickListener CloseClickListener = v -> stop();
 
     private void stop() {
         finish();

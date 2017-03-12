@@ -24,7 +24,6 @@ import ru.sigil.fantasyradio.R;
 
 class ScheduleListAdapter extends BaseExpandableListAdapter {
 
-    private Object saveSync = new Object();
     private String[] item;
     private Context context;
 
@@ -36,10 +35,10 @@ class ScheduleListAdapter extends BaseExpandableListAdapter {
         this.context = context;
         this.entities = objects;
         Resources res = context.getResources();
-        if(res!=null)
+        if (res != null)
             item = res.getStringArray(R.array.week);
         else
-            item = new String[] {"", "", "", "", "", "", ""};
+            item = new String[]{"", "", "", "", "", "", ""};
     }
 
     @Override
@@ -136,44 +135,29 @@ class ScheduleListAdapter extends BaseExpandableListAdapter {
         final String messageString = message.getText();
         final String imageURLString = message.getImageURL();
         //----------------------------------------
-        row.setOnClickListener(new View.OnClickListener() {
-            @Override
-            /**
-             * Кликнули на элемент списка. Показываем окошко с подробностями
-             */
-            public void onClick(View v) {
-                final Dialog alertDialog = new Dialog(context);
-                alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                alertDialog.setContentView(R.layout.schedule_dialog);
-                LinearLayout ll = (LinearLayout) (alertDialog.findViewById(R.id.scheduleDialogLayout));
-                ll.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        alertDialog.cancel();
-                    }
-                });
-                LinearLayout ll2 = (LinearLayout) (alertDialog.findViewById(R.id.scheduleDialogInternalLayout));
-                ll2.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        alertDialog.cancel();
-                    }
-                });
-                TextView tv = (TextView) (alertDialog.findViewById(R.id.schedule_dialog_text));
-                tv.setText(messageString);
-                ImageView im = (ImageView) (alertDialog.findViewById(R.id.schedule_dialog_image));
-                TextView tv2 = (TextView) (alertDialog.findViewById(R.id.schedule_dialog_title));
-                tv2.setText(titleString);
-                try {
-                    alertDialog.setCancelable(true);
-                    alertDialog.setCanceledOnTouchOutside(true);
-                    ImageLoader imageLoader = ImageLoader.getInstance();
-                    imageLoader.displayImage(imageURLString, im);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                alertDialog.show();
+        row.setOnClickListener(v -> {
+            //Кликнули на элемент списка. Показываем окошко с подробностями
+            final Dialog alertDialog = new Dialog(context);
+            alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            alertDialog.setContentView(R.layout.schedule_dialog);
+            LinearLayout ll = (LinearLayout) (alertDialog.findViewById(R.id.scheduleDialogLayout));
+            ll.setOnClickListener(v1 -> alertDialog.cancel());
+            LinearLayout ll2 = (LinearLayout) (alertDialog.findViewById(R.id.scheduleDialogInternalLayout));
+            ll2.setOnClickListener(v12 -> alertDialog.cancel());
+            TextView tv = (TextView) (alertDialog.findViewById(R.id.schedule_dialog_text));
+            tv.setText(messageString);
+            ImageView im = (ImageView) (alertDialog.findViewById(R.id.schedule_dialog_image));
+            TextView tv2 = (TextView) (alertDialog.findViewById(R.id.schedule_dialog_title));
+            tv2.setText(titleString);
+            try {
+                alertDialog.setCancelable(true);
+                alertDialog.setCanceledOnTouchOutside(true);
+                ImageLoader imageLoader = ImageLoader.getInstance();
+                imageLoader.displayImage(imageURLString, im);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            alertDialog.show();
         });
         //------------------------------------------------------------
         return row;

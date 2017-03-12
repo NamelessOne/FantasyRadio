@@ -79,12 +79,7 @@ public class RadioFragment extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             if (getActivity() != null) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getActivity().finish();
-                    }
-                });
+                getActivity().runOnUiThread(() -> getActivity().finish());
             } else {
                 BASS.BASS_Free();
             }
@@ -132,29 +127,14 @@ public class RadioFragment extends Fragment {
         player.addEventListener(eventListener);
         //------------------------------------------------------------------------------------------
         ImageView streamButton = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
-        streamButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                streamButtonClick(v);
-            }
-        });
+        streamButton.setOnClickListener(v -> streamButtonClick(v));
         mainFragmentView.findViewById(R.id.bitrateText0).setOnClickListener(bitrateClick);
         mainFragmentView.findViewById(R.id.bitrateText1).setOnClickListener(bitrateClick);
         mainFragmentView.findViewById(R.id.bitrateText3).setOnClickListener(bitrateClick);
         mainFragmentView.findViewById(R.id.bitrateText4).setOnClickListener(bitrateClick);
         ImageView recordButton = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
-        recordButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                streamRecordClick();
-            }
-        });
-        mainFragmentView.findViewById(R.id.tvChangeTime).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onTimerClick(v);
-            }
-        });
+        recordButton.setOnClickListener(v -> streamRecordClick());
+        mainFragmentView.findViewById(R.id.tvChangeTime).setOnClickListener(v -> onTimerClick(v));
         //------------------------------------------------------------------------------------------
         //setContentView(R.layout.activity_main);
         AlarmReceiever.setSleepHandler(sleepTimerHandler);
@@ -163,28 +143,25 @@ public class RadioFragment extends Fragment {
         sender = PendingIntent.getBroadcast(getActivity().getBaseContext(), 192837, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         am = (AlarmManager) getActivity().getBaseContext().getSystemService(Context.ALARM_SERVICE);
-        cb1.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calNow = Calendar.getInstance();
-                Calendar cal = Calendar.getInstance();
-                // add 5 minutes to the calendar object
-                cal.set(Calendar.MINUTE, minute);
-                cal.set(Calendar.HOUR_OF_DAY, hour);
-                cal.set(Calendar.SECOND, 0);
-                Long alarmMillis = cal.getTimeInMillis();
-                // is chkIos checked?
-                if (calNow.after(cal)) {
-                    alarmMillis += 86400000L; // Add 1 day if time selected
-                    // before now
-                    cal.setTimeInMillis(alarmMillis);
-                }
-                if (((CheckBox) v).isChecked()) {
-                    am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-                            sender);
-                } else {
-                    am.cancel(sender);
-                }
+        cb1.setOnClickListener(v -> {
+            Calendar calNow = Calendar.getInstance();
+            Calendar cal = Calendar.getInstance();
+            // add 5 minutes to the calendar object
+            cal.set(Calendar.MINUTE, minute);
+            cal.set(Calendar.HOUR_OF_DAY, hour);
+            cal.set(Calendar.SECOND, 0);
+            Long alarmMillis = cal.getTimeInMillis();
+            // is chkIos checked?
+            if (calNow.after(cal)) {
+                alarmMillis += 86400000L; // Add 1 day if time selected
+                // before now
+                cal.setTimeInMillis(alarmMillis);
+            }
+            if (((CheckBox) v).isChecked()) {
+                am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
+                        sender);
+            } else {
+                am.cancel(sender);
             }
         });
         setTimer(Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar
@@ -398,28 +375,20 @@ public class RadioFragment extends Fragment {
             re.setArtist(re.getArtist());
             re.setStation(re.getStation());
             getActivity().runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(title);
-                        }
-                    }
+                    () -> ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(title)
             );
         }
 
         @Override
         public void onAuthorChanged(final String author) {
             getActivity().runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            if (author != null && !author.isEmpty()) {
-                                ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                                        .setText(author + " - " + player.currentTitle());
-                            } else {
-                                ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                                        .setText(player.currentTitle());
-                            }
+                    () -> {
+                        if (author != null && !author.isEmpty()) {
+                            ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                                    .setText(author + " - " + player.currentTitle());
+                        } else {
+                            ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                                    .setText(player.currentTitle());
                         }
                     }
             );
@@ -428,25 +397,22 @@ public class RadioFragment extends Fragment {
         @Override
         public void onPlayStateChanged(final PlayState state) {
             getActivity().runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
-                            switch (state) {
-                                case PLAY:
-                                case BUFFERING:
-                                    iv.setImageResource(R.drawable.pause_states);
-                                    break;
-                                case PAUSE:
-                                case PLAY_FILE:
-                                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                                            .setText("");
-                                case STOP:
-                                    iv.setImageResource(R.drawable.play_states);
-                                    break;
-                                default:
-                                    break;
-                            }
+                    () -> {
+                        ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+                        switch (state) {
+                            case PLAY:
+                            case BUFFERING:
+                                iv.setImageResource(R.drawable.pause_states);
+                                break;
+                            case PAUSE:
+                            case PLAY_FILE:
+                                ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                                        .setText("");
+                            case STOP:
+                                iv.setImageResource(R.drawable.play_states);
+                                break;
+                            default:
+                                break;
                         }
                     }
             );
@@ -455,15 +421,12 @@ public class RadioFragment extends Fragment {
         @Override
         public void onRecStateChanged(final boolean isRec) {
             getActivity().runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
-                            if (isRec) {
-                                rib.setImageResource(R.drawable.rec_active);
-                            } else {
-                                rib.setImageResource(R.drawable.rec);
-                            }
+                    () -> {
+                        ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
+                        if (isRec) {
+                            rib.setImageResource(R.drawable.rec_active);
+                        } else {
+                            rib.setImageResource(R.drawable.rec);
                         }
                     }
             );
@@ -477,12 +440,7 @@ public class RadioFragment extends Fragment {
         @Override
         public void onBufferingProgress(final long progress) {
             getActivity().runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String.format("BUFFERING... %d%%", progress));
-                        }
-                    }
+                    () -> ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String.format("BUFFERING... %d%%", progress))
             );
         }
 
@@ -494,12 +452,7 @@ public class RadioFragment extends Fragment {
         @Override
         public void onVolumeChanged(final float volume) {
             getActivity().runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            ((SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar)).setProgress((int) (volume * 100));
-                        }
-                    }
+                    () -> ((SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar)).setProgress((int) (volume * 100))
             );
         }
     };

@@ -2,8 +2,6 @@ package ru.sigil.fantasyradio.archieve;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -40,7 +38,6 @@ import ru.sigil.fantasyradio.exceptions.WrongLoginOrPasswordException;
 import ru.sigil.fantasyradio.saved.MP3Collection;
 import ru.sigil.fantasyradio.saved.MP3Entity;
 import ru.sigil.fantasyradio.settings.Settings;
-import ru.sigil.fantasyradio.utils.DownladedEntityes;
 import ru.sigil.fantasyradio.utils.DownloadThread;
 
 public class ArchieveFragment extends AbstractListFragment {
@@ -62,12 +59,7 @@ public class ArchieveFragment extends AbstractListFragment {
         View archieveActivityView = inflater.inflate(R.layout.archieve_layout, container, false);
         TextView tv = (TextView) archieveActivityView.findViewById(R.id.archive_text1);
         tv.setMovementMethod(LinkMovementMethod.getInstance());
-        archieveActivityView.findViewById(R.id.archieve_refresh_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                refreshClick(v);
-            }
-        });
+        archieveActivityView.findViewById(R.id.archieve_refresh_button).setOnClickListener(v -> refreshClick(v));
         ad = new AlertDialog.Builder(getActivity());
         setLv((ListView) archieveActivityView.findViewById(R.id.ArchieveListView));
         adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
@@ -85,30 +77,22 @@ public class ArchieveFragment extends AbstractListFragment {
                 .setView(textEntryView);
         ((TextView) ((ViewGroup) textEntryView).getChildAt(0)).setText(Settings.getLogin());
         ((TextView) ((ViewGroup) textEntryView).getChildAt(1)).setText(Settings.getPassword());
-        ad.setPositiveButton(getString(R.string.enter), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int arg1) {
-                String login = ((TextView) ((ViewGroup) textEntryView).getChildAt(0)).getText().toString();
-                String password = ((TextView) ((ViewGroup) textEntryView).getChildAt(1)).getText().toString();
-                Settings.saveLoginAndPassword(login, password);
-                searchAsyncTasc = new ParseAsyncTask();
-                try {
-                    searchAsyncTasc.login = login;
-                    searchAsyncTasc.password = password;
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
-                searchAsyncTasc.execute();
+        ad.setPositiveButton(getString(R.string.enter), (dialog, arg1) -> {
+            String login = ((TextView) ((ViewGroup) textEntryView).getChildAt(0)).getText().toString();
+            String password = ((TextView) ((ViewGroup) textEntryView).getChildAt(1)).getText().toString();
+            Settings.saveLoginAndPassword(login, password);
+            searchAsyncTasc = new ParseAsyncTask();
+            try {
+                searchAsyncTasc.login = login;
+                searchAsyncTasc.password = password;
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
+            searchAsyncTasc.execute();
         });
-        ad.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int arg1) {
-            }
-        });
+        ad.setNegativeButton(getString(R.string.cancel), (dialog, arg1) -> {});
         ad.setCancelable(true);
-        ad.setOnCancelListener(new OnCancelListener() {
-            public void onCancel(DialogInterface dialog) {
-            }
-        });
+        ad.setOnCancelListener(dialog -> {});
         ad.create();
         ad.show();
         //--------------------
@@ -142,12 +126,9 @@ public class ArchieveFragment extends AbstractListFragment {
             this.progress = new ProgressDialog(getActivity());
             this.progress.setMessage(getString(R.string.load));
             this.progress.setCancelable(false);
-            this.progress.setOnCancelListener(new OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    // STOP thread execution
-                    searchAsyncTasc.cancel(true);
-                }
+            this.progress.setOnCancelListener(dialog -> {
+                // STOP thread execution
+                searchAsyncTasc.cancel(true);
             });
             this.progress.show();
         }
@@ -158,12 +139,10 @@ public class ArchieveFragment extends AbstractListFragment {
                 archieveEntityes = archieveGetter.ParseArchieve(login, password);
             } catch (WrongLoginOrPasswordException e) {
                 //сообщение о неправильном логине/пароле
-                getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast toast = Toast.makeText(getActivity().getBaseContext(),
-                                getString(R.string.wrong_login_or_password), Toast.LENGTH_LONG);
-                        toast.show();
-                    }
+                getActivity().runOnUiThread(() -> {
+                    Toast toast = Toast.makeText(getActivity().getBaseContext(),
+                            getString(R.string.wrong_login_or_password), Toast.LENGTH_LONG);
+                    toast.show();
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -198,12 +177,7 @@ public class ArchieveFragment extends AbstractListFragment {
         }
     }
 
-    final View.OnClickListener downloadClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            downloadClick(v);
-        }
-    };
+    final View.OnClickListener downloadClickListener = v -> downloadClick(v);
 
     public void downloadClick(View v) {
         Calendar c = Calendar.getInstance();
@@ -217,7 +191,6 @@ public class ArchieveFragment extends AbstractListFragment {
         Toast toast = Toast.makeText(getActivity().getBaseContext(),
                 getString(R.string.download_started), Toast.LENGTH_LONG);
         toast.show();
-        DownladedEntityes.getDownloadedEntityes().add(entity.getURL());
         DownloadThread dt = new DownloadThread(entity.getURL(),
                 Environment.getExternalStorageDirectory() + Settings.getSaveDir(),
                 formattedDate + entity.getFileName(), getActivity().getBaseContext(),
@@ -255,8 +228,6 @@ public class ArchieveFragment extends AbstractListFragment {
                     b.getString("time"));
             mp3Collection.remove(mp3Entity);
             mp3Collection.add(mp3Entity);
-            DownladedEntityes.getDownloadedEntityes()
-                    .remove(b.getString("URL"));
             try {
                 SeekBar sb = (SeekBar) getLv().findViewWithTag(b.getString("URL"));// ProgressSeekBar!!!
                 LinearLayout ll = null;

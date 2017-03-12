@@ -17,11 +17,7 @@ public class Gratitude extends Activity {
         tv.setOnClickListener(CloselickListener);
     }
 
-    private View.OnClickListener CloselickListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            stop();
-        }
-    };
+    private View.OnClickListener CloselickListener = v -> stop();
 
     private void stop() {
         finish();

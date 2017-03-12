@@ -57,18 +57,8 @@ public class SavedFragment extends AbstractListFragment {
     }
 
     public void notifyAdapter() {
-        View.OnClickListener deleteClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteClick(v);
-            }
-        };
-        View.OnClickListener playClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playClick(v);
-            }
-        };
+        View.OnClickListener deleteClickListener = v -> deleteClick(v);
+        View.OnClickListener playClickListener = v -> playClick(v);
         adapter = new MP3ArrayAdapter(getActivity().getBaseContext(),
                 mp3Collection.getCursor(),
                 deleteClickListener, playClickListener
@@ -159,29 +149,25 @@ public class SavedFragment extends AbstractListFragment {
         alertDialogBuilder
                 .setTitle(getString(R.string.are_you_sure_want_delete));
         alertDialogBuilder.setPositiveButton(getString(R.string.yes),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mp3Collection.remove(
-                                mp3EntityForDelete);
-                        if (player.getCurrentMP3Entity() != null) {
-                            if (mp3EntityForDelete.getDirectory().equals(player.getCurrentMP3Entity().getDirectory())) {
-                                player.stop();
-                            }
+                (dialog, which) -> {
+                    mp3Collection.remove(
+                            mp3EntityForDelete);
+                    if (player.getCurrentMP3Entity() != null) {
+                        if (mp3EntityForDelete.getDirectory().equals(player.getCurrentMP3Entity().getDirectory())) {
+                            player.stop();
                         }
-                        File f = new File(mp3EntityForDelete.getDirectory());
-                        Log.v("dir", mp3EntityForDelete.getDirectory());
-                        Boolean b = f.delete();
-                        Log.v("tf", b.toString());
-                        dialog.dismiss();
-                        onResume();
                     }
+                    File f = new File(mp3EntityForDelete.getDirectory());
+                    Log.v("dir", mp3EntityForDelete.getDirectory());
+                    Boolean b = f.delete();
+                    Log.v("tf", b.toString());
+                    dialog.dismiss();
+                    onResume();
                 });
         alertDialogBuilder.setNegativeButton(getString(R.string.no),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // here you can add functions
-                        dialog.dismiss();
-                    }
+                (dialog, which) -> {
+                    // here you can add functions
+                    dialog.dismiss();
                 });
         alertDialogBuilder.create().show();
         this.onResume();
@@ -230,15 +216,13 @@ public class SavedFragment extends AbstractListFragment {
 
         @Override
         public void endSync() {
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    // Заканчивается воспроизведение. Переходим на следующий трек.
-                    //adapter.notifyDataSetChanged();
-                    ITrack next = mp3Collection.getNext(player.getCurrentMP3Entity());
-                    player.stop();
-                    if (next != null) {
-                        player.playFile(next);
-                    }
+            getActivity().runOnUiThread(() -> {
+                // Заканчивается воспроизведение. Переходим на следующий трек.
+                //adapter.notifyDataSetChanged();
+                ITrack next = mp3Collection.getNext(player.getCurrentMP3Entity());
+                player.stop();
+                if (next != null) {
+                    player.playFile(next);
                 }
             });
         }
@@ -287,11 +271,9 @@ public class SavedFragment extends AbstractListFragment {
 
         @Override
         public void onVolumeChanged(final float volume) {
-            getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
-                    volumeSeekBar.setProgress((int) (volume * 100));
-                }
+            getActivity().runOnUiThread(() -> {
+                SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
+                volumeSeekBar.setProgress((int) (volume * 100));
             });
         }
     };

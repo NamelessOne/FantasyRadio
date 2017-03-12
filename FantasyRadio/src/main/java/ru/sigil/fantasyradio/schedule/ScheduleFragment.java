@@ -53,12 +53,7 @@ public class ScheduleFragment extends Fragment {
         LogManager.d(TAG, "onCreateView");
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         View scheduleFragmentView = inflater.inflate(R.layout.schedule_layout, container, false);
-        scheduleFragmentView.findViewById(R.id.schedule_refresh_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                refreshClick(v);
-            }
-        });
+        scheduleFragmentView.findViewById(R.id.schedule_refresh_button).setOnClickListener(v -> refreshClick(v));
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
             .cacheOnDisk(true).build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity().getBaseContext())
@@ -99,12 +94,9 @@ public class ScheduleFragment extends Fragment {
             this.progress = new ProgressDialog(getActivity());
             this.progress.setMessage(getString(R.string.load));
             this.progress.setCancelable(false);
-            this.progress.setOnCancelListener(new OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    // STOP thread execution
-                    searchAsyncTasc.cancel(true);
-                }
+            this.progress.setOnCancelListener(dialog -> {
+                // STOP thread execution
+                searchAsyncTasc.cancel(true);
             });
             this.progress.show();
         }

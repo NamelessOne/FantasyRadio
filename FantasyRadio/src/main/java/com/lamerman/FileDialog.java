@@ -63,7 +63,7 @@ public class FileDialog extends ListActivity {
     private String parentPath;
     private String currentPath = PATH_ROOT;
 
-    private HashMap<String, Integer> lastPositions = new HashMap<String, Integer>();
+    private HashMap<String, Integer> lastPositions = new HashMap<>();
 
     @Override
     public void onStart() {
@@ -99,26 +99,20 @@ public class FileDialog extends ListActivity {
 
         selectButton = (Button) findViewById(R.id.fdButtonSelect);
         // selectButton.setEnabled(false);
-        selectButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-				 * if (selectedFile != null) {
-				 * returnFilename(selectedFile.getPath()); }
-				 */
-                returnFilename();
-            }
+        selectButton.setOnClickListener(v -> {
+            /*
+             * if (selectedFile != null) {
+             * returnFilename(selectedFile.getPath()); }
+             */
+            returnFilename();
         });
 
         final Button newButton = (Button) findViewById(R.id.fdButtonNew);
-        newButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setCreateVisible(v);
+        newButton.setOnClickListener(v -> {
+            setCreateVisible(v);
 
-                mFileName.setText("");
-                mFileName.requestFocus();
-            }
+            mFileName.setText("");
+            mFileName.requestFocus();
         });
 
         if (!options.allowCreate) {
@@ -136,24 +130,16 @@ public class FileDialog extends ListActivity {
         }
 
         final Button cancelButton = (Button) findViewById(R.id.fdButtonCancel);
-        cancelButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setSelectVisible(v);
-            }
-        });
+        cancelButton.setOnClickListener(v -> setSelectVisible(v));
         final Button createButton = (Button) findViewById(R.id.fdButtonCreate);
-        createButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Тут написать создание папки
-                if (mFileName.getText().length() > 0) {
-                    File f = new File(currentPath + File.separator + mFileName.getText());
-                    f.mkdirs();
-                    // Тут надо обновить список папок
-                    getDir(currentPath);
-                    cancelButton.performClick();
-                }
+        createButton.setOnClickListener(v -> {
+            // Тут написать создание папки
+            if (mFileName.getText().length() > 0) {
+                File f = new File(currentPath + File.separator + mFileName.getText());
+                f.mkdirs();
+                // Тут надо обновить список папок
+                getDir(currentPath);
+                cancelButton.performClick();
             }
         });
 
@@ -284,7 +270,7 @@ public class FileDialog extends ListActivity {
 
     private void addItem(ArrayList<HashMap<String, Object>> mList,
                          String fileName, int imageId) {
-        HashMap<String, Object> item = new HashMap<String, Object>();
+        HashMap<String, Object> item = new HashMap<>();
         item.put(ITEM_KEY, fileName);
         item.put(ITEM_IMAGE, imageId);
         mList.add(item);
@@ -302,11 +288,7 @@ public class FileDialog extends ListActivity {
                     .setTitle("Does not exist.")
                     .setMessage(file.getName())
                     .setPositiveButton("OK",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                }
+                            (dialog, which) -> {
                             }).show();
             return;
         }
@@ -326,13 +308,7 @@ public class FileDialog extends ListActivity {
                                 "[" + file.getName() + "] "
                                         + getText(R.string.cant_read_folder))
                         .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-
-                                    @Override
-                                    public void onClick(DialogInterface dialog,
-                                                        int which) {
-
-                                    }
+                                (dialog, which) -> {
                                 }).show();
             }
         } else {

@@ -66,11 +66,9 @@ public class TabHoster extends FragmentActivity {
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.permissions_request_title))
                 .setMessage(getString(R.string.permissions_request))
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // continue with delete
-                        requestMyPermissions();
-                    }
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    // continue with delete
+                    requestMyPermissions();
                 })
                 .setCancelable(false)
                 .show();
@@ -318,27 +316,16 @@ public class TabHoster extends FragmentActivity {
         }
     }
 
-    public boolean isFirstLaunch() {
-        SharedPreferences settings = getPreferences(0);
-        return !settings.getBoolean("gratitude", false);
-    }
-
-    private IPLayerErrorListener playerErrorListener = new IPLayerErrorListener() {
-        @Override
-        public void onError(String message, int errorCode) {
-            final String s = String.format("%s\n(error code: %d)", message, errorCode);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                s, Toast.LENGTH_SHORT);
-                        toast.show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
+    private IPLayerErrorListener playerErrorListener = (message, errorCode) -> {
+        final String s = String.format("%s\n(error code: %d)", message, errorCode);
+        runOnUiThread(() -> {
+            try {
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        s, Toast.LENGTH_SHORT);
+                toast.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     };
 }

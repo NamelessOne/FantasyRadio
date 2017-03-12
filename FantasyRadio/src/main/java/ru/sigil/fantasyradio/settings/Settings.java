@@ -86,7 +86,7 @@ public class Settings {
             if (!saveDir.endsWith("/"))
                 saveDir = saveDir + "/";
             editor.putString("saveDir", saveDir);
-            editor.commit();
+            editor.apply();
             setSaveDir(saveDir);
         }
     }
@@ -103,7 +103,7 @@ public class Settings {
         SharedPreferences.Editor editor = Settings.getSettings().edit();
         editor.putString("login", getLogin());
         editor.putString("password", getPassword());
-        editor.commit();
+        editor.apply();
     }
 
     public static void saveGratitude(boolean gratitude)
@@ -111,6 +111,6 @@ public class Settings {
         setGratitude(gratitude);
         SharedPreferences.Editor editor = Settings.getSettings().edit();
         editor.putBoolean("gratitude", getGratitude());
-        editor.commit();
+        editor.apply();
     }
 }
