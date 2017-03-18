@@ -10,7 +10,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/FantasyRadio" />
-            <option value="$PROJECT_DIR$/../bassplayerlib/bassplayerlib" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

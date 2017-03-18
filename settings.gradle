@@ -1,2 +1,1 @@
-include ':FantasyRadio', ':bassplayerlib'
-project(':bassplayerlib').projectDir = new File(settingsDir, '../bassplayerlib/bassplayerlib')
+include ':FantasyRadio'
