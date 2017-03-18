@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 25
@@ -79,3 +78,5 @@ dependencies {
     provided 'javax.annotation:jsr250-api:1.0'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.0'
 }
+
+apply plugin: 'com.google.gms.google-services'
