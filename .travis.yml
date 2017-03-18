@@ -10,6 +10,7 @@ android:
     - android-25
 
 script:
+   - ls
    - chmod +x ./gradlew
    - ./gradlew build connectedCheck
    - ./gradlew test
