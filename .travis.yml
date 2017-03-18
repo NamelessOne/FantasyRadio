@@ -19,5 +19,5 @@ licenses:
 
 script:
    - chmod +x ./gradlew
-   - ./gradlew build connectedCheck
+   - ./gradlew build connectedCheck -x lint 
    - ./gradlew test
