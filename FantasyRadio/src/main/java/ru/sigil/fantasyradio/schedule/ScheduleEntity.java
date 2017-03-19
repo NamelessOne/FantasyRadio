@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Элемент расписания радиостанции.
  * Содержит дату начала и конца трансляции, название, ссылку на изображение (если есть), текст с подробностями.
  */
-class ScheduleEntity implements Serializable{
+public class ScheduleEntity implements Serializable{
     private DateTime startDate;
     private DateTime endDate;
     private String title;

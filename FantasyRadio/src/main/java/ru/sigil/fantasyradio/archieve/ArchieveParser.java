@@ -1,7 +1,5 @@
 package ru.sigil.fantasyradio.archieve;
 
-import android.util.Log;
-
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -36,9 +34,7 @@ public class ArchieveParser {
                     .timeout(45 * 1000).followRedirects(true)
                     .ignoreContentType(true).get().toString());
             Elements mp3Elems = doc.getElementsByAttributeValue("name", "FlashVars");
-            Log.v("count flash vars", String.valueOf(mp3Elems.size()));//8 - норма
             Elements tableElems = doc.getElementsByTag("table");
-            Log.v("count table elems", String.valueOf(tableElems.size()));//
             Elements trElems = new Elements();
             for (Element element : tableElems) {
                 if (element.attributes().get("style")
@@ -46,7 +42,6 @@ public class ArchieveParser {
                     trElems = element.getElementsByTag("tr");
                 }
             }
-            Log.v("count tr elems", String.valueOf(trElems.size()));//
             for (int i = 0; i < mp3Elems.size(); i++) {
                 ArchieveEntity ae = new ArchieveEntity();
                 int x = mp3Elems.get(i).attr("value").lastIndexOf('=');
