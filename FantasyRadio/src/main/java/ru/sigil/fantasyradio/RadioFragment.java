@@ -263,31 +263,28 @@ public class RadioFragment extends Fragment {
      * @param v Вьюха, в тэге содержится строка с битрэйтом (URL)
      */
 
-    private OnClickListener bitrateClick = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_URL) {
-                if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
-                    ((TabHoster) getActivity()).getmInterstitialAd().show();
-                }
+    private OnClickListener bitrateClick = v -> {
+        if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_URL) {
+            if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
+                ((TabHoster) getActivity()).getmInterstitialAd().show();
             }
-            mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
-            mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
-            mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
-            mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
-                    getResources().getColor(R.color.bitrate_element));
-            v.setBackgroundColor(getResources().getColor(
-                    R.color.bitrate_element_active));
-            //TODO фабричный метод
-            player.setStream(radioStreamFactory.createStreamWithBitrate(bitrates.get(Integer.valueOf(v.getTag().toString()))));
-            if (player.currentState() == PlayState.PLAY) {
-                ImageView b = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
-                b.performClick();
-                b.performClick();
-            }
+        }
+        mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
+                getResources().getColor(R.color.bitrate_element));
+        v.setBackgroundColor(getResources().getColor(
+                R.color.bitrate_element_active));
+        //TODO фабричный метод
+        player.setStream(radioStreamFactory.createStreamWithBitrate(bitrates.get(Integer.valueOf(v.getTag().toString()))));
+        if (player.currentState() == PlayState.PLAY) {
+            ImageView b = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+            b.performClick();
+            b.performClick();
         }
     };
 

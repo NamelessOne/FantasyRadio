@@ -2,7 +2,6 @@ package ru.sigil.fantasyradio;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 /**
@@ -20,10 +19,8 @@ public class About extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        tv.setOnClickListener(CloseClickListener);
+        tv.setOnClickListener(v -> stop());
     }
-
-    private View.OnClickListener CloseClickListener = v -> stop();
 
     private void stop() {
         finish();

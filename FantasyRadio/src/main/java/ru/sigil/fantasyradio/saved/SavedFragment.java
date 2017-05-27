@@ -57,11 +57,9 @@ public class SavedFragment extends AbstractListFragment {
     }
 
     public void notifyAdapter() {
-        View.OnClickListener deleteClickListener = v -> deleteClick(v);
-        View.OnClickListener playClickListener = v -> playClick(v);
         adapter = new MP3ArrayAdapter(getActivity().getBaseContext(),
                 mp3Collection.getCursor(),
-                deleteClickListener, playClickListener
+                v -> deleteClick(v), v -> playClick(v)
         );
         getLv().setAdapter(adapter);
     }

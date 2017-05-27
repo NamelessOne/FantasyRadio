@@ -14,10 +14,8 @@ public class Gratitude extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.grtitude);
         TextView tv = (TextView) findViewById(R.id.thx_content);
-        tv.setOnClickListener(CloselickListener);
+        tv.setOnClickListener(v -> stop());
     }
-
-    private View.OnClickListener CloselickListener = v -> stop();
 
     private void stop() {
         finish();
