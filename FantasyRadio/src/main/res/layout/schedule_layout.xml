@@ -3,34 +3,29 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:background="@color/program_background"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <Button
         android:id="@+id/schedule_refresh_button"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_height="48dp"
         android:background="@drawable/refresh_states"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"
+        android:padding="4dp"
         android:textColor="@color/common_google_signin_btn_text_light_default"
         android:text="@string/refresh" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_weight="1"
         android:background="@color/main_background"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:layout_marginTop="8dp">
 
         <ExpandableListView
             android:id="@+id/ScheduleListView"
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="380"
+            android:layout_height="match_parent"
             android:cacheColorHint="#00000000"
             android:dividerHeight="1dp"
             android:groupIndicator="@null" />

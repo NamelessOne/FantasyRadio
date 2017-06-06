@@ -3,178 +3,176 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:background="@color/program_background"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="10dp"
         android:layout_weight="1"
         android:background="@color/main_background">
 
         <LinearLayout
+            android:id="@+id/mainHeaderLL"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="5dp"
-                android:weightSum="300">
+                android:layout_height="48dp"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/streamButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="40"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:adjustViewBounds="true"
+                    android:padding="4dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/play_states" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="10" />
-
                 <ImageView
                     android:id="@+id/recordButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_gravity="bottom"
-                    android:layout_weight="30"
                     android:adjustViewBounds="true"
+                    android:padding="8dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/rec" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="10" />
 
                 <TextView
                     android:id="@+id/textView1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="210" />
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="210"
+                    android:padding="4dp" />
             </LinearLayout>
 
+            <!-- Линия -->
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="1dp"
+                android:layout_height="2dp"
                 android:layout_margin="5dp"
                 android:background="@android:color/white" />
 
+            <!-- Громкость и битрейт-->
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_height="48dp"
+                android:layout_margin="0dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="5dp"
-                android:weightSum="300">
+                android:padding="4dp">
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="205"
-                    android:text="@string/stream_quality" />
+                <Spinner
+                    android:id="@+id/stream_quality_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:entries="@array/stream_qualities"
+                    android:minWidth="144dp" />
 
-                <SeekBar
-                    android:id="@+id/mainVolumeSeekBar"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_weight="95"
-                    android:progressDrawable="@drawable/sb_progress"
-                    android:thumb="@drawable/progress_control" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@+id/mainVolumeSeekBar"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_volume_down" />
+
+                    <SeekBar
+                        android:id="@+id/mainVolumeSeekBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:maxWidth="144dp"
+                        android:minWidth="96dp"
+                        android:padding="4dp"
+                        android:progressDrawable="@drawable/sb_progress"
+                        android:thumb="@drawable/progress_control" />
+                </RelativeLayout>
             </LinearLayout>
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/sleepingTimerLabel"
+            android:layout_below="@id/mainHeaderLL">
 
             <LinearLayout
-                android:layout_width="fill_parent"
+                android:id="@+id/currentInfoLL"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/currentInfoImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="144dp"
+                    android:maxHeight="96dp"
+                    android:padding="4dp" />
 
                 <TextView
-                    android:id="@+id/bitrateText0"
-                    android:layout_width="fill_parent"
+                    android:id="@+id/currentInfoAbout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/bitrate_element"
-                    android:clickable="true"
-                    android:padding="5dp"
-                    android:tag="0"
-                    android:text="@string/stream_AAC16" />
-
-                <TextView
-                    android:id="@+id/bitrateText1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/bitrate_element"
-                    android:clickable="true"
-                    android:padding="5dp"
-                    android:tag="1"
-                    android:text="@string/stream_MP332" />
-
-                <TextView
-                    android:id="@+id/bitrateText4"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/bitrate_element"
-                    android:clickable="true"
-                    android:padding="5dp"
-                    android:tag="4"
-                    android:text="@string/stream_MP396" />
-
-                <TextView
-                    android:id="@+id/bitrateText3"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/bitrate_element"
-                    android:clickable="true"
-                    android:padding="5dp"
-                    android:tag="3"
-                    android:text="@string/stream_AAC112" />
-
+                    android:ellipsize="end"
+                    android:maxLines="50"
+                    android:padding="4dp" />
             </LinearLayout>
+        </ScrollView>
+
+
+        <TextView
+            android:id="@+id/sleepingTimerLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/sleepingTimerLL"
+            android:paddingLeft="5dp"
+            android:text="@string/sleep_timer" />
+
+        <LinearLayout
+            android:id="@+id/sleepingTimerLL"
+            android:layout_width="fill_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/checkBox1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
-                android:text="@string/sleep_timer" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp">
-
-                <CheckBox
-                    android:id="@+id/checkBox1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/tvChangeTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:paddingLeft="5dp" />
-            </LinearLayout>
-
+                android:id="@+id/tvChangeTime"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:clickable="true"
+                android:gravity="center_vertical"
+                android:padding="5dp" />
         </LinearLayout>
         <!-- Your FAB implementation -->
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
-            android:layout_margin="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
+            android:layout_margin="5dp"
             android:onClick="fabButtonClick"
-            android:src="@drawable/fab"/>
+            android:src="@drawable/fab" />
     </RelativeLayout>
 </LinearLayout>

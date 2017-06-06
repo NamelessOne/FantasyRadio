@@ -3,6 +3,7 @@ package ru.sigil.fantasyradio.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import ru.sigil.fantasyradio.currentstreraminfo.CurrentStreamInfoService;
 import ru.sigil.fantasyradio.FantasyRadioNotificationReceiver;
 import ru.sigil.fantasyradio.MyApp;
 import ru.sigil.fantasyradio.RadioFragment;
@@ -44,6 +45,8 @@ public interface PlayerComponent {
     void inject(FantasyRadioNotificationManager fantasyRadioNotificationManager);
 
     void inject(AlarmReceiever alarmReceiever);
+
+    void inject(CurrentStreamInfoService alarmReceiever);
 
     final class Initializer {
         private Initializer() {

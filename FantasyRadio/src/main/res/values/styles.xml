@@ -1,6 +1,4 @@
 <resources>
-
     <style name="AppTheme" parent="android:Theme.Light" />
     <style name="NotificationTextView" parent="android:TextAppearance.StatusBar.EventContent" />
-
 </resources>

@@ -78,6 +78,13 @@
     <string name="widget_MP332">32</string>
     <string name="widget_MP396">96</string>
 
+    <string-array name="stream_qualities">
+        <item>@string/stream_AAC16</item>
+        <item>@string/stream_MP332</item>
+        <item>@string/stream_MP396</item>
+        <item>@string/stream_AAC112</item>
+    </string-array>
+
     <string-array name="week">
         <item>Понедельник</item>
         <item>Вторник</item>

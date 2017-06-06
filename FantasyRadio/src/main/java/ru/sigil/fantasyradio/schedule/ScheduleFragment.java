@@ -1,8 +1,6 @@
 package ru.sigil.fantasyradio.schedule;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,10 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.joda.time.LocalDate;
 
@@ -54,11 +48,6 @@ public class ScheduleFragment extends Fragment {
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         View scheduleFragmentView = inflater.inflate(R.layout.schedule_layout, container, false);
         scheduleFragmentView.findViewById(R.id.schedule_refresh_button).setOnClickListener(v -> refreshClick(v));
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-            .cacheOnDisk(true).build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity().getBaseContext())
-                .defaultDisplayImageOptions(defaultOptions).build();
-        ImageLoader.getInstance().init(config);
         lv = (ExpandableListView) scheduleFragmentView.findViewById(R.id.ScheduleListView);
         if (arr.size() > 0) {
             ScheduleListAdapter adapter = new ScheduleListAdapter(getActivity(), arr);

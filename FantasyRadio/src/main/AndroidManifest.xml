@@ -2,8 +2,8 @@
     package="ru.sigil.fantasyradio"
     android:hardwareAccelerated="false"
     android:installLocation="auto"
-    android:versionCode="132"
-    android:versionName="1.32">
+    android:versionCode="133"
+    android:versionName="1.33">
 
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.INTERNET" />

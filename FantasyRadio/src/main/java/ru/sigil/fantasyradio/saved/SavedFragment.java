@@ -3,7 +3,6 @@ package ru.sigil.fantasyradio.saved;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,7 +29,6 @@ import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
-import ru.sigil.fantasyradio.utils.Bitrate;
 import ru.sigil.fantasyradio.utils.RadioStream;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
 

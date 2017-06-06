@@ -14,15 +14,17 @@ import android.support.v4.app.Fragment;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.un4seen.bass.BASS;
 
 import java.util.Calendar;
@@ -33,21 +35,25 @@ import javax.inject.Inject;
 import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.IPlayerEventListener;
 import ru.sigil.bassplayerlib.PlayState;
+import ru.sigil.fantasyradio.currentstreraminfo.CurrentStreamInfoService;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
 import ru.sigil.fantasyradio.utils.Bitrate;
 import ru.sigil.fantasyradio.utils.RadioStream;
 import ru.sigil.fantasyradio.utils.RadioStreamFactory;
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider;
+import ru.sigil.log.LogManager;
 
 public class RadioFragment extends Fragment {
-
+    private static final String TAG = RadioFragment.class.getSimpleName();
     private int hour;
     private int minute;
     private AlarmManager am;
     private PendingIntent sender;
     private CheckBox cb1;
     private View mainFragmentView;
+    private String currentStreamAbout = "";
+    private String currentStreamImageUrl = "";
     public final int TIME_DIALOG_ID = 999;
     private static final int AD_SHOW_PROBABILITY_REC = 25;
     private static final int AD_SHOW_PROBABILITY_URL = 4;
@@ -59,14 +65,17 @@ public class RadioFragment extends Fragment {
         bitrates = new SparseArray<>();
         bitrates.put(0, Bitrate.aac_16);
         bitrates.put(1, Bitrate.mp3_32);
+        bitrates.put(2, Bitrate.mp3_96);
         bitrates.put(3, Bitrate.aac_112);
-        bitrates.put(4, Bitrate.mp3_96);
     }
 
     @Inject
     IPlayer<RadioStream> player;
     @Inject
     RadioStreamFactory radioStreamFactory;
+    @Inject
+    CurrentStreamInfoService currentStreamInfoService;
+
 
     private Random random;
 
@@ -85,6 +94,43 @@ public class RadioFragment extends Fragment {
             }
         }
     };
+
+    private final static int CURRENT_INFO_UPDATE_INTERVAL = 1000 * 60; //1 minute
+    Handler currentInfoUpdateHandler = new Handler();
+
+    Runnable currentInfoUpdateHandlerTask = new Runnable() {
+        @Override
+        public void run() {
+            //doSomething();
+            LogManager.d(TAG, "UPDATE STREAM INFO");
+            //TODO Передавать это в функцию коллбэком?
+            currentStreamInfoService.updateInfo((about, imageUrl) -> getActivity().runOnUiThread(() ->
+                    {
+                        currentStreamAbout = about;
+                        currentStreamImageUrl = imageUrl;
+                        updateCurrentStreamInfo(about, imageUrl);
+                    }
+            ));
+            currentInfoUpdateHandler.postDelayed(currentInfoUpdateHandlerTask, CURRENT_INFO_UPDATE_INTERVAL);
+        }
+    };
+
+    private void updateCurrentStreamInfo(String about, String imageUrl) {
+        ((TextView) mainFragmentView.findViewById(R.id.currentInfoAbout)).setText(about);
+        if (imageUrl.length() > 0) {
+            ImageLoader.getInstance().displayImage("http://fantasyradio.ru/" + imageUrl, (ImageView) mainFragmentView.findViewById(R.id.currentInfoImage));
+        } else {
+            ((ImageView) mainFragmentView.findViewById(R.id.currentInfoImage)).setImageDrawable(null);
+        }
+    }
+
+    void startRepeatingCurrentInfoUpdatingTask() {
+        currentInfoUpdateHandlerTask.run();
+    }
+
+    void stopRepeatingCurrentInfoUpdatingTask() {
+        currentInfoUpdateHandler.removeCallbacks(currentInfoUpdateHandlerTask);
+    }
 
     private Random getRandom() {
         if (random == null)
@@ -128,10 +174,7 @@ public class RadioFragment extends Fragment {
         //------------------------------------------------------------------------------------------
         ImageView streamButton = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
         streamButton.setOnClickListener(v -> streamButtonClick(v));
-        mainFragmentView.findViewById(R.id.bitrateText0).setOnClickListener(bitrateClick);
-        mainFragmentView.findViewById(R.id.bitrateText1).setOnClickListener(bitrateClick);
-        mainFragmentView.findViewById(R.id.bitrateText3).setOnClickListener(bitrateClick);
-        mainFragmentView.findViewById(R.id.bitrateText4).setOnClickListener(bitrateClick);
+        //TODO устанавливаем текущий bitrate
         ImageView recordButton = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
         recordButton.setOnClickListener(v -> streamRecordClick());
         mainFragmentView.findViewById(R.id.tvChangeTime).setOnClickListener(v -> onTimerClick(v));
@@ -170,6 +213,9 @@ public class RadioFragment extends Fragment {
     }
 
     private void initView() {
+        Spinner spinner = (Spinner) mainFragmentView.findViewById(R.id.stream_quality_spinner);
+        spinner.setSelection(bitrates.keyAt(bitrates.indexOfValue(player.currentStream().getBitrate())));
+        spinner.setOnItemSelectedListener(bitrateSelected);
         SeekBar sb = (SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar);
         sb.setProgress((int) (player.getVolume() * 100));
         sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -186,33 +232,6 @@ public class RadioFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-
-        mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        switch (player.currentStream().getBitrate()) {
-            case aac_16:
-                mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
-                        getResources().getColor(R.color.bitrate_element_active));
-                break;
-            case mp3_32:
-                mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
-                        getResources().getColor(R.color.bitrate_element_active));
-                break;
-            case mp3_96:
-                mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
-                        getResources().getColor(R.color.bitrate_element_active));
-                break;
-            case aac_112:
-                mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
-                        getResources().getColor(R.color.bitrate_element_active));
-                break;
-        }
 
         ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
         if (player.isRecActive()) {
@@ -249,6 +268,7 @@ public class RadioFragment extends Fragment {
             default:
                 break;
         }
+        updateCurrentStreamInfo(currentStreamAbout, currentStreamImageUrl);
     }
 
     @Override
@@ -263,35 +283,42 @@ public class RadioFragment extends Fragment {
      * @param v Вьюха, в тэге содержится строка с битрэйтом (URL)
      */
 
-    private OnClickListener bitrateClick = v -> {
-        if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_URL) {
-            if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
-                ((TabHoster) getActivity()).getmInterstitialAd().show();
+    private AdapterView.OnItemSelectedListener bitrateSelected = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (position != bitrates.keyAt(bitrates.indexOfValue(player.currentStream().getBitrate()))) {
+                if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_URL) {
+                    if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
+                        ((TabHoster) getActivity()).getmInterstitialAd().show();
+                    }
+                }
+                player.setStream(radioStreamFactory.createStreamWithBitrate(bitrates.get(position)));
+                if (player.currentState() == PlayState.PLAY) {
+                    ImageView b = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+                    b.performClick();
+                    b.performClick();
+                }
             }
+
         }
-        mainFragmentView.findViewById(R.id.bitrateText0).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText1).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText3).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        mainFragmentView.findViewById(R.id.bitrateText4).setBackgroundColor(
-                getResources().getColor(R.color.bitrate_element));
-        v.setBackgroundColor(getResources().getColor(
-                R.color.bitrate_element_active));
-        //TODO фабричный метод
-        player.setStream(radioStreamFactory.createStreamWithBitrate(bitrates.get(Integer.valueOf(v.getTag().toString()))));
-        if (player.currentState() == PlayState.PLAY) {
-            ImageView b = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
-            b.performClick();
-            b.performClick();
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
         }
     };
 
     @Override
     public void onResume() {
         initView();
+        startRepeatingCurrentInfoUpdatingTask();
         super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        stopRepeatingCurrentInfoUpdatingTask();
+        super.onPause();
     }
 
     /**

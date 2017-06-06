@@ -64,8 +64,11 @@ public class MP3ArrayAdapter extends CursorAdapter {
         TextView messageArtistView = (TextView) view.findViewById(R.id.MP3artist);
         SeekBar progressSeekBar = (SeekBar) view.findViewById(R.id.MP3SeekBar1);
         SeekBar volumeSeekBar = (SeekBar) view.findViewById(R.id.volumeSeekBar);
-        messageArtistView.setText(message.getArtist() + " / "
-                + message.getTime() + " / " + message.getTitle());
+        String artist = message.getArtist() != null && message.getArtist().length() > 0 ?
+                message.getArtist() + " / " : "";
+        String time = message.getTime() != null && message.getTime().length() > 0 ?
+                message.getTime() + " / " : "";
+        messageArtistView.setText(artist + time + message.getTitle());
         ImageButton deleteBtn = (ImageButton) view.findViewById(R.id.deleteMP3Button);
         HashMap<String, String> messageMap = new HashMap<>();
         messageMap.put("artist", message.getArtist());
@@ -116,7 +119,7 @@ public class MP3ArrayAdapter extends CursorAdapter {
         });
 
         playBtn.setImageResource(R.drawable.play_states);
-        if (player.getCurrentMP3Entity()!=null && message.getDirectory().equals(player.getCurrentMP3Entity().getDirectory()) &&
+        if (player.getCurrentMP3Entity() != null && message.getDirectory().equals(player.getCurrentMP3Entity().getDirectory()) &&
                 (player.currentState() == PlayState.PLAY_FILE || player.currentState() == PlayState.PAUSE)) {
             progressSeekBar.setVisibility(View.VISIBLE);
             volumeSeekBar.setVisibility(View.VISIBLE);

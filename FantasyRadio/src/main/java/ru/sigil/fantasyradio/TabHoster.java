@@ -1,7 +1,6 @@
 package ru.sigil.fantasyradio;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -25,6 +24,9 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import javax.inject.Inject;
 
@@ -107,7 +109,6 @@ public class TabHoster extends FragmentActivity {
             if (getmInterstitialAd() == null) {
                 mInterstitialAd = new InterstitialAd(this);
                 getmInterstitialAd().setAdUnitId(getString(R.string.admob_publisher_id));
-
                 getmInterstitialAd().setAdListener(new AdListener() {
                     @Override
                     public void onAdClosed() {
@@ -118,6 +119,11 @@ public class TabHoster extends FragmentActivity {
                 requestNewInterstitial();
             }
         }
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisk(true).build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getBaseContext())
+                .defaultDisplayImageOptions(defaultOptions).build();
+        ImageLoader.getInstance().init(config);
 
     }
 
