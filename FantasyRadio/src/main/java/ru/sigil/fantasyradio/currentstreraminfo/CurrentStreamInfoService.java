@@ -1,4 +1,4 @@
-package ru.sigil.fantasyradio.CurrentStreamInfo;
+package ru.sigil.fantasyradio.currentstreraminfo;
 
 import org.json.JSONObject;
 
@@ -8,6 +8,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import javax.inject.Inject;
+
+
 /**
  * Created by
  * namelessone on 02.06.17.
@@ -15,8 +18,14 @@ import java.net.URL;
 
 public class CurrentStreamInfoService {
 
-    private String imageURL;
-    private String about;
+    private String imageURL = "";
+    private String about = "";
+
+    @Inject
+    public CurrentStreamInfoService()
+    {
+
+    }
 
     public void updateInfo(ICurrentStreamInfoUpdater callback) {
         new Thread(() -> {

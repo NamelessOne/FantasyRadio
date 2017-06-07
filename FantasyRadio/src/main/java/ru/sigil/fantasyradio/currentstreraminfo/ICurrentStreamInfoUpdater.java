@@ -1,4 +1,4 @@
-package ru.sigil.fantasyradio.CurrentStreamInfo;
+package ru.sigil.fantasyradio.currentstreraminfo;
 
 /**
  * Created by
