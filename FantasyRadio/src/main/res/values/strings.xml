@@ -8,7 +8,9 @@
     <color name="refresh_border">#124E67</color>
     <color name="refresh_background_active">#008DD2</color>
     <color name="refresh_border_active">#124E67</color>
-    
+    <color name="menu_item_active">#124E67</color>
+    <color name="menu_item">#4cb7e5</color>
+
     <color name="widget_border">#0C648C</color>
     <color name="widget_author">#0C648C</color>
     <color name="widget_quality_active_background">#0C648C</color>

@@ -1,4 +1,8 @@
 <resources>
-    <style name="AppTheme" parent="android:Theme.Light" />
+
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:itemBackground">@drawable/menu_item_states</item>
+    </style>>
     <style name="NotificationTextView" parent="android:TextAppearance.StatusBar.EventContent" />
+
 </resources>
