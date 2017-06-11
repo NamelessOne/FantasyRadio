@@ -46,12 +46,12 @@ class ArchieveListAdapter extends ArrayAdapter<ArchieveEntity> {
         ArchieveEntity message = getItem(position);
         TextView time = null;
         if (row != null) {
-            time = (TextView) row.findViewById(R.id.ArchieveItemTime);
+            time = row.findViewById(R.id.ArchieveItemTime);
         }
         time.setText(message.getTime());
-        TextView title = (TextView) row.findViewById(R.id.ArchieveItemTitle);
+        TextView title = row.findViewById(R.id.ArchieveItemTitle);
         title.setText(message.getName());
-        ImageView downloadButton = (ImageView) row
+        ImageView downloadButton = row
                 .findViewById(R.id.archieveItemDownloadButton);
         downloadButton.setTag(message);
         downloadButton.setOnClickListener(downloadClickListener);

@@ -13,7 +13,7 @@ public class Gratitude extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.grtitude);
-        TextView tv = (TextView) findViewById(R.id.thx_content);
+        TextView tv = findViewById(R.id.thx_content);
         tv.setOnClickListener(v -> stop());
     }
 

@@ -19,7 +19,6 @@ public class DownloadThread extends Thread {
     private MP3Entity mp3Entity;
     private Handler errorHandler;
 
-    Object lock = new Object();
     private final static String[] ReservedChars = {"|", "\\", "?", "*", "<", "\"",
             ":", ">", "+", "[", "]", "/", "'", "%"};
 

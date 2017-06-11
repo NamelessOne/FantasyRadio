@@ -28,6 +28,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import java.util.Locale;
+
 import javax.inject.Inject;
 
 import ru.sigil.bassplayerlib.IPLayerErrorListener;
@@ -103,7 +105,7 @@ public class TabHoster extends FragmentActivity {
         SharedPreferences settings = getPreferences(0);
         Settings.setSettings(settings);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        ViewPager mViewPager = (ViewPager) findViewById(R.id.pager);
+        ViewPager mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         if (BuildConfig.FLAVOR.equals("free")) {
             if (getmInterstitialAd() == null) {
@@ -217,7 +219,7 @@ public class TabHoster extends FragmentActivity {
                 if (!settings.getBoolean("gratitude", false)) {
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putBoolean("gratitude", true);
-                    editor.commit();
+                    editor.apply();
                     Intent intent = new Intent(getApplicationContext(), Gratitude.class);
                     startActivity(intent);
                     return true;
@@ -323,7 +325,7 @@ public class TabHoster extends FragmentActivity {
     }
 
     private IPLayerErrorListener playerErrorListener = (message, errorCode) -> {
-        final String s = String.format("%s\n(error code: %d)", message, errorCode);
+        final String s = String.format(Locale.getDefault(), "%s\n(error code: %d)", message, errorCode);
         runOnUiThread(() -> {
             try {
                 Toast toast = Toast.makeText(getApplicationContext(),

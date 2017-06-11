@@ -11,12 +11,10 @@ import ru.sigil.fantasyradio.R;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,8 +82,8 @@ public class FileDialog extends ListActivity {
         setResult(RESULT_CANCELED, getIntent());
 
         setContentView(R.layout.file_dialog_main);
-        myPath = (TextView) findViewById(R.id.path);
-        mFileName = (EditText) findViewById(R.id.fdEditTextFile);
+        myPath = findViewById(R.id.path);
+        mFileName = findViewById(R.id.fdEditTextFile);
 
         // Read options
         options = new FileDialogOptions(getIntent());
@@ -97,7 +95,7 @@ public class FileDialog extends ListActivity {
 
         inputManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
-        selectButton = (Button) findViewById(R.id.fdButtonSelect);
+        selectButton = findViewById(R.id.fdButtonSelect);
         // selectButton.setEnabled(false);
         selectButton.setOnClickListener(v -> {
             /*
@@ -107,7 +105,7 @@ public class FileDialog extends ListActivity {
             returnFilename();
         });
 
-        final Button newButton = (Button) findViewById(R.id.fdButtonNew);
+        final Button newButton = findViewById(R.id.fdButtonNew);
         newButton.setOnClickListener(v -> {
             setCreateVisible(v);
 
@@ -119,8 +117,8 @@ public class FileDialog extends ListActivity {
             newButton.setEnabled(false);
         }
 
-        layoutSelect = (LinearLayout) findViewById(R.id.fdLinearLayoutSelect);
-        layoutCreate = (LinearLayout) findViewById(R.id.fdLinearLayoutCreate);
+        layoutSelect = findViewById(R.id.fdLinearLayoutSelect);
+        layoutCreate = findViewById(R.id.fdLinearLayoutCreate);
         layoutCreate.setVisibility(View.GONE);
 
         // If the New button is disabled and it's one click select, hide the
@@ -129,9 +127,9 @@ public class FileDialog extends ListActivity {
             layoutSelect.setVisibility(View.GONE);
         }
 
-        final Button cancelButton = (Button) findViewById(R.id.fdButtonCancel);
+        final Button cancelButton = findViewById(R.id.fdButtonCancel);
         cancelButton.setOnClickListener(v -> setSelectVisible(v));
-        final Button createButton = (Button) findViewById(R.id.fdButtonCreate);
+        final Button createButton = findViewById(R.id.fdButtonCreate);
         createButton.setOnClickListener(v -> {
             // Тут написать создание папки
             if (mFileName.getText().length() > 0) {

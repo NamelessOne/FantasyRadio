@@ -61,15 +61,15 @@ public class MP3ArrayAdapter extends CursorAdapter {
                 cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.DIRECTORY)),
                 cursor.getString(cursor.getColumnIndexOrThrow(MP3Collection.TIME)));
 
-        TextView messageArtistView = (TextView) view.findViewById(R.id.MP3artist);
-        SeekBar progressSeekBar = (SeekBar) view.findViewById(R.id.MP3SeekBar1);
-        SeekBar volumeSeekBar = (SeekBar) view.findViewById(R.id.volumeSeekBar);
+        TextView messageArtistView = view.findViewById(R.id.MP3artist);
+        SeekBar progressSeekBar = view.findViewById(R.id.MP3SeekBar1);
+        SeekBar volumeSeekBar = view.findViewById(R.id.volumeSeekBar);
         String artist = message.getArtist() != null && message.getArtist().length() > 0 ?
                 message.getArtist() + " / " : "";
         String time = message.getTime() != null && message.getTime().length() > 0 ?
                 message.getTime() + " / " : "";
         messageArtistView.setText(artist + time + message.getTitle());
-        ImageButton deleteBtn = (ImageButton) view.findViewById(R.id.deleteMP3Button);
+        ImageButton deleteBtn = view.findViewById(R.id.deleteMP3Button);
         HashMap<String, String> messageMap = new HashMap<>();
         messageMap.put("artist", message.getArtist());
         messageMap.put("directory", message.getDirectory());
@@ -77,7 +77,7 @@ public class MP3ArrayAdapter extends CursorAdapter {
         messageMap.put("title", message.getTitle());
         deleteBtn.setTag(messageMap);
         deleteBtn.setOnClickListener(deleteCLickListener);
-        final ImageButton playBtn = (ImageButton) view.findViewById(R.id.MP3buttonPlay);
+        final ImageButton playBtn = view.findViewById(R.id.MP3buttonPlay);
         playBtn.setTag(message);
         playBtn.setOnClickListener(playCLickListener);
         progressSeekBar.setTag(message.getDirectory());

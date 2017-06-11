@@ -13,7 +13,6 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -47,8 +46,8 @@ public class ScheduleFragment extends Fragment {
         LogManager.d(TAG, "onCreateView");
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         View scheduleFragmentView = inflater.inflate(R.layout.schedule_layout, container, false);
-        scheduleFragmentView.findViewById(R.id.schedule_refresh_button).setOnClickListener(v -> refreshClick(v));
-        lv = (ExpandableListView) scheduleFragmentView.findViewById(R.id.ScheduleListView);
+        scheduleFragmentView.findViewById(R.id.schedule_refresh_button).setOnClickListener(this::refreshClick);
+        lv = scheduleFragmentView.findViewById(R.id.ScheduleListView);
         if (arr.size() > 0) {
             ScheduleListAdapter adapter = new ScheduleListAdapter(getActivity(), arr);
             lv.setAdapter(adapter);
@@ -109,9 +108,8 @@ public class ScheduleFragment extends Fragment {
                 ArrayList<ScheduleEntity> arr2 = new ArrayList<>();
                 LocalDate ld = LocalDate.now();
                 ld = ld.plusDays(i);
-                for (Iterator<ScheduleEntity> it = scheduleEntityesCollection.iterator(); it.hasNext(); ) {
-                    ScheduleEntity scheduleEntity = it.next();
-                    if (scheduleEntity.getStartDate()!=null&&scheduleEntity.getStartDate().getDayOfYear() == ld
+                for (ScheduleEntity scheduleEntity : scheduleEntityesCollection) {
+                    if (scheduleEntity.getStartDate() != null && scheduleEntity.getStartDate().getDayOfYear() == ld
                             .getDayOfYear()) {
                         arr2.add(scheduleEntity);
                     }

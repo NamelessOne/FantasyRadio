@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
+import java.util.Locale;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 

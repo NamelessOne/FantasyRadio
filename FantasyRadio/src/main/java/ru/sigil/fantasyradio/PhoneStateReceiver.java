@@ -19,14 +19,14 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         try {
             String str = intent.getAction();
             if ("android.intent.action.PHONE_STATE".equals(str))
-                inComing(context, intent);
+                inComing(intent);
         }catch (Exception e)
         {
             e.printStackTrace();
         }
     }
 
-    private void inComing(Context context, Intent intent) {
+    private void inComing(Intent intent) {
         String callState = intent.getStringExtra("state");
         if ("RINGING".equals(callState) || "OFFHOOK".equals(callState)) {
             vol = BASS.BASS_GetVolume();

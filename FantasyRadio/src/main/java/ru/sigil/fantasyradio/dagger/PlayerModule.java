@@ -22,7 +22,7 @@ import ru.sigil.fantasyradio.utils.TrackFactory;
 @Module
 public class PlayerModule {
 
-    final Application mApplication;
+    private final Application mApplication;
 
     public PlayerModule(Application application) {
         mApplication = application;

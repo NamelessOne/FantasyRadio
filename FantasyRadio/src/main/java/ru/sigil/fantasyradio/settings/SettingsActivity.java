@@ -22,11 +22,11 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
-        EditText et = (EditText) findViewById(R.id.settingsMP3SaveFolder);
+        EditText et = findViewById(R.id.settingsMP3SaveFolder);
         et.setText(String.valueOf(Settings.getSaveDir()));
         // --------------------------------------------------------
         findViewById(R.id.settingsButtonCancel).setOnClickListener(
-                CancelClickListener);
+                v -> finish());
         findViewById(R.id.settingsButtonSave).setOnClickListener(
                 SaveClickListener);
     }
@@ -42,9 +42,8 @@ public class SettingsActivity extends Activity {
     }
 
 
-    private View.OnClickListener CancelClickListener = v -> finish();
     private View.OnClickListener SaveClickListener = v -> {
-        EditText et = (EditText) findViewById(R.id.settingsMP3SaveFolder);
+        EditText et = findViewById(R.id.settingsMP3SaveFolder);
         String s = et.getText().toString();
         Settings.saveSaveDir(s);
         finish();
@@ -73,7 +72,7 @@ public class SettingsActivity extends Activity {
                 filePath = filePath.replace(mntSDcard, "");
             }
             Log.v("folder", filePath);
-            EditText et = (EditText) findViewById(R.id.settingsMP3SaveFolder);
+            EditText et = findViewById(R.id.settingsMP3SaveFolder);
             et.setText(filePath);
         }
     }

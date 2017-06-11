@@ -28,6 +28,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.un4seen.bass.BASS;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -172,16 +173,16 @@ public class RadioFragment extends Fragment {
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         player.addEventListener(eventListener);
         //------------------------------------------------------------------------------------------
-        ImageView streamButton = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
-        streamButton.setOnClickListener(v -> streamButtonClick(v));
+        ImageView streamButton = mainFragmentView.findViewById(R.id.streamButton);
+        streamButton.setOnClickListener(this::streamButtonClick);
         //TODO устанавливаем текущий bitrate
-        ImageView recordButton = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
+        ImageView recordButton = mainFragmentView.findViewById(R.id.recordButton);
         recordButton.setOnClickListener(v -> streamRecordClick());
-        mainFragmentView.findViewById(R.id.tvChangeTime).setOnClickListener(v -> onTimerClick(v));
+        mainFragmentView.findViewById(R.id.tvChangeTime).setOnClickListener(this::onTimerClick);
         //------------------------------------------------------------------------------------------
         //setContentView(R.layout.activity_main);
         AlarmReceiever.setSleepHandler(sleepTimerHandler);
-        cb1 = (CheckBox) mainFragmentView.findViewById(R.id.checkBox1);
+        cb1 = mainFragmentView.findViewById(R.id.checkBox1);
         Intent intent = new Intent(getActivity().getBaseContext(), AlarmReceiever.class);
         sender = PendingIntent.getBroadcast(getActivity().getBaseContext(), 192837, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -213,10 +214,10 @@ public class RadioFragment extends Fragment {
     }
 
     private void initView() {
-        Spinner spinner = (Spinner) mainFragmentView.findViewById(R.id.stream_quality_spinner);
+        Spinner spinner = mainFragmentView.findViewById(R.id.stream_quality_spinner);
         spinner.setSelection(bitrates.keyAt(bitrates.indexOfValue(player.currentStream().getBitrate())));
         spinner.setOnItemSelectedListener(bitrateSelected);
-        SeekBar sb = (SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar);
+        SeekBar sb = mainFragmentView.findViewById(R.id.mainVolumeSeekBar);
         sb.setProgress((int) (player.getVolume() * 100));
         sb.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar seekBar, int progress,
@@ -233,13 +234,13 @@ public class RadioFragment extends Fragment {
             }
         });
 
-        ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
+        ImageView rib = mainFragmentView.findViewById(R.id.recordButton);
         if (player.isRecActive()) {
             rib.setImageResource(R.drawable.rec_active);
         } else {
             rib.setImageResource(R.drawable.rec);
         }
-        ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+        ImageView iv = mainFragmentView.findViewById(R.id.streamButton);
         switch (player.currentState()) {
             case PLAY:
                 if (player.currentArtist() != null && !player.currentArtist().isEmpty()) {
@@ -277,12 +278,6 @@ public class RadioFragment extends Fragment {
         super.onDestroyView();
     }
 
-    /**
-     * Выбор битрэйта
-     *
-     * @param v Вьюха, в тэге содержится строка с битрэйтом (URL)
-     */
-
     private AdapterView.OnItemSelectedListener bitrateSelected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -294,7 +289,7 @@ public class RadioFragment extends Fragment {
                 }
                 player.setStream(radioStreamFactory.createStreamWithBitrate(bitrates.get(position)));
                 if (player.currentState() == PlayState.PLAY) {
-                    ImageView b = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+                    ImageView b = mainFragmentView.findViewById(R.id.streamButton);
                     b.performClick();
                     b.performClick();
                 }
@@ -346,7 +341,7 @@ public class RadioFragment extends Fragment {
     void setTimer(int h, int m) {
         hour = h;
         minute = m;
-        TextView timeTv = (TextView) mainFragmentView.findViewById(R.id.tvChangeTime);
+        TextView timeTv = mainFragmentView.findViewById(R.id.tvChangeTime);
         String str = "";
         if (minute < 10)
             str = "0";
@@ -422,7 +417,7 @@ public class RadioFragment extends Fragment {
         public void onPlayStateChanged(final PlayState state) {
             getActivity().runOnUiThread(
                     () -> {
-                        ImageView iv = (ImageView) mainFragmentView.findViewById(R.id.streamButton);
+                        ImageView iv = mainFragmentView.findViewById(R.id.streamButton);
                         switch (state) {
                             case PLAY:
                             case BUFFERING:
@@ -446,7 +441,7 @@ public class RadioFragment extends Fragment {
         public void onRecStateChanged(final boolean isRec) {
             getActivity().runOnUiThread(
                     () -> {
-                        ImageView rib = (ImageView) mainFragmentView.findViewById(R.id.recordButton);
+                        ImageView rib = mainFragmentView.findViewById(R.id.recordButton);
                         if (isRec) {
                             rib.setImageResource(R.drawable.rec_active);
                         } else {

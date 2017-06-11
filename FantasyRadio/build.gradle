@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.0'
     defaultConfig {
         applicationId "ru.sigil.fantasyradio"
-        minSdkVersion 16
-        targetSdkVersion 25
-        //TODO удалить после отказа от поддержки Android 4
+        minSdkVersion 17
+        targetSdkVersion 26
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
@@ -39,11 +38,11 @@ android {
     productFlavors {
         free {
             buildConfigField 'boolean', 'Admob', 'true'
-            flavorDimension 'market'
+            dimension 'market'
         }
         paid {
             buildConfigField 'boolean', 'Admob', 'false'
-            flavorDimension 'market'
+            dimension 'market'
             applicationId = "ru.sigil.fantasyradioplus"
         }
     }
@@ -67,8 +66,8 @@ dependencies {
     compile 'joda-time:joda-time:2.9.2'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'org.jsoup:jsoup:1.8.3'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+    compile 'com.android.support:design:26.0.0-alpha1'
     compile 'com.gordonwong:material-sheet-fab:1.2.1'
     compile 'ch.acra:acra:4.5.0'
     compile 'com.google.dagger:dagger:2.2'
@@ -76,11 +75,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.json:json:20140107'
-    compile 'org.jsoup:jsoup:1.8.3'
     androidTestCompile 'org.mockito:mockito-core:1.10.19'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.1'
     androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support:support-annotations:25.3.1'
+    androidTestCompile 'com.android.support:support-annotations:26.0.0-alpha1'
     provided 'javax.annotation:jsr250-api:1.0'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.0'
 }

@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -57,11 +58,11 @@ public class ArchieveFragment extends AbstractListFragment {
                              Bundle savedInstanceState) {
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         View archieveActivityView = inflater.inflate(R.layout.archieve_layout, container, false);
-        TextView tv = (TextView) archieveActivityView.findViewById(R.id.archive_text1);
+        TextView tv = archieveActivityView.findViewById(R.id.archive_text1);
         tv.setMovementMethod(LinkMovementMethod.getInstance());
         archieveActivityView.findViewById(R.id.archieve_refresh_button).setOnClickListener(v -> refreshClick(v));
         ad = new AlertDialog.Builder(getActivity());
-        setLv((ListView) archieveActivityView.findViewById(R.id.ArchieveListView));
+        setLv(archieveActivityView.findViewById(R.id.ArchieveListView));
         adapter = new ArchieveListAdapter(getActivity().getBaseContext(),
                 archieveEntityes, downloadClickListener);
         getLv().setAdapter(adapter);
@@ -229,7 +230,7 @@ public class ArchieveFragment extends AbstractListFragment {
             mp3Collection.remove(mp3Entity);
             mp3Collection.add(mp3Entity);
             try {
-                SeekBar sb = (SeekBar) getLv().findViewWithTag(b.getString("URL"));// ProgressSeekBar!!!
+                SeekBar sb = getLv().findViewWithTag(b.getString("URL"));// ProgressSeekBar!!!
                 LinearLayout ll = null;
                 if (sb != null) {
                     ll = (LinearLayout) sb.getParent().getParent();

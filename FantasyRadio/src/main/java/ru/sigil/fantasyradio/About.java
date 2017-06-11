@@ -12,7 +12,7 @@ public class About extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
-        TextView tv = (TextView) findViewById(R.id.about_content);
+        TextView tv = findViewById(R.id.about_content);
         try {
             tv.append(getString(R.string.versiontext) + " "
                     + this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName);

@@ -77,12 +77,11 @@ public class MP3Collection implements ITracksCollection {
                         + DIRECTORY + " = '" + entity.getDirectory() + "')", null, null, null, "_id DESC");
                 if (managedCursor != null) {
                     if (managedCursor.moveToFirst()) {
-                        MP3Entity mp3Entity = new MP3Entity(managedCursor.getString(
+                        return new MP3Entity(managedCursor.getString(
                                 managedCursor.getColumnIndex(ARTIST)),
                                 managedCursor.getString(managedCursor.getColumnIndex(TITLE)),
                                 managedCursor.getString(managedCursor.getColumnIndex(DIRECTORY)),
                                 managedCursor.getString(managedCursor.getColumnIndex(TIME)));
-                        return mp3Entity;
                     }
                 }
                 managedCursor.close();

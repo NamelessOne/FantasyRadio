@@ -68,7 +68,7 @@ public class SavedFragment extends AbstractListFragment {
             long streamProgress = player.getProgress();
             try {
                 if (player.currentState() == PlayState.PLAY_FILE) {
-                    SeekBar sb = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory());
+                    SeekBar sb = getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory());
                     if (sb != null) {
                         sb.setProgress((int) streamProgress);
                     }
@@ -85,7 +85,7 @@ public class SavedFragment extends AbstractListFragment {
         savedActivityView = inflater.inflate(R.layout.mp3s, container, false);
         player.addEventListener(eventListener);
         //CurrentControls.setRewindMP3Handler(rewindMp3Handler);
-        setLv((ListView) savedActivityView.findViewById(R.id.MP3ListView));
+        setLv(savedActivityView.findViewById(R.id.MP3ListView));
         return savedActivityView;
     }
 
@@ -268,7 +268,7 @@ public class SavedFragment extends AbstractListFragment {
         @Override
         public void onVolumeChanged(final float volume) {
             getActivity().runOnUiThread(() -> {
-                SeekBar volumeSeekBar = (SeekBar) getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
+                SeekBar volumeSeekBar = getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
                 volumeSeekBar.setProgress((int) (volume * 100));
             });
         }

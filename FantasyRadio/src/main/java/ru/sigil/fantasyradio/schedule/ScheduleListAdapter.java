@@ -86,7 +86,7 @@ class ScheduleListAdapter extends BaseExpandableListAdapter {
         }
         TextView textGroup = null;
         if (convertView != null) {
-            textGroup = (TextView) convertView
+            textGroup = convertView
                     .findViewById(R.id.textGroup);
         }
         LocalDate ld = LocalDate.now();
@@ -108,28 +108,10 @@ class ScheduleListAdapter extends BaseExpandableListAdapter {
         final ScheduleEntity message = entities.get(groupPosition).get(childPosition);
         TextView startTime = null;
         if (row != null) {
-            startTime = (TextView) row.findViewById(R.id.ScheduleItemStartTime);
+            startTime = row.findViewById(R.id.ScheduleItemStartTime);
         }
         startTime.setText(fmt.print(message.getStartDate()) + " - " + fmt.print(message.getEndDate()));
-        //---------------------------
-        /*
-        ToggleButton remindToggle;
-        remindToggle = (ToggleButton) row.findViewById(R.id.scheduleReminder);
-        remindToggle.setOnCheckedChangeListener(new ToggleButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //TODO тут устанавливаем или дропаем напоминалку
-                if (isChecked) {
-                    addToBase(message);
-                    //TODO отправляем запрос на наш сервер (добавление)
-                } else {
-                    removeFromBase(message);
-                    //TODO отправляем запрос на наш сервер (удаление)
-                }
-            }
-        });*/
-        //--------------------------------------------
-        TextView title = (TextView) row.findViewById(R.id.ScheduleItemTitle);
+        TextView title = row.findViewById(R.id.ScheduleItemTitle);
         title.setText(message.getTitle());
         final String titleString = message.getTitle();
         final String messageString = message.getText();
@@ -140,14 +122,14 @@ class ScheduleListAdapter extends BaseExpandableListAdapter {
             final Dialog alertDialog = new Dialog(context);
             alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             alertDialog.setContentView(R.layout.schedule_dialog);
-            LinearLayout ll = (LinearLayout) (alertDialog.findViewById(R.id.scheduleDialogLayout));
+            LinearLayout ll = (alertDialog.findViewById(R.id.scheduleDialogLayout));
             ll.setOnClickListener(v1 -> alertDialog.cancel());
-            LinearLayout ll2 = (LinearLayout) (alertDialog.findViewById(R.id.scheduleDialogInternalLayout));
+            LinearLayout ll2 = (alertDialog.findViewById(R.id.scheduleDialogInternalLayout));
             ll2.setOnClickListener(v12 -> alertDialog.cancel());
-            TextView tv = (TextView) (alertDialog.findViewById(R.id.schedule_dialog_text));
+            TextView tv = (alertDialog.findViewById(R.id.schedule_dialog_text));
             tv.setText(messageString);
-            ImageView im = (ImageView) (alertDialog.findViewById(R.id.schedule_dialog_image));
-            TextView tv2 = (TextView) (alertDialog.findViewById(R.id.schedule_dialog_title));
+            ImageView im = (alertDialog.findViewById(R.id.schedule_dialog_image));
+            TextView tv2 = (alertDialog.findViewById(R.id.schedule_dialog_title));
             tv2.setText(titleString);
             try {
                 alertDialog.setCancelable(true);

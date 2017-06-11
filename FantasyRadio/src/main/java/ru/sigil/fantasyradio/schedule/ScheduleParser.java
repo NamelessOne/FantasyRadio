@@ -117,8 +117,6 @@ public class ScheduleParser {
                     e.printStackTrace();
                 }
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
