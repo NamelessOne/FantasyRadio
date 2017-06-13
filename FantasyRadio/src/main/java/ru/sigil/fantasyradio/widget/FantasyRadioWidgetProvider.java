@@ -13,8 +13,11 @@ import android.widget.RemoteViews;
 import javax.inject.Inject;
 
 import ru.sigil.bassplayerlib.IPlayer;
-import ru.sigil.bassplayerlib.IPlayerEventListener;
 import ru.sigil.bassplayerlib.PlayState;
+import ru.sigil.bassplayerlib.listeners.IAuthorChangedListener;
+import ru.sigil.bassplayerlib.listeners.IPlayStateChangedListener;
+import ru.sigil.bassplayerlib.listeners.IStreamChangedListener;
+import ru.sigil.bassplayerlib.listeners.ITitleChangedListener;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.Bitrate;
@@ -27,8 +30,7 @@ import ru.sigil.fantasyradio.utils.RadioStreamFactory;
  * 30.08.14.
  */
 public class FantasyRadioWidgetProvider extends AppWidgetProvider {
-    private static final String TAG = AppWidgetProvider.class.getSimpleName();
-
+    //TODO А удаление листенеров?
     private static final String ACTION_BITRATE_CLICK_16 =
             "ru.sigil.fantasyradio.widget.ACTION_BITRATE_CLICK_16";
     private static final String ACTION_BITRATE_CLICK_32 =
@@ -204,7 +206,10 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         this.context = context;
-        player.addEventListener(eventListener);
+        player.addTitleChangedListener(titleChangedListener);
+        player.addAuthorChangedListener(authorChangedListener);
+        player.addPlayStateChangedListener(playStateChangedListener);
+        player.addStreamChangedListener(streamChangedListener);
         if (ACTION_BITRATE_CLICK_16.equals(intent.getAction())) {
             RadioStream stream = radioStreamFactory.createStreamWithBitrate(Bitrate.aac_16);
             player.setStream(stream);
@@ -261,47 +266,20 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private final IPlayerEventListener eventListener = new IPlayerEventListener<RadioStream>() {
-        @Override
-        public void onTitleChanged(String title) {
-            widgetTitle = title;
-            onUpdate(context);
-        }
-
-        @Override
-        public void onAuthorChanged(String author) {
-            widgetAuthor = author;
-            onUpdate(context);
-        }
-
-        @Override
-        public void onPlayStateChanged(PlayState state) {
-            onUpdate(context);
-        }
-
-        @Override
-        public void onRecStateChanged(boolean isRec) {
-            //Виджету пофиг
-        }
-
-        @Override
-        public void onStreamChanged(RadioStream bitrate) {
-            onUpdate(context);  //Само обновится
-        }
-
-        @Override
-        public void onBufferingProgress(long progress) {
-            //Виджету пофиг
-        }
-
-        @Override
-        public void endSync() {
-
-        }
-
-        @Override
-        public void onVolumeChanged(float volume) {
-
-        }
+    private final ITitleChangedListener titleChangedListener = (title) -> {
+        widgetTitle = title;
+        onUpdate(context);
     };
+
+    private final IAuthorChangedListener authorChangedListener = (author) -> {
+        widgetTitle = author;
+        onUpdate(context);
+    };
+
+    private final IPlayStateChangedListener playStateChangedListener = (state) -> onUpdate(context);
+
+    private final IStreamChangedListener<RadioStream> streamChangedListener = (bitrate) -> onUpdate(context);
+
+    //TODO buffering progress listener???
+
 }

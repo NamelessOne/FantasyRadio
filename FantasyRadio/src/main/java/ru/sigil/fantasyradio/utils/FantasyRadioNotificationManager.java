@@ -7,14 +7,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
-import java.util.Locale;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import ru.sigil.bassplayerlib.IPlayer;
-import ru.sigil.bassplayerlib.IPlayerEventListener;
 import ru.sigil.bassplayerlib.PlayState;
+import ru.sigil.bassplayerlib.listeners.IAuthorChangedListener;
+import ru.sigil.bassplayerlib.listeners.IBufferingProgressListener;
+import ru.sigil.bassplayerlib.listeners.IEndSyncListener;
+import ru.sigil.bassplayerlib.listeners.IPlayStateChangedListener;
+import ru.sigil.bassplayerlib.listeners.ITitleChangedListener;
 import ru.sigil.fantasyradio.FantasyRadioNotificationReceiver;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.TabHoster;
@@ -37,7 +39,6 @@ public class FantasyRadioNotificationManager {
     public FantasyRadioNotificationManager(Context context, IPlayer<RadioStream> player) {
         this.context = context;
         this.player = player;
-        player.addEventListener(eventListener);
     }
 
     public void updateNotification(String currentTitle, String currentArtist, PlayState currentState) {
@@ -93,6 +94,11 @@ public class FantasyRadioNotificationManager {
     public void createNotification(String currentTitle, String currentArtist, PlayState currentState) {
         isShown = true;
         updateNotification(currentTitle, currentArtist, currentState);
+        player.addTitleChangedListener(titleChangedListener);
+        player.addAuthorChangedListener(authorChangedListener);
+        player.addPlayStateChangedListener(playStateChangedListener);
+        player.addBufferingProgressChangedListener(bufferingProgressListener);
+        player.addEndSyncListener(endSyncListener);
     }
 
     private String getText(String song, String artist) {
@@ -106,47 +112,22 @@ public class FantasyRadioNotificationManager {
     }
 
     public void cancel() {
+        player.removeTitleChangedListener(titleChangedListener);
+        player.removeAuthorChangedListener(authorChangedListener);
+        player.removePlayStateChangedListener(playStateChangedListener);
+        player.removeBufferingProgressChangedListener(bufferingProgressListener);
+        player.removeEndSyncListener(endSyncListener);
         isShown = false;
         notificationManager.cancel(MAIN_NOTIFICATION_ID);
     }
 
-    //TODO эта штука должна быть в Receiver'е?
-    private IPlayerEventListener eventListener = new IPlayerEventListener<RadioStream>() {
-        @Override
-        public void onTitleChanged(String title) {
-            updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
-        }
+    private final ITitleChangedListener titleChangedListener = (title) -> updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
 
-        @Override
-        public void onAuthorChanged(String author) {
-            updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
-        }
+    private final IAuthorChangedListener authorChangedListener = (author) -> updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
 
-        @Override
-        public void onPlayStateChanged(PlayState playState) {
-            updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
-        }
+    private final IPlayStateChangedListener playStateChangedListener = (playState) -> updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
 
-        @Override
-        public void onRecStateChanged(boolean isRec) {
-        }
+    private final IBufferingProgressListener bufferingProgressListener = (progress) -> updateNotification(String.format("BUFFERING... %d%%", progress), "", player.currentState());
 
-        @Override
-        public void onStreamChanged(RadioStream stream) {
-        }
-
-        @Override
-        public void onBufferingProgress(long progress) {
-            updateNotification(String.format("BUFFERING... %d%%", progress), "", player.currentState());
-        }
-
-        @Override
-        public void endSync() {
-            updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
-        }
-
-        @Override
-        public void onVolumeChanged(float volume) {
-        }
-    };
+    private final IEndSyncListener endSyncListener = () -> updateNotification(player.currentTitle(), player.currentArtist(), player.currentState());
 }

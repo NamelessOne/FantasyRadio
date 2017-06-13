@@ -14,13 +14,11 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
-import ru.sigil.fantasyradio.BuildConfig;
 import ru.sigil.fantasyradio.R;
-import ru.sigil.fantasyradio.TabHoster;
+import ru.sigil.fantasyradio.ad.AdService;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.log.LogManager;
 
@@ -29,9 +27,10 @@ public class ScheduleFragment extends Fragment {
     private ExpandableListView lv;
     private ParseAsyncTask searchAsyncTasc;
     ArrayList<ArrayList<ScheduleEntity>> arr = new ArrayList<>();
-    private Random random;
     private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
     private List<ScheduleEntity> scheduleEntityesCollection = new ArrayList<>();
+    @Inject
+    AdService adSevice;
     @Inject
     ScheduleParser scheduleParser;
 
@@ -61,12 +60,6 @@ public class ScheduleFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-    }
-
-    private Random getRandom() {
-        if (random == null)
-            random = new Random();
-        return random;
     }
 
     /**
@@ -137,11 +130,7 @@ public class ScheduleFragment extends Fragment {
     }
 
     public void refreshClick(@SuppressWarnings("UnusedParameters") View v) {
-        if(BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_REFRESH) {
-            if (((TabHoster)getActivity()).getmInterstitialAd().isLoaded()) {
-                ((TabHoster)getActivity()).getmInterstitialAd().show();
-            }
-        }
+        adSevice.showAd(AD_SHOW_PROBABILITY_REFRESH);
         searchAsyncTasc = new ParseAsyncTask();
         searchAsyncTasc.execute();
     }

@@ -36,33 +36,33 @@ android {
     flavorDimensions 'market'
 
     productFlavors {
-        free {
-            buildConfigField 'boolean', 'Admob', 'true'
-            dimension 'market'
-        }
         paid {
             buildConfigField 'boolean', 'Admob', 'false'
             dimension 'market'
             applicationId = "ru.sigil.fantasyradioplus"
         }
+        free {
+            buildConfigField 'boolean', 'Admob', 'true'
+            dimension 'market'
+        }
     }
 
     sourceSets {
-        free {
-            assets.srcDirs = ['src/free/assets']
-            res.srcDirs = ['src/free/res']
-            java.srcDirs = ['src/free/java']
-        }
         paid {
             assets.srcDirs = ['src/paid/assets']
             res.srcDirs = ['src/paid/res']
             java.srcDirs = ['src/paid/java']
         }
+        free {
+            assets.srcDirs = ['src/free/assets']
+            res.srcDirs = ['src/free/res']
+            java.srcDirs = ['src/free/java']
+        }
     }
 }
 
 dependencies {
-    compile 'com.github.NamelessOne:BassPlayerAndroidModule:develop-SNAPSHOT'
+    compile 'com.github.NamelessOne:BassPlayerAndroidModule:divide_listeners-SNAPSHOT'
     compile 'joda-time:joda-time:2.9.2'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'org.jsoup:jsoup:1.8.3'
@@ -71,7 +71,7 @@ dependencies {
     compile 'com.gordonwong:material-sheet-fab:1.2.1'
     compile 'ch.acra:acra:4.5.0'
     compile 'com.google.dagger:dagger:2.2'
-    compile 'com.google.firebase:firebase-ads:10.0.1'
+    freeCompile 'com.google.firebase:firebase-ads:10.0.1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.json:json:20140107'

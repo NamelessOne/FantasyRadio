@@ -15,12 +15,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <permission
-        android:name="ru.sigil.fantasyradio.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="ru.sigil.fantasyradio.permission.C2D_MESSAGE" />
-
-
     <application
         android:name="MyApp"
         android:allowBackup="true"
@@ -70,7 +64,7 @@
         </receiver>
 
         <receiver android:name=".FantasyRadioNotificationReceiver" />
-        <receiver android:name=".PhoneStateReceiver" >
+        <receiver android:name=".PhoneStateReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>

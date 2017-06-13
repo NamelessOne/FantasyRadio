@@ -28,14 +28,19 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.un4seen.bass.BASS;
 
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.Random;
 
 import javax.inject.Inject;
 
 import ru.sigil.bassplayerlib.IPlayer;
-import ru.sigil.bassplayerlib.IPlayerEventListener;
 import ru.sigil.bassplayerlib.PlayState;
+import ru.sigil.bassplayerlib.listeners.IAuthorChangedListener;
+import ru.sigil.bassplayerlib.listeners.IBufferingProgressListener;
+import ru.sigil.bassplayerlib.listeners.IPlayStateChangedListener;
+import ru.sigil.bassplayerlib.listeners.IRecStateChangedListener;
+import ru.sigil.bassplayerlib.listeners.ITitleChangedListener;
+import ru.sigil.bassplayerlib.listeners.IVolumeChangedListener;
+import ru.sigil.fantasyradio.ad.AdService;
 import ru.sigil.fantasyradio.currentstreraminfo.CurrentStreamInfoService;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
@@ -76,6 +81,8 @@ public class RadioFragment extends Fragment {
     RadioStreamFactory radioStreamFactory;
     @Inject
     CurrentStreamInfoService currentStreamInfoService;
+    @Inject
+    AdService adService;
 
 
     private Random random;
@@ -144,11 +151,7 @@ public class RadioFragment extends Fragment {
      */
     public void streamButtonClick(View v) {
         updateWidget();
-        if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_PLAY) {
-            if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
-                ((TabHoster) getActivity()).getmInterstitialAd().show();
-            }
-        }
+        adService.showAd(AD_SHOW_PROBABILITY_PLAY);
         if (player.currentState() != PlayState.PLAY) {
             RadioStream stream = radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate());
             switch (player.currentStream().getBitrate()) {
@@ -171,11 +174,15 @@ public class RadioFragment extends Fragment {
                              Bundle savedInstanceState) {
         mainFragmentView = inflater.inflate(R.layout.activity_main, container, false);
         Bootstrap.INSTANCE.getBootstrap().inject(this);
-        player.addEventListener(eventListener);
+        player.addTitleChangedListener(titleChangedListener);
+        player.addAuthorChangedListener(authorChangedListener);
+        player.addPlayStateChangedListener(playStateChangedListener);
+        player.addRecStateChangedListener(recStateChangedListener);
+        player.addBufferingProgressChangedListener(bufferingProgressListener);
+        player.addVolumeChangedListener(volumeChangedListener);
         //------------------------------------------------------------------------------------------
         ImageView streamButton = mainFragmentView.findViewById(R.id.streamButton);
         streamButton.setOnClickListener(this::streamButtonClick);
-        //TODO устанавливаем текущий bitrate
         ImageView recordButton = mainFragmentView.findViewById(R.id.recordButton);
         recordButton.setOnClickListener(v -> streamRecordClick());
         mainFragmentView.findViewById(R.id.tvChangeTime).setOnClickListener(this::onTimerClick);
@@ -274,7 +281,12 @@ public class RadioFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        player.removeEventListener(eventListener);
+        player.removeTitleChangedListener(titleChangedListener);
+        player.removeAuthorChangedListener(authorChangedListener);
+        player.removePlayStateChangedListener(playStateChangedListener);
+        player.removeRecStateChangedListener(recStateChangedListener);
+        player.removeBufferingProgressChangedListener(bufferingProgressListener);
+        player.removeVolumeChangedListener(volumeChangedListener);
         super.onDestroyView();
     }
 
@@ -282,11 +294,7 @@ public class RadioFragment extends Fragment {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (position != bitrates.keyAt(bitrates.indexOfValue(player.currentStream().getBitrate()))) {
-                if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_URL) {
-                    if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
-                        ((TabHoster) getActivity()).getmInterstitialAd().show();
-                    }
-                }
+                adService.showAd(AD_SHOW_PROBABILITY_URL);
                 player.setStream(radioStreamFactory.createStreamWithBitrate(bitrates.get(position)));
                 if (player.currentState() == PlayState.PLAY) {
                     ImageView b = mainFragmentView.findViewById(R.id.streamButton);
@@ -294,7 +302,6 @@ public class RadioFragment extends Fragment {
                     b.performClick();
                 }
             }
-
         }
 
         @Override
@@ -320,11 +327,7 @@ public class RadioFragment extends Fragment {
      * Запись потока.
      */
     private void streamRecordClick() {
-        if (BuildConfig.FLAVOR.equals("free") && getRandom().nextInt(100) < AD_SHOW_PROBABILITY_REC) {
-            if (((TabHoster) getActivity()).getmInterstitialAd().isLoaded()) {
-                ((TabHoster) getActivity()).getmInterstitialAd().show();
-            }
-        }
+        adService.showAd(AD_SHOW_PROBABILITY_REC);
         if (player.isRecActive()) {
             player.rec(false);
         } else {
@@ -386,95 +389,67 @@ public class RadioFragment extends Fragment {
         showDialog(TIME_DIALOG_ID);
     }
 
-    private final IPlayerEventListener eventListener = new IPlayerEventListener<RadioStream>() {
-        @Override
-        public void onTitleChanged(final String title) {
-            RadioEntity re = new RadioEntity();
-            re.setTitle(title);
-            re.setArtist(re.getArtist());
-            re.setStation(re.getStation());
-            getActivity().runOnUiThread(
-                    () -> ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(title)
-            );
-        }
-
-        @Override
-        public void onAuthorChanged(final String author) {
-            getActivity().runOnUiThread(
-                    () -> {
-                        if (author != null && !author.isEmpty()) {
-                            ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                                    .setText(author + " - " + player.currentTitle());
-                        } else {
-                            ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                                    .setText(player.currentTitle());
-                        }
-                    }
-            );
-        }
-
-        @Override
-        public void onPlayStateChanged(final PlayState state) {
-            getActivity().runOnUiThread(
-                    () -> {
-                        ImageView iv = mainFragmentView.findViewById(R.id.streamButton);
-                        switch (state) {
-                            case PLAY:
-                            case BUFFERING:
-                                iv.setImageResource(R.drawable.pause_states);
-                                break;
-                            case PAUSE:
-                            case PLAY_FILE:
-                                ((TextView) mainFragmentView.findViewById(R.id.textView1))
-                                        .setText("");
-                            case STOP:
-                                iv.setImageResource(R.drawable.play_states);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-            );
-        }
-
-        @Override
-        public void onRecStateChanged(final boolean isRec) {
-            getActivity().runOnUiThread(
-                    () -> {
-                        ImageView rib = mainFragmentView.findViewById(R.id.recordButton);
-                        if (isRec) {
-                            rib.setImageResource(R.drawable.rec_active);
-                        } else {
-                            rib.setImageResource(R.drawable.rec);
-                        }
-                    }
-            );
-        }
-
-        @Override
-        public void onStreamChanged(RadioStream stream) {
-
-        }
-
-        @Override
-        public void onBufferingProgress(final long progress) {
-            getActivity().runOnUiThread(
-                    () -> ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String.format("BUFFERING... %d%%", progress))
-            );
-        }
-
-        @Override
-        public void endSync() {
-
-        }
-
-        @Override
-        public void onVolumeChanged(final float volume) {
-            getActivity().runOnUiThread(
-                    () -> ((SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar)).setProgress((int) (volume * 100))
-            );
-        }
+    private final ITitleChangedListener titleChangedListener = (title) -> {
+        RadioEntity re = new RadioEntity();
+        re.setTitle(title);
+        re.setArtist(re.getArtist());
+        re.setStation(re.getStation());
+        getActivity().runOnUiThread(
+                () -> ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(title)
+        );
     };
+
+    private final IAuthorChangedListener authorChangedListener = (author) -> getActivity().runOnUiThread(
+            () -> {
+                if (author != null && !author.isEmpty()) {
+                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                            .setText(author + " - " + player.currentTitle());
+                } else {
+                    ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                            .setText(player.currentTitle());
+                }
+            }
+    );
+
+    private final IPlayStateChangedListener playStateChangedListener = (state) -> getActivity().runOnUiThread(
+            () -> {
+                ImageView iv = mainFragmentView.findViewById(R.id.streamButton);
+                switch (state) {
+                    case PLAY:
+                    case BUFFERING:
+                        iv.setImageResource(R.drawable.pause_states);
+                        break;
+                    case PAUSE:
+                    case PLAY_FILE:
+                        ((TextView) mainFragmentView.findViewById(R.id.textView1))
+                                .setText("");
+                    case STOP:
+                        iv.setImageResource(R.drawable.play_states);
+                        break;
+                    default:
+                        break;
+                }
+            }
+    );
+
+    private final IRecStateChangedListener recStateChangedListener = (isRec) -> getActivity().runOnUiThread(
+            () -> {
+                ImageView rib = mainFragmentView.findViewById(R.id.recordButton);
+                if (isRec) {
+                    rib.setImageResource(R.drawable.rec_active);
+                } else {
+                    rib.setImageResource(R.drawable.rec);
+                }
+            }
+    );
+
+    private final IBufferingProgressListener bufferingProgressListener = (progress) -> getActivity().runOnUiThread(
+            () -> ((TextView) mainFragmentView.findViewById(R.id.textView1)).setText(String.format("BUFFERING... %d%%", progress))
+    );
+
+    private final IVolumeChangedListener volumeChangedListener = (volume) -> getActivity().runOnUiThread(
+            () -> ((SeekBar) mainFragmentView.findViewById(R.id.mainVolumeSeekBar)).setProgress((int) (volume * 100))
+    );
 
     private void updateWidget() {
         Intent intent = new Intent(getActivity().getApplicationContext(), FantasyRadioWidgetProvider.class);

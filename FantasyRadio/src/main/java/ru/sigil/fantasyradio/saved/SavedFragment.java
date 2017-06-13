@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.SeekBar;
 
 import java.io.File;
@@ -23,9 +22,11 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 
 import ru.sigil.bassplayerlib.IPlayer;
-import ru.sigil.bassplayerlib.IPlayerEventListener;
 import ru.sigil.bassplayerlib.ITrack;
 import ru.sigil.bassplayerlib.PlayState;
+import ru.sigil.bassplayerlib.listeners.IEndSyncListener;
+import ru.sigil.bassplayerlib.listeners.IPlayStateChangedListener;
+import ru.sigil.bassplayerlib.listeners.IVolumeChangedListener;
 import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
@@ -48,16 +49,14 @@ public class SavedFragment extends AbstractListFragment {
     };
     private Timer seekTimer = new Timer();
 
-    public SavedFragment()
-    {
+    public SavedFragment() {
         Bootstrap.INSTANCE.getBootstrap().inject(this);
-        player.addEventListener(endSyncEventListener);
     }
 
     public void notifyAdapter() {
         adapter = new MP3ArrayAdapter(getActivity().getBaseContext(),
                 mp3Collection.getCursor(),
-                v -> deleteClick(v), v -> playClick(v)
+                this::deleteClick, this::playClick
         );
         getLv().setAdapter(adapter);
     }
@@ -83,15 +82,16 @@ public class SavedFragment extends AbstractListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         savedActivityView = inflater.inflate(R.layout.mp3s, container, false);
-        player.addEventListener(eventListener);
-        //CurrentControls.setRewindMP3Handler(rewindMp3Handler);
+        player.addPlayStateChangedListener(playStateChangedListener);
+        player.addVolumeChangedListener(volumeChangedListener);
         setLv(savedActivityView.findViewById(R.id.MP3ListView));
         return savedActivityView;
     }
 
     @Override
     public void onDestroyView() {
-        player.removeEventListener(eventListener);
+        player.removePlayStateChangedListener(playStateChangedListener);
+        player.removeVolumeChangedListener(volumeChangedListener);
         super.onDestroyView();
     }
 
@@ -106,7 +106,7 @@ public class SavedFragment extends AbstractListFragment {
         updateWidget();
         if (player.isPaused()) {
             if (player.getCurrentMP3Entity() != null && v.getTag() != null
-                    && player.getCurrentMP3Entity().getDirectory().equals(((MP3Entity)v.getTag()).getDirectory())) {
+                    && player.getCurrentMP3Entity().getDirectory().equals(((MP3Entity) v.getTag()).getDirectory())) {
                 // Это была пауза.
                 player.resume();
                 return;
@@ -119,7 +119,7 @@ public class SavedFragment extends AbstractListFragment {
         }
         if (player.currentState() == PlayState.PLAY || player.currentState() == PlayState.PLAY_FILE) {
             if (player.getCurrentMP3Entity() != null && v.getTag() != null
-                    && player.getCurrentMP3Entity().getDirectory().equals(((MP3Entity)v.getTag()).getDirectory())) {
+                    && player.getCurrentMP3Entity().getDirectory().equals(((MP3Entity) v.getTag()).getDirectory())) {
                 //TODO !!!
                 player.pause();
                 ImageButton bv = (ImageButton) v;// !!!!!!!!!!!!!!!
@@ -178,99 +178,11 @@ public class SavedFragment extends AbstractListFragment {
         getActivity().getApplicationContext().sendBroadcast(intent);
     }
 
-    //TODO по хорошему, должно быть статическим. Придумать лучшее решение
-    private IPlayerEventListener endSyncEventListener = new IPlayerEventListener<RadioStream>() {
-        @Override
-        public void onTitleChanged(String title) {
+    private final IPlayStateChangedListener playStateChangedListener = (playState) -> adapter.notifyDataSetChanged();
 
-        }
 
-        @Override
-        public void onAuthorChanged(String author) {
-
-        }
-
-        @Override
-        public void onPlayStateChanged(PlayState playState) {
-
-        }
-
-        @Override
-        public void onRecStateChanged(boolean isRec) {
-
-        }
-
-        @Override
-        public void onStreamChanged(RadioStream stream) {
-
-        }
-
-        @Override
-        public void onBufferingProgress(long progress) {
-
-        }
-
-        @Override
-        public void endSync() {
-            getActivity().runOnUiThread(() -> {
-                // Заканчивается воспроизведение. Переходим на следующий трек.
-                //adapter.notifyDataSetChanged();
-                ITrack next = mp3Collection.getNext(player.getCurrentMP3Entity());
-                player.stop();
-                if (next != null) {
-                    player.playFile(next);
-                }
-            });
-        }
-
-        @Override
-        public void onVolumeChanged(float volume) {
-
-        }
-    };
-
-    private IPlayerEventListener eventListener = new IPlayerEventListener<RadioStream>() {
-        @Override
-        public void onTitleChanged(String title) {
-
-        }
-
-        @Override
-        public void onAuthorChanged(String author) {
-
-        }
-
-        @Override
-        public void onPlayStateChanged(PlayState playState) {
-            adapter.notifyDataSetChanged();
-        }
-
-        @Override
-        public void onRecStateChanged(boolean isRec) {
-
-        }
-
-        @Override
-        public void onStreamChanged(RadioStream stream) {
-
-        }
-
-        @Override
-        public void onBufferingProgress(long progress) {
-
-        }
-
-        @Override
-        public void endSync() {
-
-        }
-
-        @Override
-        public void onVolumeChanged(final float volume) {
-            getActivity().runOnUiThread(() -> {
-                SeekBar volumeSeekBar = getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
-                volumeSeekBar.setProgress((int) (volume * 100));
-            });
-        }
-    };
+    private IVolumeChangedListener volumeChangedListener = (volume) -> getActivity().runOnUiThread(() -> {
+        SeekBar volumeSeekBar = getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
+        volumeSeekBar.setProgress((int) (volume * 100));
+    });
 }

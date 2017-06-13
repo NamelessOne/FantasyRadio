@@ -11,7 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="48dp"
         android:background="@drawable/refresh_states"
-        android:textColor="@color/common_google_signin_btn_text_light_default"
+        android:textColor="@color/refresh_button_text_color"
         android:text="@string/refresh"
         android:padding="4dp" />
 

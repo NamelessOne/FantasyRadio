@@ -20,9 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -32,9 +29,10 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import ru.sigil.bassplayerlib.IPLayerErrorListener;
 import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.PlayState;
+import ru.sigil.bassplayerlib.listeners.IPlayerErrorListener;
+import ru.sigil.fantasyradio.ad.AdService;
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.saved.SavedFragment;
@@ -43,12 +41,10 @@ import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.settings.SettingsActivity;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.fantasyradio.utils.RadioStream;
-import ru.sigil.log.LogManager;
 
 public class TabHoster extends FragmentActivity {
     private static final String TAG = TabHoster.class.getSimpleName();
     public SectionsPagerAdapter mSectionsPagerAdapter;
-    private InterstitialAd mInterstitialAd;
     private final int MY_PERMISSIONS_REQUEST = 1;
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -56,15 +52,11 @@ public class TabHoster extends FragmentActivity {
     IPlayer<RadioStream> player;
     @Inject
     FantasyRadioNotificationManager notificationManager;
+    @Inject
+    AdService adService;
 
 
     private static int current_menu;
-
-    private void requestNewInterstitial() {
-        AdRequest adRequest = new AdRequest.Builder()
-                .build();
-        getmInterstitialAd().loadAd(adRequest);
-    }
 
     private void requestPermissionWithRationale() {
         new AlertDialog.Builder(this)
@@ -89,7 +81,7 @@ public class TabHoster extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bootstrap.INSTANCE.getBootstrap().inject(this);
-        player.addErrorListener(playerErrorListener);
+        player.addPlayerErrorListener(playerErrorListener);
         setContentView(R.layout.tabs);
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -107,20 +99,6 @@ public class TabHoster extends FragmentActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         ViewPager mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        if (BuildConfig.FLAVOR.equals("free")) {
-            if (getmInterstitialAd() == null) {
-                mInterstitialAd = new InterstitialAd(this);
-                getmInterstitialAd().setAdUnitId(getString(R.string.admob_publisher_id));
-                getmInterstitialAd().setAdListener(new AdListener() {
-                    @Override
-                    public void onAdClosed() {
-                        LogManager.d("AD", "closed");
-                        requestNewInterstitial();
-                    }
-                });
-                requestNewInterstitial();
-            }
-        }
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisk(true).build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getBaseContext())
@@ -148,8 +126,7 @@ public class TabHoster extends FragmentActivity {
 
     @Override
     public void onDestroy() {
-        player.removeErrorListener(playerErrorListener);
-        //player.stop();
+        player.removePlayerErrorListener(playerErrorListener);
         super.onDestroy();
     }
 
@@ -253,10 +230,6 @@ public class TabHoster extends FragmentActivity {
         super.onResume();
     }
 
-    public InterstitialAd getmInterstitialAd() {
-        return mInterstitialAd;
-    }
-
     public void fabButtonClick(View view) {
         openOptionsMenu();
     }
@@ -324,7 +297,7 @@ public class TabHoster extends FragmentActivity {
         }
     }
 
-    private IPLayerErrorListener playerErrorListener = (message, errorCode) -> {
+    private IPlayerErrorListener playerErrorListener = (message, errorCode) -> {
         final String s = String.format(Locale.getDefault(), "%s\n(error code: %d)", message, errorCode);
         runOnUiThread(() -> {
             try {

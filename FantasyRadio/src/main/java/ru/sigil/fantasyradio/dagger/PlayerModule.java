@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import ru.sigil.bassplayerlib.IPlayer;
+import ru.sigil.bassplayerlib.ITrack;
 import ru.sigil.bassplayerlib.ITrackFactory;
 import ru.sigil.bassplayerlib.Player;
 import ru.sigil.fantasyradio.saved.MP3Collection;
@@ -37,7 +38,15 @@ public class PlayerModule {
     @Provides
     @Singleton
     IPlayer<RadioStream> providesPlayer(MP3Collection mp3Collection, ITrackFactory trackFactory, RadioStreamFactory radioStreamFactory) {
-        return new Player<>(mp3Collection, trackFactory, radioStreamFactory.createDefaultStream()); //TODO дефолтный битрейт (с фабрики получать)
+        IPlayer<RadioStream> player = new Player<>(mp3Collection, trackFactory, radioStreamFactory.createDefaultStream());
+        player.addEndSyncListener(() -> {
+            ITrack next = mp3Collection.getNext(player.getCurrentMP3Entity());
+            player.stop();
+            if (next != null) {
+                player.playFile(next);
+            }
+        });
+        return player;
     }
 
     @Provides
