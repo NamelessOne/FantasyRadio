@@ -43,8 +43,8 @@ public class TabHoster extends FragmentActivity {
     private static final String TAG = TabHoster.class.getSimpleName();
     public SectionsPagerAdapter mSectionsPagerAdapter;
     private final int MY_PERMISSIONS_REQUEST = 1;
-    private IPlayer<RadioStream> player;
-
+    @Inject
+    IPlayer<RadioStream> player;
     @Inject
     FantasyRadioNotificationManager notificationManager;
 
@@ -73,7 +73,6 @@ public class TabHoster extends FragmentActivity {
         super.onCreate(savedInstanceState);
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         startService(new Intent(this, PlayerBackgroundService.class)); //Start
-        bindService(new Intent(this, PlayerBackgroundService.class), sConn, 0); //Bind
         player.addPlayerErrorListener(playerErrorListener);
         setContentView(R.layout.tabs);
         //-------------------------------------------------------
@@ -116,7 +115,6 @@ public class TabHoster extends FragmentActivity {
     @Override
     public void onDestroy() {
         player.removePlayerErrorListener(playerErrorListener);
-        unbindService(sConn);
         super.onDestroy();
     }
 
@@ -236,20 +234,4 @@ public class TabHoster extends FragmentActivity {
             }
         });
     };
-
-    ServiceConnection sConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            player = ((PlayerBackgroundService.PlayerBackgroundServiceBinder) iBinder).getPlayer();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-    };
-
-    public IPlayer<RadioStream> getPlayer() {
-        return player;
-    }
 }
