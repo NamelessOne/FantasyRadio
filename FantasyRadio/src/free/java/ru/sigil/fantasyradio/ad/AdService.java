@@ -5,6 +5,7 @@ import android.content.Context;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Random;
 
@@ -23,6 +24,7 @@ import ru.sigil.log.LogManager;
 public class AdService {
     private InterstitialAd mInterstitialAd;
     private Random random;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
 
     private Random getRandom() {
@@ -39,6 +41,7 @@ public class AdService {
 
     @Inject
     public AdService(Context context) {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
         if (mInterstitialAd == null) {
             mInterstitialAd = new InterstitialAd(context);
             mInterstitialAd.setAdUnitId(context.getString(R.string.admob_publisher_id));

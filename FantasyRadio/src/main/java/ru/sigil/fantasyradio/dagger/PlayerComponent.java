@@ -9,6 +9,7 @@ import ru.sigil.fantasyradio.MyApp;
 import ru.sigil.fantasyradio.RadioFragment;
 import ru.sigil.fantasyradio.TabHoster;
 import ru.sigil.fantasyradio.archieve.ArchieveFragment;
+import ru.sigil.fantasyradio.playerservice.PlayerBackgroundService;
 import ru.sigil.fantasyradio.saved.MP3ArrayAdapter;
 import ru.sigil.fantasyradio.saved.SavedFragment;
 import ru.sigil.fantasyradio.schedule.ScheduleFragment;
@@ -47,6 +48,8 @@ public interface PlayerComponent {
     void inject(AlarmReceiever alarmReceiever);
 
     void inject(CurrentStreamInfoService alarmReceiever);
+
+    void inject(PlayerBackgroundService playerBackgroundService);
 
     final class Initializer {
         private Initializer() {

@@ -71,7 +71,7 @@ dependencies {
     compile 'com.gordonwong:material-sheet-fab:1.2.1'
     compile 'ch.acra:acra:4.5.0'
     compile 'com.google.dagger:dagger:2.2'
-    freeCompile 'com.google.firebase:firebase-ads:10.0.1'
+    freeCompile 'com.google.firebase:firebase-ads:11.0.1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.json:json:20140107'

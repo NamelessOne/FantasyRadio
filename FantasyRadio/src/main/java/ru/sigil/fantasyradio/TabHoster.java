@@ -1,15 +1,15 @@
 package ru.sigil.fantasyradio;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -32,29 +31,22 @@ import javax.inject.Inject;
 import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.bassplayerlib.PlayState;
 import ru.sigil.bassplayerlib.listeners.IPlayerErrorListener;
-import ru.sigil.fantasyradio.ad.AdService;
-import ru.sigil.fantasyradio.archieve.ArchieveFragment;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
-import ru.sigil.fantasyradio.saved.SavedFragment;
-import ru.sigil.fantasyradio.schedule.ScheduleFragment;
+import ru.sigil.fantasyradio.playerservice.PlayerBackgroundService;
 import ru.sigil.fantasyradio.settings.Settings;
 import ru.sigil.fantasyradio.settings.SettingsActivity;
 import ru.sigil.fantasyradio.utils.FantasyRadioNotificationManager;
 import ru.sigil.fantasyradio.utils.RadioStream;
 
+
 public class TabHoster extends FragmentActivity {
     private static final String TAG = TabHoster.class.getSimpleName();
     public SectionsPagerAdapter mSectionsPagerAdapter;
     private final int MY_PERMISSIONS_REQUEST = 1;
-    private FirebaseAnalytics mFirebaseAnalytics;
+    private IPlayer<RadioStream> player;
 
-    @Inject
-    IPlayer<RadioStream> player;
     @Inject
     FantasyRadioNotificationManager notificationManager;
-    @Inject
-    AdService adService;
-
 
     private static int current_menu;
 
@@ -70,8 +62,7 @@ public class TabHoster extends FragmentActivity {
                 .show();
     }
 
-    private void requestMyPermissions()
-    {
+    private void requestMyPermissions() {
         ActivityCompat.requestPermissions(this,
                 new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE},
                 MY_PERMISSIONS_REQUEST);
@@ -81,22 +72,21 @@ public class TabHoster extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bootstrap.INSTANCE.getBootstrap().inject(this);
+        startService(new Intent(this, PlayerBackgroundService.class)); //Start
+        bindService(new Intent(this, PlayerBackgroundService.class), sConn, 0); //Bind
         player.addPlayerErrorListener(playerErrorListener);
         setContentView(R.layout.tabs);
-        // Obtain the FirebaseAnalytics instance.
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         //-------------------------------------------------------
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissionWithRationale();
+            requestPermissionWithRationale();
         }
         //-------------------------------------------------------
-        // EasyTracker is now ready for use.
         setCurrent_menu(R.menu.activity_main);
         SharedPreferences settings = getPreferences(0);
         Settings.setSettings(settings);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
@@ -104,7 +94,6 @@ public class TabHoster extends FragmentActivity {
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getBaseContext())
                 .defaultDisplayImageOptions(defaultOptions).build();
         ImageLoader.getInstance().init(config);
-
     }
 
     @Override
@@ -127,6 +116,7 @@ public class TabHoster extends FragmentActivity {
     @Override
     public void onDestroy() {
         player.removePlayerErrorListener(playerErrorListener);
+        unbindService(sConn);
         super.onDestroy();
     }
 
@@ -234,69 +224,6 @@ public class TabHoster extends FragmentActivity {
         openOptionsMenu();
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        private RadioFragment radioFragment = new RadioFragment();
-        private ScheduleFragment scheduleFragment = new ScheduleFragment();
-        private ArchieveFragment archieveFragment = new ArchieveFragment();
-        private SavedFragment savedFragment = new SavedFragment();
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a DummySectionFragment (defined as a static inner class
-            // below) with the page number as its lone argument.
-            //TODO
-            Fragment fragment = new Fragment();
-            switch (position) {
-                case 0:
-                    fragment = radioFragment;
-                    break;
-                case 1:
-                    fragment = scheduleFragment;
-                    break;
-                case 2:
-                    fragment = archieveFragment;
-                    break;
-                case 3:
-                    fragment = savedFragment;
-                    break;
-            }
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            return 4;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return getString(R.string.first_tab_text);
-                case 1:
-                    return getString(R.string.second_tab_text);
-                case 2:
-                    return getString(R.string.third_tab_text);
-                case 3:
-                    return getString(R.string.fourth_tab_text);
-            }
-            return null;
-        }
-
-        public void notifySavedFragment() {
-            savedFragment.notifyAdapter();
-        }
-    }
-
     private IPlayerErrorListener playerErrorListener = (message, errorCode) -> {
         final String s = String.format(Locale.getDefault(), "%s\n(error code: %d)", message, errorCode);
         runOnUiThread(() -> {
@@ -309,4 +236,20 @@ public class TabHoster extends FragmentActivity {
             }
         });
     };
+
+    ServiceConnection sConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            player = ((PlayerBackgroundService.PlayerBackgroundServiceBinder) iBinder).getPlayer();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
+
+    public IPlayer<RadioStream> getPlayer() {
+        return player;
+    }
 }

@@ -69,5 +69,7 @@
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
+
+        <service android:enabled="true" android:name=".playerservice.PlayerBackgroundService" />
     </application>
 </manifest>
