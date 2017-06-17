@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import ru.sigil.bassplayerlib.IPlayer;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.RadioStream;
+import ru.sigil.log.LogManager;
 
 /**
  * Created by namelessone
@@ -17,6 +18,8 @@ import ru.sigil.fantasyradio.utils.RadioStream;
  */
 
 public class PlayerBackgroundService extends Service {
+    private static final String TAG = PlayerBackgroundService.class.getSimpleName();
+
     @Inject
     IPlayer<RadioStream> player;
 
@@ -36,6 +39,7 @@ public class PlayerBackgroundService extends Service {
     public void onCreate() {
         super.onCreate();
         Bootstrap.INSTANCE.getBootstrap().inject(this);
+        player.addTitleChangedListener((title) -> LogManager.e(TAG, title));
     }
 
     @Override
