@@ -28,5 +28,4 @@ licenses:
 
 script:
    - chmod +x ./gradlew
-   - ./gradlew buildFree
    - ./gradlew testFreeDebugUnitTest
