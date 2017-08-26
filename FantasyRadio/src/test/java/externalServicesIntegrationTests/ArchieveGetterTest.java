@@ -22,7 +22,7 @@ public class ArchieveGetterTest {
     {
         ArchieveParser archieveParser = new ArchieveParser();
         ArchieveGetter target = new ArchieveGetter(archieveParser);
-        List<ArchieveEntity> result = target.ParseArchieve("NamelessOne1", "fantasyradio364");
+        List<ArchieveEntity> result = target.ParseArchieve("NamelessOne", "fantasyradio364");
         Assert.assertNotNull(result);
         Assert.assertFalse(result.isEmpty());
         for (ArchieveEntity entity : result) {
