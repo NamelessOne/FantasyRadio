@@ -30,7 +30,7 @@ public class CurrentStreamInfoService {
     public void updateInfo(ICurrentStreamInfoUpdater callback) {
         new Thread(() -> {
             try {
-                URL url = new URL("http://fantasyradionotifications-sigil.rhcloud.com/current");
+                URL url = new URL("https://infinite-everglades-80645.herokuapp.com/currentstream");
 
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
