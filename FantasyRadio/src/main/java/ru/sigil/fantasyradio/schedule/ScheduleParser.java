@@ -62,7 +62,9 @@ public class ScheduleParser {
                     Elements imgs = doc.getElementsByTag("img");
                     //Если tds = 0, значит там вообще не тэгов, одна голая надпись
                     if (tds.size() > 0) {
-                        se.setImageURL(imgs.get(0).attr("src"));
+                        if(imgs.size()>0) {
+                            se.setImageURL(imgs.get(0).attr("src"));
+                        }
                         se.setText(tds.get(tds.size() - 1).text());
                     } else {
                         se.setText(doc.text());
