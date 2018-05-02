@@ -40,7 +40,6 @@ import ru.sigil.bassplayerlib.listeners.IPlayStateChangedListener;
 import ru.sigil.bassplayerlib.listeners.IRecStateChangedListener;
 import ru.sigil.bassplayerlib.listeners.ITitleChangedListener;
 import ru.sigil.bassplayerlib.listeners.IVolumeChangedListener;
-import ru.sigil.fantasyradio.ad.AdService;
 import ru.sigil.fantasyradio.currentstreraminfo.CurrentStreamInfoService;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.utils.AlarmReceiever;
@@ -61,9 +60,6 @@ public class RadioFragment extends Fragment {
     private String currentStreamAbout = "";
     private String currentStreamImageUrl = "";
     public final int TIME_DIALOG_ID = 999;
-    private static final int AD_SHOW_PROBABILITY_REC = 25;
-    private static final int AD_SHOW_PROBABILITY_URL = 4;
-    private static final int AD_SHOW_PROBABILITY_PLAY = 5;
 
     private static final SparseArray<Bitrate> bitrates;
 
@@ -81,8 +77,6 @@ public class RadioFragment extends Fragment {
     RadioStreamFactory radioStreamFactory;
     @Inject
     CurrentStreamInfoService currentStreamInfoService;
-    @Inject
-    AdService adService;
 
 
     private Random random;
@@ -151,7 +145,6 @@ public class RadioFragment extends Fragment {
      */
     public void streamButtonClick(View v) {
         updateWidget();
-        adService.showAd(AD_SHOW_PROBABILITY_PLAY);
         if (player.currentState() != PlayState.PLAY) {
             RadioStream stream = radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate());
             switch (player.currentStream().getBitrate()) {
@@ -294,7 +287,6 @@ public class RadioFragment extends Fragment {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (position != bitrates.keyAt(bitrates.indexOfValue(player.currentStream().getBitrate()))) {
-                adService.showAd(AD_SHOW_PROBABILITY_URL);
                 player.setStream(radioStreamFactory.createStreamWithBitrate(bitrates.get(position)));
                 if (player.currentState() == PlayState.PLAY) {
                     ImageView b = mainFragmentView.findViewById(R.id.streamButton);
@@ -327,7 +319,6 @@ public class RadioFragment extends Fragment {
      * Запись потока.
      */
     private void streamRecordClick() {
-        adService.showAd(AD_SHOW_PROBABILITY_REC);
         if (player.isRecActive()) {
             player.rec(false);
         } else {

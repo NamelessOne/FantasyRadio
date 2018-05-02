@@ -18,7 +18,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.sigil.fantasyradio.R;
-import ru.sigil.fantasyradio.ad.AdService;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.log.LogManager;
 
@@ -27,10 +26,7 @@ public class ScheduleFragment extends Fragment {
     private ExpandableListView lv;
     private ParseAsyncTask searchAsyncTasc;
     ArrayList<ArrayList<ScheduleEntity>> arr = new ArrayList<>();
-    private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
     private List<ScheduleEntity> scheduleEntityesCollection = new ArrayList<>();
-    @Inject
-    AdService adSevice;
     @Inject
     ScheduleParser scheduleParser;
 
@@ -130,7 +126,6 @@ public class ScheduleFragment extends Fragment {
     }
 
     public void refreshClick(@SuppressWarnings("UnusedParameters") View v) {
-        adSevice.showAd(AD_SHOW_PROBABILITY_REFRESH);
         searchAsyncTasc = new ParseAsyncTask();
         searchAsyncTasc.execute();
     }

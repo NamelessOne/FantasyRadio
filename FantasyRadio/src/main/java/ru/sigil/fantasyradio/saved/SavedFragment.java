@@ -182,7 +182,9 @@ public class SavedFragment extends AbstractListFragment {
 
 
     private IVolumeChangedListener volumeChangedListener = (volume) -> getActivity().runOnUiThread(() -> {
-        SeekBar volumeSeekBar = getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
-        volumeSeekBar.setProgress((int) (volume * 100));
+        if (player.getCurrentMP3Entity() != null) {
+            SeekBar volumeSeekBar = getLv().findViewWithTag(player.getCurrentMP3Entity().getDirectory() + "volume");
+            volumeSeekBar.setProgress((int) (volume * 100));
+        }
     });
 }

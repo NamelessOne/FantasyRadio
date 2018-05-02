@@ -34,7 +34,6 @@ import ru.sigil.fantasyradio.AbstractListFragment;
 import ru.sigil.fantasyradio.BuildConfig;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.TabHoster;
-import ru.sigil.fantasyradio.ad.AdService;
 import ru.sigil.fantasyradio.dagger.Bootstrap;
 import ru.sigil.fantasyradio.exceptions.WrongLoginOrPasswordException;
 import ru.sigil.fantasyradio.saved.MP3Collection;
@@ -47,14 +46,11 @@ public class ArchieveFragment extends AbstractListFragment {
     private ParseAsyncTask searchAsyncTasc;
     private AlertDialog.Builder ad;
     private Random random;
-    private static final int AD_SHOW_PROBABILITY_REFRESH = 25;
     private List<ArchieveEntity> archieveEntityes = new ArrayList<>();
     @Inject
     MP3Collection mp3Collection;
     @Inject
     ArchieveGetter archieveGetter;
-    @Inject
-    AdService adService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,7 +115,6 @@ public class ArchieveFragment extends AbstractListFragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            adService.showAd(AD_SHOW_PROBABILITY_REFRESH);
             try {
                 adapter.clear();
             } catch (Exception e) {
