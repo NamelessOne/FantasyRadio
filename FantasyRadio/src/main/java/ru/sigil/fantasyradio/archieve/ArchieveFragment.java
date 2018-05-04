@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -25,13 +24,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 import javax.inject.Inject;
 
 import ru.sigil.fantasyradio.AbstractListFragment;
-import ru.sigil.fantasyradio.BuildConfig;
 import ru.sigil.fantasyradio.R;
 import ru.sigil.fantasyradio.TabHoster;
 import ru.sigil.fantasyradio.dagger.Bootstrap;

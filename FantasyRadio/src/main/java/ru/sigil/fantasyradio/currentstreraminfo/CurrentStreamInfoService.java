@@ -1,8 +1,10 @@
 package ru.sigil.fantasyradio.currentstreraminfo;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -17,6 +19,8 @@ import javax.inject.Inject;
  */
 
 public class CurrentStreamInfoService {
+    private static final String MAIN_URL = "https://infinite-everglades-80645.herokuapp.com/currentstream";
+    private static final String ALTERNATE_URL = "http://31.163.196.172:36484/CurrentStreamInformation/Last";
 
     private String imageURL = "";
     private String about = "";
@@ -30,32 +34,50 @@ public class CurrentStreamInfoService {
     public void updateInfo(ICurrentStreamInfoUpdater callback) {
         new Thread(() -> {
             try {
-                URL url = new URL("https://infinite-everglades-80645.herokuapp.com/currentstream");
+                URL url = new URL(MAIN_URL);
 
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
 
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuilder buffer = new StringBuilder();
+                if(urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    JSONObject dataJsonObj = getJson(urlConnection);
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line);
+                    about = dataJsonObj.getString("about").length() > 0 ? dataJsonObj.getString("about") : "Описание отсутствует";
+                    imageURL = dataJsonObj.getString("image_url");
                 }
+                else {
+                    URL alternateURL = new URL(ALTERNATE_URL);
 
-                String resultJson = buffer.toString();
+                    HttpURLConnection alternateUrlConnection = (HttpURLConnection) alternateURL.openConnection();
+                    alternateUrlConnection.setRequestMethod("GET");
+                    alternateUrlConnection.connect();
 
-                JSONObject dataJsonObj = new JSONObject(resultJson);
-                about = dataJsonObj.getString("about").length() > 0 ? dataJsonObj.getString("about") : "Описание отсутствует";
-                imageURL = dataJsonObj.getString("image_url");
+                    JSONObject dataJsonObj = getJson(alternateUrlConnection);
+                    about = dataJsonObj.getString("about").length() > 0 ? dataJsonObj.getString("about") : "Описание отсутствует";
+                    imageURL = dataJsonObj.getString("imageURL");
+                }
                 callback.update(about, imageURL);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    private JSONObject getJson(HttpURLConnection urlConnection) throws IOException, JSONException
+    {
+        InputStream inputStream = urlConnection.getInputStream();
+        StringBuilder buffer = new StringBuilder();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            buffer.append(line);
+        }
+
+        String resultJson = buffer.toString();
+        return new JSONObject(resultJson);
     }
 
     public String getImageURL() {
