@@ -21,6 +21,7 @@ import javax.inject.Inject;
 public class CurrentStreamInfoService {
     private static final String ALTERNATE_URL = "https://infinite-everglades-80645.herokuapp.com/currentstream";
     private static final String MAIN_URL = "http://31.163.196.172:36484/CurrentStreamInformation/Last";
+    private static final int CONNECTION_TIMEOUT = 10000;
 
     private String imageURL = "";
     private String about = "";
@@ -38,6 +39,7 @@ public class CurrentStreamInfoService {
 
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
+                urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
                 urlConnection.connect();
 
                 if(urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
@@ -56,6 +58,7 @@ public class CurrentStreamInfoService {
 
                 HttpURLConnection alternateUrlConnection = (HttpURLConnection) alternateURL.openConnection();
                 alternateUrlConnection.setRequestMethod("GET");
+                alternateUrlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
                 alternateUrlConnection.connect();
 
                 JSONObject dataJsonObj = getJson(alternateUrlConnection);
