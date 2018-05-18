@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import ru.sigil.bassplayerlib.StreamFormat;
 import ru.sigil.fantasyradio.R;
 
 /**
@@ -31,6 +32,19 @@ public class RadioStreamFactory {
     }
 
     public RadioStream createStreamWithBitrate(Bitrate bitrate) {
-        return new RadioStream(bitrate, bitratesMap.get(bitrate));
+        StreamFormat streamFormat;
+        switch (bitrate)
+        {
+            case aac_16:
+            case aac_112:
+                streamFormat = StreamFormat.aac;
+                break;
+            case mp3_96:
+            case mp3_32:
+            default:
+                streamFormat = StreamFormat.mp3;
+                break;
+        }
+        return new RadioStream(bitrate, bitratesMap.get(bitrate), streamFormat);
     }
 }

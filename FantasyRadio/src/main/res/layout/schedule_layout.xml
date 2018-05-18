@@ -8,11 +8,7 @@
 
     <Button
         android:id="@+id/schedule_refresh_button"
-        android:layout_width="fill_parent"
-        android:layout_height="48dp"
-        android:background="@drawable/refresh_states"
-        android:padding="4dp"
-        android:textColor="@color/refresh_button_text_color"
+        style="@style/WideButton"
         android:text="@string/refresh" />
 
     <LinearLayout

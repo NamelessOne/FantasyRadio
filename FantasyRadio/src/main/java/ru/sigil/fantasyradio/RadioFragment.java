@@ -147,16 +147,7 @@ public class RadioFragment extends Fragment {
         updateWidget();
         if (player.currentState() != PlayState.PLAY) {
             RadioStream stream = radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate());
-            switch (player.currentStream().getBitrate()) {
-                case aac_16:
-                case aac_112:
-                    player.playAAC(stream);
-                    break;
-                case mp3_32:
-                case mp3_96:
-                    player.play(stream);
-                    break;
-            }
+            player.playStream(stream);
         } else {
             player.stop();
         }

@@ -1,8 +1,24 @@
 <resources>
-
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:itemBackground">@drawable/menu_item_states</item>
     </style>>
     <style name="NotificationTextView" parent="android:TextAppearance.StatusBar.EventContent" />
-
+    <style name="SquareButton">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+    </style>
+    <style name="PlayerControl" parent="SquareButton">
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">fitCenter</item>>
+    </style>
+    <style name="PlayerPanel">
+        <item name="android:layout_height">48dp</item>
+    </style>
+    <style name="WideButton">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">@drawable/refresh_states</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:textColor">@color/refresh_button_text_color</item>
+    </style>
 </resources>

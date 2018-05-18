@@ -20,26 +20,20 @@
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="48dp"
+                style="@style/PlayerPanel"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/streamButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:adjustViewBounds="true"
                     android:padding="4dp"
-                    android:scaleType="fitCenter"
+                    style="@style/PlayerControl"
                     android:src="@drawable/play_states" />
 
                 <ImageView
                     android:id="@+id/recordButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    style="@style/PlayerControl"
                     android:layout_gravity="bottom"
-                    android:adjustViewBounds="true"
                     android:padding="8dp"
-                    android:scaleType="fitCenter"
                     android:src="@drawable/rec" />
 
                 <TextView
@@ -166,8 +160,7 @@
         <!-- Your FAB implementation -->
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            style="@style/SquareButton"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"

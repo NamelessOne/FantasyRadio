@@ -178,7 +178,7 @@ public class SavedFragment extends AbstractListFragment {
         getActivity().getApplicationContext().sendBroadcast(intent);
     }
 
-    private final IPlayStateChangedListener playStateChangedListener = (playState) -> adapter.notifyDataSetChanged();
+    private final IPlayStateChangedListener playStateChangedListener = (playState) -> getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
 
 
     private IVolumeChangedListener volumeChangedListener = (volume) -> getActivity().runOnUiThread(() -> {

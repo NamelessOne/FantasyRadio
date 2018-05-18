@@ -54,7 +54,7 @@ android {
 }
 
 dependencies {
-    compile 'com.github.NamelessOne:BassPlayerAndroidModule:develop-SNAPSHOT'
+    implementation 'com.github.NamelessOne:BassPlayerAndroidModule:develop-SNAPSHOT'
     compile 'joda-time:joda-time:2.9.2'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'org.jsoup:jsoup:1.8.3'

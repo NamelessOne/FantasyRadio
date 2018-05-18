@@ -35,7 +35,6 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getStringExtra(FantasyRadioNotificationManager.ACTION);
         if (FantasyRadioNotificationManager.PAUSE.equals(action)) {
-            //TODO
             switch (player.currentState()) {
                 case PLAY:
                 case BUFFERING:
@@ -46,20 +45,9 @@ public class FantasyRadioNotificationReceiver extends BroadcastReceiver {
             }
             notificationManager.updateNotification(player.currentTitle(), player.currentArtist(), PlayState.STOP/*player.currentState()*/);
         } else {
-            //TODO
             switch (player.currentState()) {
                 case STOP:
-                    switch (player.currentStream().getBitrate())
-                    {
-                        case aac_16:
-                        case aac_112:
-                            player.playAAC(radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate()));
-                            break;
-                        case mp3_32:
-                        case mp3_96:
-                        default:
-                            player.play(radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate()));
-                    }
+                    player.playStream(radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate()));
                     break;
                 case PAUSE:
                     player.resume();

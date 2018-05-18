@@ -215,7 +215,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             player.setStream(stream);
             if (player.currentState() == PlayState.PLAY) {
                 player.stop();
-                player.playAAC(stream);
+                player.playStream(stream);
             }
             onUpdate(context);
         }
@@ -224,7 +224,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             player.setStream(stream);
             if (player.currentState() == PlayState.PLAY) {
                 player.stop();
-                player.play(stream);
+                player.playStream(stream);
             }
             onUpdate(context);
         }
@@ -233,7 +233,7 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             player.setStream(stream);
             if (player.currentState() == PlayState.PLAY) {
                 player.stop();
-                player.play(stream);
+                player.playStream(stream);
             }
             onUpdate(context);
         }
@@ -242,23 +242,14 @@ public class FantasyRadioWidgetProvider extends AppWidgetProvider {
             player.setStream(stream);
             if (player.currentState() == PlayState.PLAY) {
                 player.stop();
-                player.playAAC(stream);
+                player.playStream(stream);
             }
             onUpdate(context);
         }
 
         if (ACTION_PLAY_CLICK.equals(intent.getAction())) {
             RadioStream stream = radioStreamFactory.createStreamWithBitrate(player.currentStream().getBitrate());
-            switch (player.currentStream().getBitrate()) {
-                case aac_16:
-                case aac_112:
-                    player.playAAC(stream);
-                    break;
-                case mp3_32:
-                case mp3_96:
-                    player.play(stream);
-                    break;
-            }
+            player.playStream(stream);
             onUpdate(context);
         }
         if (ACTION_STOP_CLICK.equals(intent.getAction())) {

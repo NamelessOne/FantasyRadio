@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="48dp">
+        style="@style/PlayerPanel">
 
         <TextView
             android:id="@+id/MP3artist"
@@ -23,12 +23,9 @@
 
         <ImageButton
             android:id="@+id/deleteMP3Button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            style="@style/PlayerControl"
             android:layout_gravity="center_vertical"
-            android:adjustViewBounds="true"
             android:background="@null"
-            android:scaleType="fitCenter"
             android:padding="12dp"
             android:layout_alignParentRight="true"
             android:src="@drawable/delete_states" />
@@ -37,19 +34,16 @@
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="48dp"
+        style="@style/PlayerPanel"
         android:focusable="false"
         android:gravity="center_vertical">
 
         <ImageButton
             android:id="@+id/MP3buttonPlay"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:adjustViewBounds="true"
+            style="@style/PlayerControl"
             android:background="@null"
             android:padding="4dp"
             android:layout_alignParentLeft="true"
-            android:scaleType="fitCenter"
             android:src="@drawable/play_states" />
 
         <SeekBar

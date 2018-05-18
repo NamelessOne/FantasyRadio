@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.PowerManager;
 
 import javax.inject.Inject;
 
@@ -20,12 +21,11 @@ import ru.sigil.fantasyradio.utils.RadioStream;
  */
 
 public class PlayerBackgroundService extends Service {
-    private WifiManager.WifiLock lock;
+    private WifiManager.WifiLock wifiLock;
+    private PowerManager.WakeLock wakeLock;
 
     @Inject
     IPlayer<RadioStream> player;
-    @Inject
-    Context context;
 
     PlayerBackgroundServiceBinder binder = new PlayerBackgroundServiceBinder();
 
@@ -44,9 +44,13 @@ public class PlayerBackgroundService extends Service {
         super.onCreate();
         Bootstrap.INSTANCE.getBootstrap().inject(this);
         try {
-            WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            lock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, "LockTag");
-            lock.acquire();
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, "LockTag");
+            wifiLock.acquire();
+            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                    "MyWakelockTag");
+            wakeLock.acquire();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -56,9 +60,13 @@ public class PlayerBackgroundService extends Service {
                 switch (state) {
                     case STOP:
                     case PAUSE:
-                        lock.release();
+                        wifiLock.release();
+                        wakeLock.release();
+                        break;
                     default:
-                        lock.acquire();
+                        wifiLock.acquire();
+                        wakeLock.acquire();
+                        break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();

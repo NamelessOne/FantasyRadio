@@ -19,8 +19,8 @@ import javax.inject.Inject;
  */
 
 public class CurrentStreamInfoService {
-    private static final String MAIN_URL = "https://infinite-everglades-80645.herokuapp.com/currentstream";
-    private static final String ALTERNATE_URL = "http://31.163.196.172:36484/CurrentStreamInformation/Last";
+    private static final String ALTERNATE_URL = "https://infinite-everglades-80645.herokuapp.com/currentstream";
+    private static final String MAIN_URL = "http://31.163.196.172:36484/CurrentStreamInformation/Last";
 
     private String imageURL = "";
     private String about = "";
@@ -44,21 +44,25 @@ public class CurrentStreamInfoService {
                     JSONObject dataJsonObj = getJson(urlConnection);
 
                     about = dataJsonObj.getString("about").length() > 0 ? dataJsonObj.getString("about") : "Описание отсутствует";
-                    imageURL = dataJsonObj.getString("image_url");
-                }
-                else {
-                    URL alternateURL = new URL(ALTERNATE_URL);
-
-                    HttpURLConnection alternateUrlConnection = (HttpURLConnection) alternateURL.openConnection();
-                    alternateUrlConnection.setRequestMethod("GET");
-                    alternateUrlConnection.connect();
-
-                    JSONObject dataJsonObj = getJson(alternateUrlConnection);
-                    about = dataJsonObj.getString("about").length() > 0 ? dataJsonObj.getString("about") : "Описание отсутствует";
                     imageURL = dataJsonObj.getString("imageURL");
+                    callback.update(about, imageURL);
+                    return;
                 }
-                callback.update(about, imageURL);
             } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                URL alternateURL = new URL(ALTERNATE_URL);
+
+                HttpURLConnection alternateUrlConnection = (HttpURLConnection) alternateURL.openConnection();
+                alternateUrlConnection.setRequestMethod("GET");
+                alternateUrlConnection.connect();
+
+                JSONObject dataJsonObj = getJson(alternateUrlConnection);
+                about = dataJsonObj.getString("about").length() > 0 ? dataJsonObj.getString("about") : "Описание отсутствует";
+                imageURL = dataJsonObj.getString("image_url");
+                callback.update(about, imageURL);
+            }catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();

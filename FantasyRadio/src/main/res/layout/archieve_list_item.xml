@@ -27,11 +27,8 @@
 
     <ImageView
         android:id="@+id/archieveItemDownloadButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        style="@style/PlayerControl"
         android:layout_gravity="center_vertical"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
         android:src="@drawable/download_states"
         android:padding="4dp"
         android:layout_centerVertical="true"
