@@ -1,7 +1,6 @@
 package externalServicesIntegrationTests;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public class ScheduleGetterTest {
     public void Get_Schedule_Positive_Test() throws Exception
     {
         ScheduleParser scheduleParser = new ScheduleParser();
-        List<ScheduleEntity> result = scheduleParser.ParseSchedule();
+        List<ScheduleEntity> result = scheduleParser.parseSchedule();
         Assert.assertNotNull(result);
         Assert.assertFalse(result.isEmpty());
         for (ScheduleEntity entity : result) {

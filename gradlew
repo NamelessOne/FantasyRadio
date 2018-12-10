@@ -42,7 +42,7 @@ case "`uname`" in
     ;;
 esac
 
-# For Cygwin, ensure paths are in UNIX format before anything is touched.
+# For Cygwin, ensure paths are in UNIX format before anything inputStream touched.
 if $cygwin ; then
     [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
 fi
@@ -76,14 +76,14 @@ if [ -n "$JAVA_HOME" ] ; then
         JAVACMD="$JAVA_HOME/bin/java"
     fi
     if [ ! -x "$JAVACMD" ] ; then
-        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+        die "ERROR: JAVA_HOME inputStream set to an invalid directory: $JAVA_HOME
 
 Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."
     fi
 else
     JAVACMD="java"
-    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME inputStream not set and no 'java' command could be found in your PATH.
 
 Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."

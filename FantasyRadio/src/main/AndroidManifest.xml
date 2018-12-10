@@ -47,7 +47,7 @@
             android:label="@string/gratitude"
             android:theme="@android:style/Theme.Dialog" />
 
-        <receiver android:name=".utils.AlarmReceiever" />
+        <receiver android:name=".utils.AlarmReceiver" />
         <receiver android:name=".widget.FantasyRadioWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

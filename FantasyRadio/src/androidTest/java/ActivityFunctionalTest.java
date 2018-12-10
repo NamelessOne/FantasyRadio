@@ -1,10 +1,9 @@
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
+import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,10 +13,13 @@ import org.mockito.Mockito;
 import ru.sigil.fantasyradio.Gratitude;
 import ru.sigil.fantasyradio.TabHoster;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static junit.framework.TestCase.assertNotNull;
+
 
 @RunWith(AndroidJUnit4.class)
 public class ActivityFunctionalTest extends
-        ActivityInstrumentationTestCase2<TabHoster> {
+        ActivityTestRule<TabHoster> {
 
     public ActivityFunctionalTest() {
         super(TabHoster.class);
@@ -29,7 +31,7 @@ public class ActivityFunctionalTest extends
     @Ignore
     public void Gratitude_Should_Be_Shown_When_App_Close_First_Time() throws Exception {
         try {
-            injectInstrumentation(InstrumentationRegistry.getInstrumentation());
+            //injectInstrumentation(getInstrumentation());
             TabHoster activity = getActivity();
             final SharedPreferences sharedPrefs = Mockito.mock(SharedPreferences.class);
             final Context context = Mockito.mock(Context.class);
