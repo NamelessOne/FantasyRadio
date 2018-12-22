@@ -46,15 +46,26 @@ android {
     }
 
     sourceSets {
+        test {
+            java.srcDirs = ['src/test/kotlin']
+        }
+        androidTest {
+            java.srcDirs = ['src/androidTest/kotlin']
+        }
+        main {
+            assets.srcDirs = ['src/main/assets']
+            res.srcDirs = ['src/main/res']
+            java.srcDirs = ['src/main/kotlin']
+        }
         paid {
             assets.srcDirs = ['src/paid/assets']
             res.srcDirs = ['src/paid/res']
-            java.srcDirs = ['src/paid/java']
+            java.srcDirs = ['src/paid/kotlin']
         }
         free {
             assets.srcDirs = ['src/free/assets']
             res.srcDirs = ['src/free/res']
-            java.srcDirs = ['src/free/java']
+            java.srcDirs = ['src/free/kotlin']
         }
     }
 }
