@@ -22,10 +22,10 @@ class PlayerBackgroundService: Service() {
     private var wifiLock: WifiManager.WifiLock? = null
     private var wakeLock: PowerManager.WakeLock? = null
 
-    @set:Inject
-    var player: IPlayer<RadioStream>? = null
+    @Inject
+    lateinit var player: IPlayer<RadioStream>
 
-    var binder = PlayerBackgroundServiceBinder()
+    private var binder = PlayerBackgroundServiceBinder()
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         //TODO do something useful
@@ -44,8 +44,7 @@ class PlayerBackgroundService: Service() {
             wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, "LockTag")
             wifiLock?.acquire()
             val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                    "MyWakelockTag")
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakelockTag")
             wakeLock?.acquire()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -68,11 +67,11 @@ class PlayerBackgroundService: Service() {
                 }            }
 
         }
-        player?.addPlayStateChangedListener(playerStateChangedListener)
+        player.addPlayStateChangedListener(playerStateChangedListener)
     }
 
     override fun onDestroy() {
-        player?.stop()
+        player.stop()
     }
 
     override fun onLowMemory() {

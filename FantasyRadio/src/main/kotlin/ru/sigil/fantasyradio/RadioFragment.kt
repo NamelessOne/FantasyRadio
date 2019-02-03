@@ -21,8 +21,6 @@ import java.util.*
 import com.un4seen.bass.BASS
 import ru.sigil.fantasyradio.utils.AlarmReceiver
 import com.nostra13.universalimageloader.core.ImageLoader
-import ru.sigil.fantasyradio.currentstreraminfo.ICurrentStreamInfoUpdater
-import ru.sigil.log.LogManager
 import ru.sigil.bassplayerlib.PlayState
 import android.content.Intent
 import ru.sigil.fantasyradio.utils.SleepHandlerContainer
@@ -33,18 +31,19 @@ import android.widget.*
 import ru.sigil.fantasyradio.dagger.Bootstrap
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import kotlinx.coroutines.*
 import ru.sigil.bassplayerlib.listeners.*
 import ru.sigil.fantasyradio.widget.FantasyRadioWidgetProvider
 
 const val TIME_DIALOG_ID = 999
 const val CURRENT_INFO_UPDATE_INTERVAL = 1000 * 60 //1 minute
 
+@Suppress("UNNECESSARY_SAFE_CALL")
 /**
  * Created by namelessone
  * on 09.12.18.
  */
 class RadioFragment : Fragment() {
-    private val TAG = RadioFragment::class.java.simpleName
     private var hour: Int = 0
     private var minute: Int = 0
     private var am: AlarmManager? = null
@@ -53,22 +52,23 @@ class RadioFragment : Fragment() {
     private var mainFragmentView: View? = null
     private var currentStreamAbout = ""
     private var currentStreamImageUrl = ""
+    private var updateCurrentStreamInfoJob: Job? = null
 
     private var bitRates: SparseArray<Bitrate> = SparseArray()
 
     init {
-        bitRates.put(0, Bitrate.AAC_16);
-        bitRates.put(1, Bitrate.MP3_32);
-        bitRates.put(2, Bitrate.MP3_96);
-        bitRates.put(3, Bitrate.AAC_112);
+        bitRates.put(0, Bitrate.AAC_16)
+        bitRates.put(1, Bitrate.MP3_32)
+        bitRates.put(2, Bitrate.MP3_96)
+        bitRates.put(3, Bitrate.AAC_112)
     }
 
-    @set:Inject
-    var player: IPlayer<RadioStream>? = null
-    @set:Inject
-    var radioStreamFactory: IRadioStreamFactory? = null
-    @set:Inject
-    var currentStreamInfoService: ICurrentStreamInfoService? = null
+    @Inject
+    lateinit var player: IPlayer<RadioStream>
+    @Inject
+    lateinit var radioStreamFactory: IRadioStreamFactory
+    @Inject
+    lateinit var currentStreamInfoService: ICurrentStreamInfoService
 
 
     /**
@@ -85,38 +85,15 @@ class RadioFragment : Fragment() {
         }
     }
 
-    var currentInfoUpdateHandler = Handler()
-
-    private var currentInfoUpdateHandlerTask: Runnable = object : Runnable {
-        override fun run() {
-            //doSomething();
-            LogManager.d(TAG, "UPDATE STREAM INFO")
-            currentStreamInfoService?.updateInfo(object : ICurrentStreamInfoUpdater {
-                override fun update(about: String, imageURL: String) {
-                    currentStreamAbout = about
-                    currentStreamImageUrl = imageURL
-                    updateCurrentStreamInfo(about, imageURL)
-                }
-            })
-            currentInfoUpdateHandler.postDelayed(this, CURRENT_INFO_UPDATE_INTERVAL.toLong())
-        }
-    }
-
     private fun updateCurrentStreamInfo(about: String, imageUrl: String) {
-        activity?.runOnUiThread { mainFragmentView?.findViewById<TextView>(R.id.currentInfoAbout)?.text = about }
-        if (imageUrl.isNotEmpty()) {
-            activity?.runOnUiThread { ImageLoader.getInstance().displayImage("http://fantasyradio.ru/$imageUrl", mainFragmentView?.findViewById<ImageView>(R.id.currentInfoImage)) }
-        } else {
-            //(mainFragmentView?.findViewById(R.id.currentInfoImage) as ImageView).setImageDrawable(null)
+        GlobalScope.launch(Dispatchers.Main) {
+            mainFragmentView?.findViewById<TextView>(R.id.currentInfoAbout)?.text = about
+            if (imageUrl.isNotEmpty()) {
+                ImageLoader.getInstance().displayImage("http://fantasyradio.ru/$imageUrl", mainFragmentView?.findViewById<ImageView>(R.id.currentInfoImage))
+            } else {
+                (mainFragmentView?.findViewById(R.id.currentInfoImage) as ImageView).setImageDrawable(null)
+            }
         }
-    }
-
-    private fun startRepeatingCurrentInfoUpdatingTask() {
-        currentInfoUpdateHandlerTask.run()
-    }
-
-    private fun stopRepeatingCurrentInfoUpdatingTask() {
-        currentInfoUpdateHandler.removeCallbacks(currentInfoUpdateHandlerTask)
     }
 
     /**
@@ -124,11 +101,12 @@ class RadioFragment : Fragment() {
      */
     fun streamButtonClick(v: View) {
         updateWidget()
-        if (player?.playState !== PlayState.PLAY) {
-            val stream = radioStreamFactory!!.createStreamWithBitrate(player?.stream?.bitrate ?: Bitrate.AAC_16)
-            player?.playStream(stream)
+        if (player.playState !== PlayState.PLAY) {
+            val stream = radioStreamFactory.createStreamWithBitrate(player.stream?.bitrate
+                    ?: Bitrate.AAC_16)
+            player.playStream(stream)
         } else {
-            player?.stop()
+            player.stop()
         }
     }
 
@@ -136,12 +114,12 @@ class RadioFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         mainFragmentView = inflater.inflate(R.layout.activity_main, container, false)
         Bootstrap.INSTANCE.getBootstrap().inject(this)
-        player?.addTitleChangedListener(titleChangedListener)
-        player?.addAuthorChangedListener(authorChangedListener)
-        player?.addPlayStateChangedListener(playStateChangedListener)
-        player?.addRecStateChangedListener(recStateChangedListener)
-        player?.addBufferingProgressChangedListener(bufferingProgressListener)
-        player?.addVolumeChangedListener(volumeChangedListener)
+        player.addTitleChangedListener(titleChangedListener)
+        player.addAuthorChangedListener(authorChangedListener)
+        player.addPlayStateChangedListener(playStateChangedListener)
+        player.addRecStateChangedListener(recStateChangedListener)
+        player.addBufferingProgressChangedListener(bufferingProgressListener)
+        player.addVolumeChangedListener(volumeChangedListener)
         //------------------------------------------------------------------------------------------
         val streamButton = mainFragmentView?.findViewById<ImageView>(R.id.streamButton)
         streamButton?.setOnClickListener(this::streamButtonClick)
@@ -184,16 +162,15 @@ class RadioFragment : Fragment() {
 
     private fun initView() {
         val spinner = mainFragmentView?.findViewById<Spinner>(R.id.stream_quality_spinner)
-        spinner?.setSelection(bitRates.keyAt(bitRates.indexOfValue(player?.stream?.bitrate)))
+        spinner?.setSelection(bitRates.keyAt(bitRates.indexOfValue(player.stream?.bitrate)))
         spinner?.onItemSelectedListener = bitRateSelected
         val sb = mainFragmentView?.findViewById<SeekBar>(R.id.mainVolumeSeekBar)
-        sb?.progress = ((player?.volume ?: 0.5F) * 100).toInt()
+        sb?.progress = (player.volume * 100).toInt()
 
         sb?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int,
-                                           fromUser: Boolean) {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    player?.volume = progress.toFloat() / 100
+                    player.volume = progress.toFloat() / 100
                 }
             }
 
@@ -203,19 +180,19 @@ class RadioFragment : Fragment() {
         })
 
         val rib = mainFragmentView?.findViewById<ImageView>(R.id.recordButton)
-        if (player?.isRecActive == true) {
+        if (player.isRecActive) {
             rib?.setImageResource(R.drawable.rec_active)
         } else {
             rib?.setImageResource(R.drawable.rec)
         }
         val iv = mainFragmentView?.findViewById<ImageView>(R.id.streamButton)
 
-        when (player?.playState) {
+        when (player.playState) {
             PlayState.PLAY -> {
-                if (player?.author?.isNotEmpty() == true) {
-                    (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = player?.author + " - " + player?.title
+                if (player.author?.isNotEmpty() == true) {
+                    (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = player.author + " - " + player?.title
                 } else {
-                    (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = player?.title
+                    (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = player.title
                 }
                 iv?.setImageResource(R.drawable.pause_states)
             }
@@ -224,11 +201,11 @@ class RadioFragment : Fragment() {
             }
             PlayState.PAUSE, PlayState.PLAY_FILE -> {
                 (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = ""
-                iv?.setImageResource(R.drawable.play_states);
+                iv?.setImageResource(R.drawable.play_states)
             }
             PlayState.STOP -> {
                 (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = ""
-                iv?.setImageResource(R.drawable.play_states);
+                iv?.setImageResource(R.drawable.play_states)
             }
         }
         updateCurrentStreamInfo(currentStreamAbout, currentStreamImageUrl)
@@ -236,20 +213,20 @@ class RadioFragment : Fragment() {
 
 
     override fun onDestroyView() {
-        player?.removeTitleChangedListener(titleChangedListener)
-        player?.removeAuthorChangedListener(authorChangedListener)
-        player?.removePlayStateChangedListener(playStateChangedListener)
-        player?.removeRecStateChangedListener(recStateChangedListener)
-        player?.removeBufferingProgressChangedListener(bufferingProgressListener)
-        player?.removeVolumeChangedListener(volumeChangedListener)
+        player.removeTitleChangedListener(titleChangedListener)
+        player.removeAuthorChangedListener(authorChangedListener)
+        player.removePlayStateChangedListener(playStateChangedListener)
+        player.removeRecStateChangedListener(recStateChangedListener)
+        player.removeBufferingProgressChangedListener(bufferingProgressListener)
+        player.removeVolumeChangedListener(volumeChangedListener)
         super.onDestroyView()
     }
 
     private val bitRateSelected: AdapterView.OnItemSelectedListener = object : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            if (position != bitRates.keyAt(bitRates.indexOfValue(player?.stream?.bitrate))) {
-                player?.stream = radioStreamFactory?.createStreamWithBitrate(bitRates.get(position))
-                if (player?.playState == PlayState.PLAY) {
+            if (position != bitRates.keyAt(bitRates.indexOfValue(player.stream?.bitrate))) {
+                player.stream = radioStreamFactory.createStreamWithBitrate(bitRates.get(position))
+                if (player.playState == PlayState.PLAY) {
                     val b = mainFragmentView?.findViewById<ImageView>(R.id.streamButton)
                     b?.performClick()
                     b?.performClick()
@@ -263,12 +240,18 @@ class RadioFragment : Fragment() {
 
     override fun onResume() {
         initView()
-        startRepeatingCurrentInfoUpdatingTask()
+        updateCurrentStreamInfoJob = GlobalScope.launch(Dispatchers.IO) {
+            while (true) {
+                val streamInfo = currentStreamInfoService.getInfo()
+                updateCurrentStreamInfo(streamInfo.about, streamInfo.imageURL)
+                delay(CURRENT_INFO_UPDATE_INTERVAL.toLong())
+            }
+        }
         super.onResume()
     }
 
     override fun onPause() {
-        stopRepeatingCurrentInfoUpdatingTask()
+        updateCurrentStreamInfoJob?.cancel()
         super.onPause()
     }
 
@@ -276,10 +259,10 @@ class RadioFragment : Fragment() {
      * Запись потока.
      */
     private fun streamRecordClick() {
-        if (player?.isRecActive == true) {
-            player?.rec(false)
+        if (player.isRecActive) {
+            player.rec(false)
         } else {
-            player?.rec(true)
+            player.rec(true)
         }
     }
 
@@ -298,7 +281,7 @@ class RadioFragment : Fragment() {
         timeTv?.text = hour.toString() + ":" + str + minute
     }
 
-    val timePickerListener: TimePickerDialog.OnTimeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+    private val timePickerListener: TimePickerDialog.OnTimeSetListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
         am?.cancel(sender)
         setTimer(hourOfDay, minute)
         val calNow = Calendar.getInstance()
@@ -312,10 +295,10 @@ class RadioFragment : Fragment() {
         if (calNow.after(cal)) {
             alarmMillis += 86400000L // Add 1 day if time selected
             // before now
-            cal.timeInMillis = alarmMillis;
+            cal.timeInMillis = alarmMillis
         }
         if (cb1?.isChecked == true) {
-            am?.set(AlarmManager.RTC_WAKEUP, cal.timeInMillis, sender);
+            am?.set(AlarmManager.RTC_WAKEUP, cal.timeInMillis, sender)
         }
     }
 
@@ -335,26 +318,27 @@ class RadioFragment : Fragment() {
 
     private val titleChangedListener: ITitleChangedListener = object : ITitleChangedListener {
         override fun onTitleChanged(title: String) {
-            activity?.runOnUiThread { mainFragmentView?.findViewById<TextView>(R.id.textView1)?.text = title
+            activity?.runOnUiThread {
+                mainFragmentView?.findViewById<TextView>(R.id.textView1)?.text = title
             }
         }
     }
 
     private val authorChangedListener: IAuthorChangedListener = object : IAuthorChangedListener {
         override fun onAuthorChanged(author: String) {
-            activity?.runOnUiThread({
+            activity?.runOnUiThread {
                 if (author.isNotEmpty()) {
-                    (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = author + " - " + player?.title
+                    (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = author + " - " + player.title
                 } else {
-                    (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = player?.author
+                    (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = player.author
                 }
-            })
+            }
         }
     }
 
     private val playStateChangedListener: IPlayStateChangedListener = object : IPlayStateChangedListener {
         override fun onPlayStateChanged(playState: PlayState) {
-            activity?.runOnUiThread({
+            activity?.runOnUiThread {
                 val iv = mainFragmentView?.findViewById<ImageView>(R.id.streamButton)
                 when (playState) {
                     PlayState.PLAY, PlayState.BUFFERING -> {
@@ -369,13 +353,13 @@ class RadioFragment : Fragment() {
                     else -> {
                     }
                 }
-            })
+            }
         }
     }
 
     private val recStateChangedListener: IRecStateChangedListener = object : IRecStateChangedListener {
         override fun onRecStateChanged(isRec: Boolean) {
-            activity?.runOnUiThread({
+            activity?.runOnUiThread {
                 val rib = mainFragmentView?.findViewById<ImageView>(R.id.recordButton)
                 if (isRec) {
                     rib?.setImageResource(R.drawable.rec_active)
@@ -383,19 +367,18 @@ class RadioFragment : Fragment() {
                     rib?.setImageResource(R.drawable.rec)
                 }
             }
-            )
         }
     }
 
     private val bufferingProgressListener: IBufferingProgressListener = object : IBufferingProgressListener {
         override fun onBufferingProgress(progress: Long) {
-            activity?.runOnUiThread({ (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = String.format("BUFFERING... %d%%", progress) })
+            activity?.runOnUiThread { (mainFragmentView?.findViewById<TextView>(R.id.textView1))?.text = String.format("BUFFERING... %d%%", progress) }
         }
     }
 
     private val volumeChangedListener: IVolumeChangedListener = object : IVolumeChangedListener {
         override fun onVolumeChanged(volume: Float) {
-             activity?.runOnUiThread({ (mainFragmentView?.findViewById<SeekBar>(R.id.mainVolumeSeekBar))?.progress = (volume * 100).toInt() })
+            activity?.runOnUiThread { (mainFragmentView?.findViewById<SeekBar>(R.id.mainVolumeSeekBar))?.progress = (volume * 100).toInt() }
         }
     }
 
@@ -403,7 +386,7 @@ class RadioFragment : Fragment() {
         val intent = Intent(activity?.applicationContext, FantasyRadioWidgetProvider::class.java)
         intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
         val ids = AppWidgetManager.getInstance(activity?.applicationContext).getAppWidgetIds(
-                 ComponentName(activity?.applicationContext, FantasyRadioWidgetProvider::class.java))
+                ComponentName(activity?.applicationContext, FantasyRadioWidgetProvider::class.java))
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         activity?.applicationContext?.sendBroadcast(intent)
     }

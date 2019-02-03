@@ -6,11 +6,10 @@ import android.content.Context
 import javax.inject.Inject
 import android.os.Bundle
 import android.os.Message
-import android.util.Log
 import ru.sigil.fantasyradio.R
+import ru.sigil.fantasyradio.saved.MP3Entity
 import java.net.URL
 import java.io.*
-
 
 private const val DOWNLOAD_NOTIFICATION_ID = 364
 private const val BUFFER_SIZE = 4096
@@ -20,8 +19,9 @@ private const val BUFFER_SIZE = 4096
  * Created by namelessone
  * on 05.12.18.
  */
-//TODO интерфейс
 class FileDownloader @Inject constructor(private val context: Context) : IFileDownloader {
+    private val reservedChars = arrayOf("|", "\\", "?", "*", "<", "\"", ":", ">", "+", "[", "]", "/", "'", "%")
+
     private var notificationManager: NotificationManager? = null
     private var builder: NotificationCompat.Builder? = null
 
@@ -33,33 +33,29 @@ class FileDownloader @Inject constructor(private val context: Context) : IFileDo
      * @param fileName Имя файла. Например 31-Aug-201310-Radio_Fantasy_archive.mp3
      */
     @Synchronized
-    override fun downloadFile(fileUrl: String,
-                     fileDir: String, fileName: String): Boolean {
-        Log.v("fileDir", fileDir)
-        Log.v("fileUrl", fileUrl)
-        Log.v("fileName", fileName)
-        //---------------------------------------------------
+    override fun downloadFile(fileUrl: String, fileDir: String, fileName: String, title: String?, time: String?): MP3Entity? {
+        var normalizedFileName = fileName
+        for (s in reservedChars) {
+            normalizedFileName = fileName.replace(s, "_")
+        }
         builder = NotificationCompat.Builder(context)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_PROGRESS)
                 .setContentTitle(context.getString(R.string.download_started))
-                .setContentText(fileName)
+                .setContentText(normalizedFileName)
                 .setSmallIcon(R.drawable.download)
                 .setAutoCancel(false)
-        //.setOngoing(false)
-        //-------------------------------------------------
-        //-----------------------------------------------------
         notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager?.notify(DOWNLOAD_NOTIFICATION_ID, builder?.build())// !!!
         val bundle = Bundle()
-        bundle.putString("title", fileName)
+        bundle.putString("title", normalizedFileName)
         val titleMsg = Message()
         titleMsg.data = bundle
         try {
             val url = URL(fileUrl)
             val direct = File(fileDir)
             direct.mkdirs()
-            val myFolder = File(fileDir + fileName)
+            val myFolder = File(fileDir + normalizedFileName)
             try {
                 myFolder.delete()
             } catch (e: Exception) {
@@ -91,11 +87,11 @@ class FileDownloader @Inject constructor(private val context: Context) : IFileDo
             fos.close()
         } catch (e: Exception) {
             e.printStackTrace()
-            return false
+            return null
         } finally {
             notificationManager?.cancel(DOWNLOAD_NOTIFICATION_ID)// !!!
         }
-        return true
+        return MP3Entity(fileName.substring(0, 11), title, fileDir + fileName, time)
     }
 
     /**

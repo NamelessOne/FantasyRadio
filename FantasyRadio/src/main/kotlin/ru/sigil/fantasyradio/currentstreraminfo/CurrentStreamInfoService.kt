@@ -22,44 +22,41 @@ class CurrentStreamInfoService @Inject constructor(): ICurrentStreamInfoService 
     private var imageURL = ""
     private var about = ""
 
-    override fun updateInfo(callback: ICurrentStreamInfoUpdater) {
-        Thread {
-            try {
-                val url = URL(MAIN_URL)
+    override fun getInfo() : CurrentStreamInfo {
+        try {
+            val url = URL(MAIN_URL)
 
-                val urlConnection = url.openConnection() as HttpURLConnection
-                urlConnection.requestMethod = "GET"
-                urlConnection.connectTimeout = CONNECTION_TIMEOUT
-                urlConnection.connect()
+            val urlConnection = url.openConnection() as HttpURLConnection
+            urlConnection.requestMethod = "GET"
+            urlConnection.connectTimeout = CONNECTION_TIMEOUT
+            urlConnection.connect()
 
-                if (urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
-                    val dataJsonObj = getJson(urlConnection)
-
-                    about = if (dataJsonObj.getString("about").isNotEmpty()) dataJsonObj.getString("about") else "Описание отсутствует"
-                    imageURL = dataJsonObj.getString("imageURL")
-                    callback.update(about, imageURL)
-                    return@Thread
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            try {
-                val alternateURL = URL(ALTERNATE_URL)
-
-                val alternateUrlConnection = alternateURL.openConnection() as HttpURLConnection
-                alternateUrlConnection.requestMethod = "GET"
-                alternateUrlConnection.connectTimeout = CONNECTION_TIMEOUT
-                alternateUrlConnection.connect()
-
-                val dataJsonObj = getJson(alternateUrlConnection)
+            if (urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
+                val dataJsonObj = getJson(urlConnection)
                 about = if (dataJsonObj.getString("about").isNotEmpty()) dataJsonObj.getString("about") else "Описание отсутствует"
-                imageURL = dataJsonObj.getString("image_url")
-                callback.update(about, imageURL)
-            } catch (e: Exception) {
-                e.printStackTrace()
+                imageURL = dataJsonObj.getString("imageURL")
+                return CurrentStreamInfo(about, imageURL)
             }
-        }.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        try {
+            val alternateURL = URL(ALTERNATE_URL)
+
+            val alternateUrlConnection = alternateURL.openConnection() as HttpURLConnection
+            alternateUrlConnection.requestMethod = "GET"
+            alternateUrlConnection.connectTimeout = CONNECTION_TIMEOUT
+            alternateUrlConnection.connect()
+
+            val dataJsonObj = getJson(alternateUrlConnection)
+            about = if (dataJsonObj.getString("about").isNotEmpty()) dataJsonObj.getString("about") else "Описание отсутствует"
+            imageURL = dataJsonObj.getString("image_url")
+            return CurrentStreamInfo(about, imageURL)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return CurrentStreamInfo("Описание отсутствует", "")
     }
 
     @Throws(IOException::class, JSONException::class)

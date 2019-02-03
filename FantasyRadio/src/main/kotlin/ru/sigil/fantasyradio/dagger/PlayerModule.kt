@@ -57,11 +57,6 @@ class PlayerModule constructor(private val application: Application) {
     }
 
     @Provides
-    fun providesDownloadThreadFactory(fileDownloader: IFileDownloader): IDownloadThreadFactory {
-        return DownloadThreadFactory(fileDownloader)
-    }
-
-    @Provides
     fun providesFileDownloader(context: Context): IFileDownloader {
         return FileDownloader(context)
     }

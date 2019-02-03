@@ -31,8 +31,8 @@ class MP3ArrayAdapter(context: Context, private val dbCursor: Cursor, private va
         Bootstrap.INSTANCE.getBootstrap().inject(this)
     }
 
-    @set:Inject
-    var player: IPlayer<RadioStream>? = null
+    @Inject
+    lateinit var player: IPlayer<RadioStream>
 
     override fun getCount(): Int {
         return dbCursor.count
@@ -77,13 +77,13 @@ class MP3ArrayAdapter(context: Context, private val dbCursor: Cursor, private va
         playBtn.tag = message
         playBtn.setOnClickListener(playClickListener)
         progressSeekBar.tag = message.directory
-        progressSeekBar.progress = player?.progress?.toInt() ?: 0
+        progressSeekBar.progress = player.progress.toInt()
         progressSeekBar
                 .setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(seekBar: SeekBar,
                                                    progress: Int, fromUser: Boolean) {
                         if (fromUser) {
-                            player?.progress = progress.toLong()
+                            player.progress = progress.toLong()
                         }
                     }
 
@@ -92,12 +92,12 @@ class MP3ArrayAdapter(context: Context, private val dbCursor: Cursor, private va
                     override fun onStopTrackingTouch(seekBar: SeekBar) {}
                 })
         volumeSeekBar.tag = message.directory + "volume"
-        volumeSeekBar.progress = (player!!.volume * 100).toInt()
+        volumeSeekBar.progress = (player.volume * 100).toInt()
         volumeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int,
                                            fromUser: Boolean) {
                 if (fromUser) {
-                    player?.volume = progress.toFloat() / 100
+                    player.volume = progress.toFloat() / 100
                 }
             }
 
@@ -107,11 +107,11 @@ class MP3ArrayAdapter(context: Context, private val dbCursor: Cursor, private va
         })
 
         playBtn.setImageResource(R.drawable.play_states)
-        if (player?.currentMP3Entity != null && message.directory == player?.currentMP3Entity?.directory &&
-                (player?.playState=== PlayState.PLAY_FILE || player?.playState === PlayState.PAUSE)) {
+        if (player.currentMP3Entity != null && message.directory == player.currentMP3Entity?.directory &&
+                (player.playState=== PlayState.PLAY_FILE || player.playState === PlayState.PAUSE)) {
             progressSeekBar.visibility = View.VISIBLE
             volumeSeekBar.visibility = View.VISIBLE
-            if (player?.playState === PlayState.PLAY_FILE) {
+            if (player.playState === PlayState.PLAY_FILE) {
                 playBtn.setImageResource(R.drawable.pause_states)
             }
         } else {

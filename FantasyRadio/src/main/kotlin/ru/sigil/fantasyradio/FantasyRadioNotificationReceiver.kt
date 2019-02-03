@@ -18,31 +18,31 @@ class FantasyRadioNotificationReceiver: BroadcastReceiver() {
     init {
         Bootstrap.INSTANCE.getBootstrap().inject(this)
     }
-    @set:Inject
-    var player: IPlayer<RadioStream>? = null
-    @set:Inject
-    var notificationManager: IFantasyRadioNotificationManager? = null
-    @set:Inject
-    var radioStreamFactory: IRadioStreamFactory? = null
+    @Inject
+    lateinit var player: IPlayer<RadioStream>
+    @Inject
+    lateinit var notificationManager: IFantasyRadioNotificationManager
+    @Inject
+    lateinit var radioStreamFactory: IRadioStreamFactory
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.getStringExtra(NotificationConstants.ACTION)
         if (NotificationConstants.PAUSE == action) {
-            when (player?.playState) {
-                PlayState.PLAY, PlayState.BUFFERING -> player?.stop()
-                PlayState.PLAY_FILE -> player?.pause()
+            when (player.playState) {
+                PlayState.PLAY, PlayState.BUFFERING -> player.stop()
+                PlayState.PLAY_FILE -> player.pause()
                 else -> {
                 }
             }
-            notificationManager?.updateNotification(player?.title ?: "", player?.author ?: "", PlayState.STOP)
+            notificationManager.updateNotification(player.title ?: "", player.author ?: "", PlayState.STOP)
         } else {
-            when (player?.playState) {
-                PlayState.STOP -> player?.playStream(radioStreamFactory!!.createStreamWithBitrate(player?.stream?.bitrate ?: Bitrate.AAC_16))
-                PlayState.PAUSE -> player?.resume()
+            when (player.playState) {
+                PlayState.STOP -> player.playStream(radioStreamFactory.createStreamWithBitrate(player.stream?.bitrate ?: Bitrate.AAC_16))
+                PlayState.PAUSE -> player.resume()
                 else -> {
                 }
             }
-            notificationManager?.updateNotification(player?.title ?: "", player?.author ?: "", PlayState.PLAY)
+            notificationManager.updateNotification(player.title ?: "", player.author ?: "", PlayState.PLAY)
         }
     }
 }

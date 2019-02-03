@@ -38,10 +38,10 @@ class SavedFragment: AbstractListFragment() {
     private var mp3EntityForDelete: MP3Entity? = null
     private var adapter: MP3ArrayAdapter? = null
     private var savedActivityView: View? = null
-    @set:Inject
-    var mp3Collection: MP3Collection? = null
-    @set:Inject
-    var player: IPlayer<RadioStream>? = null
+    @Inject
+    lateinit var mp3Collection: MP3Collection
+    @Inject
+    lateinit var player: IPlayer<RadioStream>
 
     private val seekTask = object : TimerTask() {
         override fun run() {
@@ -53,7 +53,7 @@ class SavedFragment: AbstractListFragment() {
 
     fun notifyAdapter() {
         adapter = MP3ArrayAdapter(activity!!.baseContext,
-                mp3Collection?.getCursor()!!,
+                mp3Collection.getCursor()!!,
                 View.OnClickListener(this::deleteClick), View.OnClickListener(this::playClick)
         )
         lv?.adapter = adapter
@@ -77,15 +77,15 @@ class SavedFragment: AbstractListFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         savedActivityView = inflater.inflate(R.layout.mp3s, container, false)
-        player?.addPlayStateChangedListener(playStateChangedListener)
-        player?.addVolumeChangedListener(volumeChangedListener)
+        player.addPlayStateChangedListener(playStateChangedListener)
+        player.addVolumeChangedListener(volumeChangedListener)
         lv = savedActivityView?.findViewById(R.id.MP3ListView)
         return savedActivityView
     }
 
     override fun onDestroyView() {
-        player?.removePlayStateChangedListener(playStateChangedListener)
-        player?.removeVolumeChangedListener(volumeChangedListener)
+        player.removePlayStateChangedListener(playStateChangedListener)
+        player.removeVolumeChangedListener(volumeChangedListener)
         super.onDestroyView()
     }
 
@@ -96,11 +96,11 @@ class SavedFragment: AbstractListFragment() {
 
     fun playClick(v: View) {
         updateWidget()
-        if (player?.isPaused == true) {
-            if (player?.currentMP3Entity != null && v.tag != null
-                    && player?.currentMP3Entity?.directory.equals((v.tag as MP3Entity).directory)) {
+        if (player.isPaused) {
+            if (player.currentMP3Entity != null && v.tag != null
+                    && player.currentMP3Entity?.directory.equals((v.tag as MP3Entity).directory)) {
                 // Это была пауза.
-                player?.resume()
+                player.resume()
                 return
             }
         }
@@ -110,21 +110,20 @@ class SavedFragment: AbstractListFragment() {
             e.printStackTrace()
         }
 
-        if (player?.playState === PlayState.PLAY || player?.playState === PlayState.PLAY_FILE) {
-            if (player?.currentMP3Entity != null && v.tag != null
-                    && player?.currentMP3Entity?.directory == (v.tag as MP3Entity).directory) {
+        if (player.playState === PlayState.PLAY || player.playState === PlayState.PLAY_FILE) {
+            if (player.currentMP3Entity != null && v.tag != null
+                    && player.currentMP3Entity?.directory == (v.tag as MP3Entity).directory) {
                 //TODO !!!
-                player?.pause()
+                player.pause()
                 val bv = v as ImageButton// !!!!!!!!!!!!!!!
                 bv.setImageResource(R.drawable.play_states)
             } else {
                 // Нажата кнопка плэй у другого трека
-                player?.playFile(v.tag as MP3Entity)
+                player.playFile(v.tag as MP3Entity)
                 adapter?.notifyDataSetChanged()
             }
         } else {
-            player?.playFile(v.tag as MP3Entity)
-            // -------------------------------------------------
+            player.playFile(v.tag as MP3Entity)
             adapter?.notifyDataSetChanged()
         }
     }
@@ -136,26 +135,26 @@ class SavedFragment: AbstractListFragment() {
         val alertDialogBuilder = AlertDialog.Builder(activity)
         alertDialogBuilder
                 .setTitle(getString(R.string.are_you_sure_want_delete))
-        alertDialogBuilder.setPositiveButton(getString(R.string.yes),
-                { dialog, _ ->
-                    mp3Collection?.remove(mp3EntityForDelete ?: return@setPositiveButton) //TODO хрень какая-то. Разобраться
-                    if (player?.currentMP3Entity != null) {
-                        if (mp3EntityForDelete?.directory.equals(player?.currentMP3Entity?.directory)) {
-                            player?.stop()
-                        }
-                    }
-                    val f = File(mp3EntityForDelete?.directory)
-                    Log.v("dir", mp3EntityForDelete?.directory)
-                    val b = f.delete()
-                    Log.v("tf", b.toString())
-                    dialog.dismiss()
-                    onResume()
-                })
-        alertDialogBuilder.setNegativeButton(getString(R.string.no),
-                { dialog, _ ->
-                    // here you can add functions
-                    dialog.dismiss()
-                })
+        alertDialogBuilder.setPositiveButton(getString(R.string.yes)
+        ) { dialog, _ ->
+            mp3Collection.remove(mp3EntityForDelete ?: return@setPositiveButton) //TODO хрень какая-то. Разобраться
+            if (player.currentMP3Entity != null) {
+                if (mp3EntityForDelete?.directory.equals(player.currentMP3Entity?.directory)) {
+                    player.stop()
+                }
+            }
+            val f = File(mp3EntityForDelete?.directory)
+            Log.v("dir", mp3EntityForDelete?.directory)
+            val b = f.delete()
+            Log.v("tf", b.toString())
+            dialog.dismiss()
+            onResume()
+        }
+        alertDialogBuilder.setNegativeButton(getString(R.string.no)
+        ) { dialog, _ ->
+            // here you can add functions
+            dialog.dismiss()
+        }
         alertDialogBuilder.create().show()
         this.onResume()
     }
@@ -178,8 +177,8 @@ class SavedFragment: AbstractListFragment() {
     private val volumeChangedListener = object : IVolumeChangedListener {
         override fun onVolumeChanged(volume: Float) {
             activity!!.runOnUiThread {
-                if (player?.currentMP3Entity != null) {
-                    val volumeSeekBar = lv?.findViewWithTag<SeekBar>(player?.currentMP3Entity?.directory + "volume")
+                if (player.currentMP3Entity != null) {
+                    val volumeSeekBar = lv?.findViewWithTag<SeekBar>(player.currentMP3Entity?.directory + "volume")
                     volumeSeekBar?.progress = (volume * 100).toInt()
                 }
             }

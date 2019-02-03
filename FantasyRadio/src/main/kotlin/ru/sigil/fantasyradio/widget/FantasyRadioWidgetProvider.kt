@@ -46,10 +46,10 @@ class FantasyRadioWidgetProvider: AppWidgetProvider() {
     private var widgetAuthor = ""
     private var context: Context? = null
 
-    @set:Inject
-    var player: IPlayer<RadioStream>? = null
-    @set:Inject
-    var radioStreamFactory: RadioStreamFactory? = null
+    @Inject
+    lateinit var player: IPlayer<RadioStream>
+    @Inject
+    lateinit var radioStreamFactory: RadioStreamFactory
 
     override fun onUpdate(context: Context?, appWidgetManager: AppWidgetManager,
                           appWidgetIds: IntArray) {
@@ -96,7 +96,7 @@ class FantasyRadioWidgetProvider: AppWidgetProvider() {
             )
             //-----------------------------------------------------------
             restoreDefaultBitrateColors(remoteViews)
-            when (player?.stream?.bitrate) {
+            when (player.stream?.bitrate) {
                 Bitrate.AAC_16 -> {
                     remoteViews.setInt(R.id.toggleQuality16, "setBackgroundColor",
                             activeBitrateColor)
@@ -122,7 +122,7 @@ class FantasyRadioWidgetProvider: AppWidgetProvider() {
                             activeBitrateTextColor)
                 }
             }
-            when (player?.playState) {
+            when (player.playState) {
                 PlayState.PLAY -> {
                     remoteViews.setViewVisibility(R.id.widget_play, View.GONE)
                     remoteViews.setViewVisibility(R.id.widget_stop, View.VISIBLE)
@@ -188,54 +188,54 @@ class FantasyRadioWidgetProvider: AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         this.context = context
-        player?.addTitleChangedListener(titleChangedListener)
-        player?.addAuthorChangedListener(authorChangedListener)
-        player?.addPlayStateChangedListener(playStateChangedListener)
-        player?.addStreamChangedListener(streamChangedListener)
+        player.addTitleChangedListener(titleChangedListener)
+        player.addAuthorChangedListener(authorChangedListener)
+        player.addPlayStateChangedListener(playStateChangedListener)
+        player.addStreamChangedListener(streamChangedListener)
         if (ACTION_BITRATE_CLICK_16 == intent.action) {
-            val stream = radioStreamFactory!!.createStreamWithBitrate(Bitrate.AAC_16)
-            player?.stream = stream
-            if (player?.playState === PlayState.PLAY) {
-                player?.stop()
-                player?.playStream(stream)
+            val stream = radioStreamFactory.createStreamWithBitrate(Bitrate.AAC_16)
+            player.stream = stream
+            if (player.playState === PlayState.PLAY) {
+                player.stop()
+                player.playStream(stream)
             }
             onUpdate(context)
         }
         if (ACTION_BITRATE_CLICK_32 == intent.action) {
-            val stream = radioStreamFactory!!.createStreamWithBitrate(Bitrate.MP3_32)
-            player?.stream = stream
-            if (player?.playState === PlayState.PLAY) {
-                player?.stop()
-                player?.playStream(stream)
+            val stream = radioStreamFactory.createStreamWithBitrate(Bitrate.MP3_32)
+            player.stream = stream
+            if (player.playState === PlayState.PLAY) {
+                player.stop()
+                player.playStream(stream)
             }
             onUpdate(context)
         }
         if (ACTION_BITRATE_CLICK_96 == intent.action) {
-            val stream = radioStreamFactory!!.createStreamWithBitrate(Bitrate.MP3_96)
-            player?.stream = stream
-            if (player?.playState === PlayState.PLAY) {
-                player?.stop()
-                player?.playStream(stream)
+            val stream = radioStreamFactory.createStreamWithBitrate(Bitrate.MP3_96)
+            player.stream = stream
+            if (player.playState === PlayState.PLAY) {
+                player.stop()
+                player.playStream(stream)
             }
             onUpdate(context)
         }
         if (ACTION_BITRATE_CLICK_112 == intent.action) {
-            val stream = radioStreamFactory!!.createStreamWithBitrate(Bitrate.AAC_112)
-            player?.stream = stream
-            if (player?.playState === PlayState.PLAY) {
-                player?.stop()
-                player?.playStream(stream)
+            val stream = radioStreamFactory.createStreamWithBitrate(Bitrate.AAC_112)
+            player.stream = stream
+            if (player.playState === PlayState.PLAY) {
+                player.stop()
+                player.playStream(stream)
             }
             onUpdate(context)
         }
 
         if (ACTION_PLAY_CLICK == intent.action) {
-            val stream = radioStreamFactory!!.createStreamWithBitrate(player?.stream?.bitrate ?: Bitrate.AAC_16)
-            player?.playStream(stream)
+            val stream = radioStreamFactory.createStreamWithBitrate(player.stream?.bitrate ?: Bitrate.AAC_16)
+            player.playStream(stream)
             onUpdate(context)
         }
         if (ACTION_STOP_CLICK == intent.action) {
-            player?.stop()
+            player.stop()
         }
     }
 

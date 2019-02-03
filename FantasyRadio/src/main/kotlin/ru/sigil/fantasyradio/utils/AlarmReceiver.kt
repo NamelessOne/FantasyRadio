@@ -8,14 +8,13 @@ import javax.inject.Inject
 import android.content.Intent
 
 
-
 /**
  * Created by namelessone
  * on 08.12.18.
  */
 class AlarmReceiver: BroadcastReceiver() {
-    @set:Inject
-    var player: IPlayer<RadioStream>? = null
+    @Inject
+    lateinit var player: IPlayer<RadioStream>
     init {
         Bootstrap.INSTANCE.getBootstrap().inject(this)
     }
@@ -27,7 +26,7 @@ class AlarmReceiver: BroadcastReceiver() {
      */
     override fun onReceive(context: Context, intent: Intent) {
         try {
-            player?.stop()
+            player.stop()
             SleepHandlerContainer.sleepHandler?.sendEmptyMessage(0)
         } catch (e: NullPointerException) {
             e.printStackTrace()

@@ -21,18 +21,17 @@ private const val REQUEST_LOAD = 1
  * on 05.12.18.
  */
 class SettingsActivity: Activity() {
-    @set:Inject
-    var settings: ISettings? = null
+    @Inject
+    lateinit var settings: ISettings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Bootstrap.INSTANCE.getBootstrap().inject(this)
         setContentView(R.layout.settings)
         val et = findViewById<EditText>(R.id.settingsMP3SaveFolder)
-        et.setText(settings?.getSaveDir())
+        et.setText(settings.getSaveDir())
         // --------------------------------------------------------
-        findViewById<View>(R.id.settingsButtonCancel).setOnClickListener(
-                { _ -> finish() })
+        findViewById<View>(R.id.settingsButtonCancel).setOnClickListener { finish() }
         findViewById<View>(R.id.settingsButtonSave).setOnClickListener(
                 saveClickListener)
     }
@@ -48,7 +47,7 @@ class SettingsActivity: Activity() {
     private val saveClickListener = { _: View ->
         val et = findViewById<EditText>(R.id.settingsMP3SaveFolder)
         val s = et.text.toString()
-        settings?.setSaveDir(s)
+        settings.setSaveDir(s)
         finish()
     }
 

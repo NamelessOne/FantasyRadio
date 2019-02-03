@@ -34,23 +34,22 @@ private const val MY_PERMISSIONS_REQUEST = 1
  * on 09.12.18.
  */
 class TabHoster: FragmentActivity() {
-    private val TAG = TabHoster::class.java.simpleName
     var mSectionsPagerAdapter: SectionsPagerAdapter? = null
-    @set:Inject
-    var player: IPlayer<RadioStream>? = null
-    @set:Inject
-    var notificationManager: IFantasyRadioNotificationManager? = null
-    @set:Inject
-    var settings: ISettings? = null
+    @Inject
+    lateinit var player: IPlayer<RadioStream>
+    @Inject
+    lateinit var notificationManager: IFantasyRadioNotificationManager
+    @Inject
+    lateinit var settings: ISettings
 
     private fun requestPermissionWithRationale() {
         AlertDialog.Builder(this)
                 .setTitle(getString(R.string.permissions_request_title))
                 .setMessage(getString(R.string.permissions_request))
-                .setPositiveButton(android.R.string.yes, { _, _ ->
+                .setPositiveButton(android.R.string.yes) { _, _ ->
                     // continue with delete
                     requestMyPermissions()
-                })
+                }
                 .setCancelable(false)
                 .show()
     }
@@ -66,7 +65,7 @@ class TabHoster: FragmentActivity() {
         super.onCreate(savedInstanceState)
         Bootstrap.INSTANCE.getBootstrap().inject(this)
         startService(Intent(this, PlayerBackgroundService::class.java)) //Start
-        player?.addPlayerErrorListener(playerErrorListener)
+        player.addPlayerErrorListener(playerErrorListener)
         setContentView(R.layout.tabs)
         //-------------------------------------------------------
         // Here, thisActivity is the current activity
@@ -76,7 +75,7 @@ class TabHoster: FragmentActivity() {
         //-------------------------------------------------------
         CurrentMenuContainer.current_menu = R.menu.activity_main
         val localSettings = getPreferences(0)
-        settings?.moveLocalSettingsToGlobal(localSettings)
+        settings.moveLocalSettingsToGlobal(localSettings)
         mSectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         val mViewPager = findViewById<ViewPager>(R.id.pager)
         mViewPager.adapter = mSectionsPagerAdapter
@@ -87,28 +86,24 @@ class TabHoster: FragmentActivity() {
         ImageLoader.getInstance().init(config)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
-
     public override fun onPause() {
-        if (player?.playState === PlayState.PLAY
-                || player?.playState === PlayState.PLAY_FILE || player?.playState === PlayState.BUFFERING) {
-            notificationManager?.createNotification(player!!.title, player!!.author, player!!.playState)
+        if (player.playState === PlayState.PLAY
+                || player.playState === PlayState.PLAY_FILE || player.playState === PlayState.BUFFERING) {
+            notificationManager.createNotification(player.title, player.author, player.playState)
         } else {
-            player?.stop()
+            player.stop()
         }
         super.onPause()
     }
 
     public override fun onDestroy() {
-        player?.removePlayerErrorListener(playerErrorListener)
+        player.removePlayerErrorListener(playerErrorListener)
         super.onDestroy()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK && player?.playState === PlayState.PLAY
-                || player?.playState === PlayState.PLAY_FILE || player?.playState === PlayState.BUFFERING) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && player.playState === PlayState.PLAY
+                || player.playState === PlayState.PLAY_FILE || player.playState === PlayState.BUFFERING) {
             onPause()
             val intent = Intent()
             intent.action = Intent.ACTION_MAIN
@@ -117,8 +112,8 @@ class TabHoster: FragmentActivity() {
             return true
         }
         //--------------
-        if (keyCode == KeyEvent.KEYCODE_BACK && settings?.getGratitude() != true) {
-            settings?.setGratitude(true)
+        if (keyCode == KeyEvent.KEYCODE_BACK && !settings.getGratitude()) {
+            settings.setGratitude(true)
             val i = Intent(applicationContext, Gratitude::class.java)
             startActivity(i)
             return true
@@ -163,10 +158,10 @@ class TabHoster: FragmentActivity() {
                 return true
             }
             R.id.exit -> {
-                player?.stop()
+                player.stop()
                 //--------------
-                if (settings?.getGratitude() != true) {
-                    settings?.setGratitude(true)
+                if (!settings.getGratitude()) {
+                    settings.setGratitude(true)
                     val intent = Intent(applicationContext, Gratitude::class.java)
                     startActivity(intent)
                     return true
@@ -181,7 +176,7 @@ class TabHoster: FragmentActivity() {
 
     public override fun onResume() {
         try {
-            notificationManager?.cancel()
+            notificationManager.cancel()
         } catch (e: Exception) {
             e.printStackTrace()
         }
