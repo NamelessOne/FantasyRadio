@@ -68,15 +68,15 @@ class Settings @Inject constructor(context: Context): ISettings {
     }
 
     override fun getSaveDir(): String {
-        return preferences.getString(PREFERENCES_SAVE_DIR_KEY, PREFERENCES_SAVE_DIR_DEFAULT)
+        return preferences.getString(PREFERENCES_SAVE_DIR_KEY, PREFERENCES_SAVE_DIR_DEFAULT) ?: PREFERENCES_SAVE_DIR_DEFAULT
     }
 
     override fun getLogin(): String {
-        return preferences.getString(PREFERENCES_LOGIN_KEY, "")
+        return preferences.getString(PREFERENCES_LOGIN_KEY, "")  ?: ""
     }
 
     override fun getPassword(): String {
-        return preferences.getString(PREFERENCES_PASSWORD_KEY, "")
+        return preferences.getString(PREFERENCES_PASSWORD_KEY, "") ?: ""
     }
 
     override fun getGratitude(): Boolean {

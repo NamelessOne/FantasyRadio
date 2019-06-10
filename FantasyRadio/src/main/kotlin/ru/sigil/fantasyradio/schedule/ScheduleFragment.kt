@@ -1,6 +1,6 @@
 package ru.sigil.fantasyradio.schedule
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import javax.inject.Inject
 import android.widget.ExpandableListView
 import android.os.Bundle
@@ -41,7 +41,7 @@ class ScheduleFragment : Fragment() {
         scheduleFragmentView.findViewById<View>(R.id.schedule_refresh_button).setOnClickListener(this::refreshClick)
         lv = scheduleFragmentView.findViewById(R.id.ScheduleListView)
         if (arr.size > 0) {
-            val adapter = ScheduleListAdapter(activity, arr)
+            val adapter = ScheduleListAdapter(activity!!, arr)
             lv?.setAdapter(adapter)
             val count = adapter.groupCount
             for (position in 1..count)
@@ -77,7 +77,7 @@ class ScheduleFragment : Fragment() {
                         arr.add(arr2)
                     }
                 }.join()
-                val adapter = ScheduleListAdapter(activity, arr)
+                val adapter = ScheduleListAdapter(activity!!, arr)
                 lv?.setAdapter(adapter)
                 val count = adapter.groupCount
                 for (position in 1..count)

@@ -19,12 +19,12 @@ import android.widget.ImageView
  * Created by namelessone
  * on 03.12.18.
  */
-class ScheduleListAdapter(private val context: Context?, private val entities: ArrayList<ArrayList<ScheduleEntity>>): BaseExpandableListAdapter() {
+class ScheduleListAdapter(private val context: Context, private val entities: ArrayList<ArrayList<ScheduleEntity>>): BaseExpandableListAdapter() {
     private val item: Array<String>
     private val fmt = DateTimeFormat.forPattern("HH':'mm")
 
     init {
-        val res = context?.resources
+        val res = context.resources
         item = if (res != null)
             res.getStringArray(R.array.week)
         else
@@ -63,7 +63,7 @@ class ScheduleListAdapter(private val context: Context?, private val entities: A
                      convertView: View?, parent: ViewGroup): View? {
         var view = convertView
         if (view == null) {
-            val inflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.group_view, null)
         }
         val textGroup = view?.findViewById<TextView>(R.id.textGroup)
@@ -77,7 +77,7 @@ class ScheduleListAdapter(private val context: Context?, private val entities: A
                               isLastChild: Boolean, convertView: View?, parent: ViewGroup): View {
         var row = convertView
         if (row == null) {
-            val inflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             row = inflater.inflate(R.layout.schedule_list_item, parent, false)
         }
         val (startDate, endDate, titleString, imageURLString, messageString) = entities[groupPosition][childPosition]

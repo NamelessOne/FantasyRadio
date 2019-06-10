@@ -1,6 +1,6 @@
 package ru.sigil.fantasyradio.utils
 
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import android.app.NotificationManager
 import android.content.Context
 import javax.inject.Inject

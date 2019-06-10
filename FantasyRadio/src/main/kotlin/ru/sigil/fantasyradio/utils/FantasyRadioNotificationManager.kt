@@ -1,20 +1,27 @@
 package ru.sigil.fantasyradio.utils
 
+import android.app.NotificationChannel
 import android.content.Context
 import ru.sigil.bassplayerlib.IPlayer
 import javax.inject.Inject
 import android.app.NotificationManager
 import android.content.Context.NOTIFICATION_SERVICE
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import android.app.PendingIntent
 import android.content.Intent
+import android.os.Build
 import ru.sigil.fantasyradio.TabHoster
 import ru.sigil.fantasyradio.FantasyRadioNotificationReceiver
 import ru.sigil.bassplayerlib.PlayState
-import ru.sigil.bassplayerlib.listeners.*
+import ru.sigil.bassplayerlib.listeners.IAuthorChangedListener
+import ru.sigil.bassplayerlib.listeners.IBufferingProgressListener
+import ru.sigil.bassplayerlib.listeners.IEndSyncListener
+import ru.sigil.bassplayerlib.listeners.IPlayStateChangedListener
+import ru.sigil.bassplayerlib.listeners.ITitleChangedListener
 import ru.sigil.fantasyradio.R
 
 const val PLAY = "PLAY"
+const val CHANNEL_ID = "FANTASY_RADIO_36484"
 const val MAIN_NOTIFICATION_ID = 36484
 
 /**
@@ -33,12 +40,14 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
             val pIntent: PendingIntent
             val intent: Intent
             val notCancelable: Boolean
+            val actionText: String
             when (currentState) {
                 PlayState.BUFFERING, PlayState.PLAY, PlayState.PLAY_FILE -> {
                     intent = Intent(context, FantasyRadioNotificationReceiver::class.java)
                     intent.putExtra(NotificationConstants.ACTION, NotificationConstants.PAUSE)
                     pIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
                     icon = android.R.drawable.ic_media_pause
+                    actionText = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) NotificationConstants.PAUSE else ""
                     notCancelable = true
                 }
                 PlayState.PAUSE, PlayState.STOP -> {
@@ -46,6 +55,7 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
                     intent.putExtra(NotificationConstants.ACTION, PLAY)
                     pIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
                     icon = android.R.drawable.ic_media_play
+                    actionText = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) PLAY else ""
                     notCancelable = false
                 }
                 else -> {
@@ -53,6 +63,7 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
                     intent.putExtra(NotificationConstants.ACTION, PLAY)
                     pIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
                     icon = android.R.drawable.ic_media_play
+                    actionText = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) PLAY else ""
                     notCancelable = false
                 }
             }
@@ -60,8 +71,14 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
             notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             val tabHosterIntent = PendingIntent.getActivity(context, 0,
                     notificationIntent, 0)
+            notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O && notificationManager?.getNotificationChannel(CHANNEL_ID) == null) {
+                val channel = NotificationChannel(CHANNEL_ID, "Радио фантастики", NotificationManager.IMPORTANCE_DEFAULT) //TODO в ресурсы
+                        .apply { setSound(null, null) }
+                notificationManager?.createNotificationChannel(channel)
+            }
 
-            val notification = NotificationCompat.Builder(context)
+            val notification = NotificationCompat.Builder(context, CHANNEL_ID)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setCategory(NotificationCompat.CATEGORY_SERVICE)
                     .setContentTitle(context.getString(R.string.app_name))
@@ -70,9 +87,7 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
                     .setAutoCancel(false)
                     .setContentIntent(tabHosterIntent)
                     .setOngoing(notCancelable)
-                    .addAction(icon, "", pIntent).build()
-
-            notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    .addAction(icon, actionText, pIntent).build()
 
             notificationManager?.notify(MAIN_NOTIFICATION_ID, notification)
         }
@@ -108,34 +123,25 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
         }
     }
 
-    private val titleChangedListener = object : ITitleChangedListener{
-        override fun onTitleChanged(title: String) {
-            updateNotification(player.title, player.author, player.playState)
-        }
+    private val titleChangedListener = object : ITitleChangedListener {
+        override fun onTitleChanged(title: String) = updateNotification(player.title, player.author, player.playState)
     }
 
-    private val authorChangedListener = object : IAuthorChangedListener{
-        override fun onAuthorChanged(author: String) {
-            updateNotification(player.title, player.author, player.playState)
-        }
+    private val authorChangedListener = object : IAuthorChangedListener {
+        override fun onAuthorChanged(author: String) = updateNotification(player.title, player.author, player.playState)
     }
 
     private val playStateChangedListener = object : IPlayStateChangedListener
     {
-        override fun onPlayStateChanged(playState: PlayState) {
-            updateNotification(player.title, player.author, player.playState)
-        }
+        override fun onPlayStateChanged(playState: PlayState) = updateNotification(player.title, player.author, player.playState)
     }
 
     private val bufferingProgressListener = object : IBufferingProgressListener {
-        override fun onBufferingProgress(progress: Long) {
-            updateNotification(String.format("BUFFERING... %d%%", progress), "", player.playState)
-        }
+        override fun onBufferingProgress(progress: Long) = updateNotification(String.format("BUFFERING... %d%%", progress), "", player.playState)
     }
 
     private val endSyncListener = object : IEndSyncListener {
-        override fun endSync() {
-            updateNotification(player.title, player.author, player.playState)
-        }
+        override fun endSync() = updateNotification(player.title, player.author, player.playState)
+
     }
 }

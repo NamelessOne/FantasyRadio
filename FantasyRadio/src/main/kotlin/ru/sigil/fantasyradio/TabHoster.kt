@@ -1,8 +1,8 @@
 package ru.sigil.fantasyradio
 
 import android.Manifest
-import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AlertDialog
+import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.AlertDialog
 import ru.sigil.fantasyradio.settings.ISettings
 import javax.inject.Inject
 import ru.sigil.fantasyradio.utils.IFantasyRadioNotificationManager
@@ -11,13 +11,15 @@ import ru.sigil.bassplayerlib.IPlayer
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import com.nostra13.universalimageloader.core.DisplayImageOptions
-import android.support.v4.view.ViewPager
+import androidx.viewpager.widget.ViewPager
 import android.content.pm.PackageManager
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import ru.sigil.fantasyradio.playerservice.PlayerBackgroundService
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
+import android.os.Handler
+import androidx.core.app.ActivityCompat
 import android.view.*
 import ru.sigil.fantasyradio.dagger.Bootstrap
 import ru.sigil.bassplayerlib.PlayState
@@ -25,6 +27,7 @@ import ru.sigil.fantasyradio.settings.SettingsActivity
 import android.widget.Toast
 import ru.sigil.bassplayerlib.listeners.IPlayerErrorListener
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 private const val MY_PERMISSIONS_REQUEST = 1
@@ -64,7 +67,11 @@ class TabHoster: FragmentActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Bootstrap.INSTANCE.getBootstrap().inject(this)
-        startService(Intent(this, PlayerBackgroundService::class.java)) //Start
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            this.startService(Intent(this, PlayerBackgroundService::class.java))
+        } else {
+            Handler().post { startService(Intent(this, PlayerBackgroundService::class.java)) } //Start
+        }
         player.addPlayerErrorListener(playerErrorListener)
         setContentView(R.layout.tabs)
         //-------------------------------------------------------

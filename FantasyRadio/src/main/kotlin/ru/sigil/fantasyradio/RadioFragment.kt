@@ -1,6 +1,6 @@
 package ru.sigil.fantasyradio
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.app.PendingIntent
 import android.app.AlarmManager
 import android.app.TimePickerDialog
@@ -386,7 +386,7 @@ class RadioFragment : Fragment() {
         val intent = Intent(activity?.applicationContext, FantasyRadioWidgetProvider::class.java)
         intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
         val ids = AppWidgetManager.getInstance(activity?.applicationContext).getAppWidgetIds(
-                ComponentName(activity?.applicationContext, FantasyRadioWidgetProvider::class.java))
+                ComponentName(activity!!.applicationContext, FantasyRadioWidgetProvider::class.java))
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         activity?.applicationContext?.sendBroadcast(intent)
     }

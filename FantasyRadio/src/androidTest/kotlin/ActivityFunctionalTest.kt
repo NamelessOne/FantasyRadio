@@ -1,11 +1,11 @@
 import android.content.Context
-import android.support.test.InstrumentationRegistry.getInstrumentation
+import androidx.test.InstrumentationRegistry.getInstrumentation
 import ru.sigil.fantasyradio.Gratitude
 import org.mockito.Mockito
 import android.content.SharedPreferences
 import ru.sigil.fantasyradio.TabHoster
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
 import android.view.KeyEvent
 import org.junit.Assert.assertNotNull
 import org.junit.runner.RunWith

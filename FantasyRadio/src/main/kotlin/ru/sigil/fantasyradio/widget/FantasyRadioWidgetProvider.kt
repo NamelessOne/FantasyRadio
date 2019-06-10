@@ -56,12 +56,12 @@ class FantasyRadioWidgetProvider: AppWidgetProvider() {
 
         // Get all ids
 
-        val thisWidget = ComponentName(context,
+        val thisWidget = ComponentName(context!!,
                 FantasyRadioWidgetProvider::class.java)
         val allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget)
         for (widgetId in allWidgetIds) {
 
-            val remoteViews = RemoteViews(context?.packageName,
+            val remoteViews = RemoteViews(context.packageName,
                     R.layout.fantasyradio_widget)
 
             val intent = Intent(context, FantasyRadioWidgetProvider::class.java)
@@ -173,7 +173,7 @@ class FantasyRadioWidgetProvider: AppWidgetProvider() {
 
             // Uses getClass().getName() rather than MyWidget.class.getName() for
             // portability into any App Widget Provider Class
-            val thisAppWidgetComponentName = ComponentName(context?.packageName, javaClass.name
+            val thisAppWidgetComponentName = ComponentName(context!!.packageName, javaClass.name
             )
             val appWidgetIds = appWidgetManager.getAppWidgetIds(
                     thisAppWidgetComponentName)
