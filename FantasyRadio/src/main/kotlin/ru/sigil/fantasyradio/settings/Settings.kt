@@ -24,14 +24,14 @@ class Settings @Inject constructor(context: Context): ISettings {
      */
     @Deprecated("На время перехода на новую версию")
     override fun moveLocalSettingsToGlobal(localPreferences: SharedPreferences) {
-        if(getSaveDir() != PREFERENCES_SAVE_DIR_DEFAULT)
+        if(getSaveDir() == PREFERENCES_SAVE_DIR_DEFAULT)
             setSaveDir(localPreferences.getString(PREFERENCES_SAVE_DIR_KEY, PREFERENCES_SAVE_DIR_DEFAULT)!!)
-        if(getLogin() != "")
+        if(getLogin() == "")
             setLogin(localPreferences.getString(PREFERENCES_LOGIN_KEY, "")!!)
-        if(getPassword() != "")
+        if(getPassword() == "")
             setPassword(localPreferences.getString(PREFERENCES_PASSWORD_KEY, "")!!)
-        if(getGratitude())
-            setGratitude(true)
+        if(!getGratitude())
+            setGratitude(localPreferences.getBoolean(PREFERENCES_GRATITUDE_KEY, false))
     }
 
     /**

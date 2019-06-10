@@ -1,8 +1,10 @@
 package ru.sigil.fantasyradio.utils
 
+import android.app.NotificationChannel
 import androidx.core.app.NotificationCompat
 import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import javax.inject.Inject
 import android.os.Bundle
 import android.os.Message
@@ -13,6 +15,7 @@ import java.io.*
 
 private const val DOWNLOAD_NOTIFICATION_ID = 364
 private const val BUFFER_SIZE = 4096
+private const val DOWNLOAD_CHANNEL_ID = "FANTASY_RADIO_364"
 
 
 /**
@@ -38,7 +41,13 @@ class FileDownloader @Inject constructor(private val context: Context) : IFileDo
         for (s in reservedChars) {
             normalizedFileName = fileName.replace(s, "_")
         }
-        builder = NotificationCompat.Builder(context)
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O && notificationManager?.getNotificationChannel(DOWNLOAD_CHANNEL_ID) == null) {
+            val channel = NotificationChannel(DOWNLOAD_CHANNEL_ID, "Загрузка файла", NotificationManager.IMPORTANCE_DEFAULT) //TODO в ресурсы
+                    .apply { setSound(null, null) }
+            notificationManager?.createNotificationChannel(channel)
+        }
+
+        builder = NotificationCompat.Builder(context, DOWNLOAD_CHANNEL_ID)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_PROGRESS)
                 .setContentTitle(context.getString(R.string.download_started))
