@@ -65,8 +65,9 @@ class PlayerModule constructor(private val application: Application) {
     fun providesRadioStreamFactory(context: Context): IRadioStreamFactory {
         return RadioStreamFactory(context)
     }
-
+    
     @Provides
+    @Singleton
     fun providesFantasyRadioNotificationManager(context: Context, player: IPlayer<RadioStream>): IFantasyRadioNotificationManager {
         return FantasyRadioNotificationManager(context, player)
     }

@@ -13,6 +13,15 @@ import android.os.Binder
 import android.os.IBinder
 import ru.sigil.bassplayerlib.listeners.IPlayStateChangedListener
 import ru.sigil.fantasyradio.dagger.Bootstrap
+import android.R
+import androidx.core.app.NotificationCompat
+import android.app.NotificationManager
+import android.app.NotificationChannel
+import android.os.Build
+import ru.sigil.fantasyradio.utils.CHANNEL_ID
+import ru.sigil.fantasyradio.utils.IFantasyRadioNotificationManager
+import ru.sigil.fantasyradio.utils.NotificationConstants.MAIN_NOTIFICATION_ID
+
 
 /**
  * Created by namelessone
@@ -25,11 +34,21 @@ class PlayerBackgroundService: Service() {
     @Inject
     lateinit var player: IPlayer<RadioStream>
 
+    @Inject
+    lateinit var notificationManager: IFantasyRadioNotificationManager
+
     private var binder = PlayerBackgroundServiceBinder()
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         //TODO do something useful
-        return Service.START_NOT_STICKY
+        if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.O) {
+            startForeground(MAIN_NOTIFICATION_ID, notificationManager.buildNotification(player.title, player.author, player.playState))
+        }
+        if (intent.action.equals("StopService")) {
+            stopForeground(true)
+            stopSelf()
+        }
+        return START_STICKY
     }
 
     override fun onBind(arg0: Intent): IBinder? {

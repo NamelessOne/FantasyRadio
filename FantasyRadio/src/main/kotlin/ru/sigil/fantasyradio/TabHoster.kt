@@ -18,7 +18,6 @@ import ru.sigil.fantasyradio.playerservice.PlayerBackgroundService
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import androidx.core.app.ActivityCompat
 import android.view.*
 import ru.sigil.fantasyradio.dagger.Bootstrap
@@ -27,7 +26,6 @@ import ru.sigil.fantasyradio.settings.SettingsActivity
 import android.widget.Toast
 import ru.sigil.bassplayerlib.listeners.IPlayerErrorListener
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 private const val MY_PERMISSIONS_REQUEST = 1
@@ -67,11 +65,6 @@ class TabHoster: FragmentActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Bootstrap.INSTANCE.getBootstrap().inject(this)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            this.startService(Intent(this, PlayerBackgroundService::class.java))
-        } else {
-            Handler().post { startService(Intent(this, PlayerBackgroundService::class.java)) } //Start
-        }
         player.addPlayerErrorListener(playerErrorListener)
         setContentView(R.layout.tabs)
         //-------------------------------------------------------
@@ -96,8 +89,19 @@ class TabHoster: FragmentActivity() {
     public override fun onPause() {
         if (player.playState === PlayState.PLAY
                 || player.playState === PlayState.PLAY_FILE || player.playState === PlayState.BUFFERING) {
-            notificationManager.createNotification(player.title, player.author, player.playState)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                startService(Intent(this, PlayerBackgroundService::class.java))
+                notificationManager.createNotification(player.title, player.author, player.playState)
+            }
+            else {
+                startForegroundService(Intent(this, PlayerBackgroundService::class.java)) //Start
+            }
         } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val stopIntent = Intent(this, PlayerBackgroundService::class.java)
+                stopIntent.action = "StopService"
+                startForegroundService(stopIntent)
+            }
             player.stop()
         }
         super.onPause()
@@ -183,6 +187,11 @@ class TabHoster: FragmentActivity() {
 
     public override fun onResume() {
         try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && player.playState != PlayState.PLAY && player.playState != PlayState.PLAY_FILE) {
+                val stopIntent = Intent(this, PlayerBackgroundService::class.java)
+                stopIntent.action = "StopService"
+                startForegroundService(stopIntent)
+            }
             notificationManager.cancel()
         } catch (e: Exception) {
             e.printStackTrace()

@@ -1,5 +1,6 @@
 package ru.sigil.fantasyradio.utils
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.content.Context
 import ru.sigil.bassplayerlib.IPlayer
@@ -19,10 +20,10 @@ import ru.sigil.bassplayerlib.listeners.IEndSyncListener
 import ru.sigil.bassplayerlib.listeners.IPlayStateChangedListener
 import ru.sigil.bassplayerlib.listeners.ITitleChangedListener
 import ru.sigil.fantasyradio.R
+import ru.sigil.fantasyradio.utils.NotificationConstants.MAIN_NOTIFICATION_ID
 
 const val PLAY = "PLAY"
 const val CHANNEL_ID = "FANTASY_RADIO_36484"
-const val MAIN_NOTIFICATION_ID = 36484
 
 /**
  * Created by namelessone
@@ -36,41 +37,6 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
 
     override fun updateNotification(currentTitle: String?, currentArtist: String?, currentState: PlayState) {
         if (isShown) {
-            val icon: Int
-            val pIntent: PendingIntent
-            val intent: Intent
-            val notCancelable: Boolean
-            val actionText: String
-            when (currentState) {
-                PlayState.BUFFERING, PlayState.PLAY, PlayState.PLAY_FILE -> {
-                    intent = Intent(context, FantasyRadioNotificationReceiver::class.java)
-                    intent.putExtra(NotificationConstants.ACTION, NotificationConstants.PAUSE)
-                    pIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
-                    icon = android.R.drawable.ic_media_pause
-                    actionText = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) NotificationConstants.PAUSE else ""
-                    notCancelable = true
-                }
-                PlayState.PAUSE, PlayState.STOP -> {
-                    intent = Intent(context, FantasyRadioNotificationReceiver::class.java)
-                    intent.putExtra(NotificationConstants.ACTION, PLAY)
-                    pIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
-                    icon = android.R.drawable.ic_media_play
-                    actionText = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) PLAY else ""
-                    notCancelable = false
-                }
-                else -> {
-                    intent = Intent(context, FantasyRadioNotificationReceiver::class.java)
-                    intent.putExtra(NotificationConstants.ACTION, PLAY)
-                    pIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
-                    icon = android.R.drawable.ic_media_play
-                    actionText = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) PLAY else ""
-                    notCancelable = false
-                }
-            }
-            val notificationIntent = Intent(context, TabHoster::class.java)
-            notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            val tabHosterIntent = PendingIntent.getActivity(context, 0,
-                    notificationIntent, 0)
             notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O && notificationManager?.getNotificationChannel(CHANNEL_ID) == null) {
                 val channel = NotificationChannel(CHANNEL_ID, "Радио фантастики", NotificationManager.IMPORTANCE_DEFAULT) //TODO в ресурсы
@@ -78,29 +44,75 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
                 notificationManager?.createNotificationChannel(channel)
             }
 
-            val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                    .setContentTitle(context.getString(R.string.app_name))
-                    .setContentText(getText(currentTitle, currentArtist))
-                    .setSmallIcon(R.drawable.notification_icon)
-                    .setAutoCancel(false)
-                    .setContentIntent(tabHosterIntent)
-                    .setOngoing(notCancelable)
-                    .addAction(icon, actionText, pIntent).build()
+            val notification = buildNotification(currentTitle, currentArtist, currentState)
 
             notificationManager?.notify(MAIN_NOTIFICATION_ID, notification)
         }
-    }
-
-    override fun createNotification(currentTitle: String?, currentArtist: String?, currentState: PlayState) {
-        isShown = true
-        updateNotification(currentTitle, currentArtist, currentState)
         player.addTitleChangedListener(titleChangedListener)
         player.addAuthorChangedListener(authorChangedListener)
         player.addPlayStateChangedListener(playStateChangedListener)
         player.addBufferingProgressChangedListener(bufferingProgressListener)
         player.addEndSyncListener(endSyncListener)
+    }
+
+    override fun buildNotification(currentTitle: String?, currentArtist: String?, currentState: PlayState) : Notification {
+        isShown = true
+        val icon: Int
+        val pIntent: PendingIntent
+        val intent: Intent
+        val notCancelable: Boolean
+        val actionText: String
+        val cancelIntent = Intent(context, FantasyRadioNotificationReceiver::class.java)
+        cancelIntent.putExtra(NotificationConstants.ACTION, NotificationConstants.STOP)
+        val pCancelIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), cancelIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+        when (currentState) {
+            PlayState.BUFFERING, PlayState.PLAY, PlayState.PLAY_FILE -> {
+                intent = Intent(context, FantasyRadioNotificationReceiver::class.java)
+                intent.putExtra(NotificationConstants.ACTION, NotificationConstants.PAUSE)
+                pIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
+                icon = android.R.drawable.ic_media_pause
+                actionText = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) NotificationConstants.PAUSE else ""
+                notCancelable = true
+            }
+            PlayState.PAUSE, PlayState.STOP -> {
+                intent = Intent(context, FantasyRadioNotificationReceiver::class.java)
+                intent.putExtra(NotificationConstants.ACTION, PLAY)
+                pIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
+                icon = android.R.drawable.ic_media_play
+                actionText = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) PLAY else ""
+                notCancelable = false
+            }
+            else -> {
+                intent = Intent(context, FantasyRadioNotificationReceiver::class.java)
+                intent.putExtra(NotificationConstants.ACTION, PLAY)
+                pIntent = PendingIntent.getBroadcast(context, System.currentTimeMillis().toInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
+                icon = android.R.drawable.ic_media_play
+                actionText = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) PLAY else ""
+                notCancelable = false
+            }
+        }
+
+        val notificationIntent = Intent(context, TabHoster::class.java)
+        notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val tabHosterIntent = PendingIntent.getActivity(context, 0,
+                notificationIntent, 0)
+
+        return NotificationCompat.Builder(context, CHANNEL_ID)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setContentTitle(context.getString(R.string.app_name))
+                .setContentText(getText(currentTitle, currentArtist))
+                .setSmallIcon(R.drawable.notification_icon)
+                .setAutoCancel(false)
+                .setContentIntent(tabHosterIntent)
+                .setDeleteIntent(pCancelIntent)
+                .setOngoing(notCancelable)
+                .addAction(icon, actionText, pIntent).build()
+    }
+
+    override fun createNotification(currentTitle: String?, currentArtist: String?, currentState: PlayState) {
+        isShown = true
+        updateNotification(currentTitle, currentArtist, currentState)
     }
 
     private fun getText(song: String?, artist: String?): String {

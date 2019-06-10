@@ -31,7 +31,7 @@ class Settings @Inject constructor(context: Context): ISettings {
         if(getPassword() != "")
             setPassword(localPreferences.getString(PREFERENCES_PASSWORD_KEY, "")!!)
         if(getGratitude())
-            setGratitude(localPreferences.getBoolean(PREFERENCES_GRATITUDE_KEY, false))
+            setGratitude(true)
     }
 
     /**

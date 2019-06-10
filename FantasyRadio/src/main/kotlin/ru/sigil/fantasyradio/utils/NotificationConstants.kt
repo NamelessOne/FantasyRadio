@@ -7,4 +7,6 @@ package ru.sigil.fantasyradio.utils
 object NotificationConstants {
     const val ACTION = "ACTION"
     const val PAUSE = "PAUSE"
+    const val STOP = "STOP"
+    const val MAIN_NOTIFICATION_ID = 36484
 }
