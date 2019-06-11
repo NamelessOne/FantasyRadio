@@ -16,7 +16,8 @@ import ru.sigil.log.LogManager
  * on 08.12.18.
  */
 @AcraCore(buildConfigClass = BuildConfig::class, reportFormat = StringFormat.JSON)
-@AcraHttpSender(uri = "https://collector.tracepot.com/64a4a681", httpMethod = HttpSender.Method.POST)
+//@AcraHttpSender(uri = "https://collector.tracepot.com/64a4a681", httpMethod = HttpSender.Method.POST)
+@AcraHttpSender(uri = "http://31.163.196.172:36484/Crash", httpMethod = HttpSender.Method.POST)
 class MyApp : Application() {
 
     override fun onCreate() {
