@@ -34,12 +34,12 @@ class PlayerBackgroundService: Service() {
 
     private var binder = PlayerBackgroundServiceBinder()
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         //TODO do something useful
         if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.O) {
             startForeground(MAIN_NOTIFICATION_ID, notificationManager.buildNotification(player.title, player.author, player.playState))
         }
-        if (intent.action.equals("StopService")) {
+        if (intent?.action.equals("StopService")) {
             stopForeground(true)
             stopSelf()
         }

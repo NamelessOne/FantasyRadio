@@ -35,17 +35,18 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
     private var isShown = false
     private var notificationManager: NotificationManager? = null
 
+    init {
+        notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O && notificationManager?.getNotificationChannel(CHANNEL_ID) == null) {
+            val channel = NotificationChannel(CHANNEL_ID, "Радио фантастики", NotificationManager.IMPORTANCE_DEFAULT) //TODO в ресурсы
+                    .apply { setSound(null, null) }
+            notificationManager?.createNotificationChannel(channel)
+        }
+    }
+
     override fun updateNotification(currentTitle: String?, currentArtist: String?, currentState: PlayState) {
         if (isShown) {
-            notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O && notificationManager?.getNotificationChannel(CHANNEL_ID) == null) {
-                val channel = NotificationChannel(CHANNEL_ID, "Радио фантастики", NotificationManager.IMPORTANCE_DEFAULT) //TODO в ресурсы
-                        .apply { setSound(null, null) }
-                notificationManager?.createNotificationChannel(channel)
-            }
-
             val notification = buildNotification(currentTitle, currentArtist, currentState)
-
             notificationManager?.notify(MAIN_NOTIFICATION_ID, notification)
         }
         player.addTitleChangedListener(titleChangedListener)
@@ -57,12 +58,6 @@ class FantasyRadioNotificationManager @Inject constructor(private val context: C
 
     override fun buildNotification(currentTitle: String?, currentArtist: String?, currentState: PlayState) : Notification {
         isShown = true
-        notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O && notificationManager?.getNotificationChannel(CHANNEL_ID) == null) {
-            val channel = NotificationChannel(CHANNEL_ID, "Радио фантастики", NotificationManager.IMPORTANCE_DEFAULT) //TODO в ресурсы
-                    .apply { setSound(null, null) }
-            notificationManager?.createNotificationChannel(channel)
-        }
         val icon: Int
         val pIntent: PendingIntent
         val intent: Intent

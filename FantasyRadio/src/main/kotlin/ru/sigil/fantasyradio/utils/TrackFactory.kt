@@ -9,7 +9,5 @@ import ru.sigil.bassplayerlib.ITrackFactory
  * on 07.12.18.
  */
 class TrackFactory : ITrackFactory {
-    override fun createTrack(author: String?, title: String?, recDirectory: String, time: String?): ITrack {
-        return MP3Entity(author, title, recDirectory, time)
-    }
+    override fun createTrack(author: String?, title: String?, recDirectory: String, time: String?): ITrack = MP3Entity(author, title, recDirectory, time)
 }

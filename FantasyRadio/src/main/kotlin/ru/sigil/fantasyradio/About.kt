@@ -19,7 +19,5 @@ class About: Activity() {
         tv.setOnClickListener { _ -> stop() }
     }
 
-    private fun stop() {
-        finish()
-    }
+    private fun stop() = finish()
 }
