@@ -75,7 +75,6 @@ class TabHoster: FragmentActivity() {
         //-------------------------------------------------------
         CurrentMenuContainer.current_menu = R.menu.activity_main
         val localSettings = getPreferences(0)
-        settings.moveLocalSettingsToGlobal(localSettings)
         mSectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         val mViewPager = findViewById<ViewPager>(R.id.pager)
         mViewPager.adapter = mSectionsPagerAdapter

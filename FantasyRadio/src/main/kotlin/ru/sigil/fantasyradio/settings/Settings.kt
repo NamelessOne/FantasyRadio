@@ -19,20 +19,6 @@ private const val PREFERENCES_GRATITUDE_KEY = "gratitude"
  */
 class Settings @Inject constructor(context: Context): ISettings {
     private val preferences: SharedPreferences = context.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_PRIVATE)
-    /**
-     * На время перехода на новую версию
-     */
-    @Deprecated("На время перехода на новую версию")
-    override fun moveLocalSettingsToGlobal(localPreferences: SharedPreferences) {
-        if(getSaveDir() == PREFERENCES_SAVE_DIR_DEFAULT)
-            setSaveDir(localPreferences.getString(PREFERENCES_SAVE_DIR_KEY, PREFERENCES_SAVE_DIR_DEFAULT)!!)
-        if(getLogin() == "")
-            setLogin(localPreferences.getString(PREFERENCES_LOGIN_KEY, "")!!)
-        if(getPassword() == "")
-            setPassword(localPreferences.getString(PREFERENCES_PASSWORD_KEY, "")!!)
-        if(!getGratitude())
-            setGratitude(localPreferences.getBoolean(PREFERENCES_GRATITUDE_KEY, false))
-    }
 
     /**
      * Сохраняет папку для сохраниния mp3 файлов
