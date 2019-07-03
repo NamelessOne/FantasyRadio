@@ -18,45 +18,10 @@ private const val CONNECTION_TIMEOUT = 10000
  * Created by namelessone
  * on 30.11.18.
  */
-class CurrentStreamInfoService @Inject constructor(): ICurrentStreamInfoService {
-    private var imageURL = ""
-    private var about = ""
-
-    override fun getInfo() : CurrentStreamInfo {
-        try {
-            val url = URL(MAIN_URL)
-
-            val urlConnection = url.openConnection() as HttpURLConnection
-            urlConnection.requestMethod = "GET"
-            urlConnection.connectTimeout = CONNECTION_TIMEOUT
-            urlConnection.connect()
-
-            if (urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
-                val dataJsonObj = getJson(urlConnection)
-                about = if (dataJsonObj.getString("about").isNotEmpty()) dataJsonObj.getString("about") else "Описание отсутствует"
-                imageURL = dataJsonObj.getString("imageURL")
-                return CurrentStreamInfo(about, imageURL)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        try {
-            val alternateURL = URL(ALTERNATE_URL)
-
-            val alternateUrlConnection = alternateURL.openConnection() as HttpURLConnection
-            alternateUrlConnection.requestMethod = "GET"
-            alternateUrlConnection.connectTimeout = CONNECTION_TIMEOUT
-            alternateUrlConnection.connect()
-
-            val dataJsonObj = getJson(alternateUrlConnection)
-            about = if (dataJsonObj.getString("about").isNotEmpty()) dataJsonObj.getString("about") else "Описание отсутствует"
-            imageURL = dataJsonObj.getString("image_url")
-            return CurrentStreamInfo(about, imageURL)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return CurrentStreamInfo("Описание отсутствует", "")
+class CurrentStreamInfoService @Inject constructor() : ICurrentStreamInfoService {
+    override fun getInfo(): CurrentStreamInfo {
+        return getFromURL(MAIN_URL, "imageURL") ?: getFromURL(ALTERNATE_URL, "image_url")
+        ?: CurrentStreamInfo("Описание отсутствует", "")
     }
 
     @Throws(IOException::class, JSONException::class)
@@ -72,5 +37,23 @@ class CurrentStreamInfoService @Inject constructor(): ICurrentStreamInfoService 
 
         val resultJson = buffer.toString()
         return JSONObject(resultJson)
+    }
+
+    private fun getFromURL(address: String, imageURLTag: String): CurrentStreamInfo? {
+        try {
+            val urlConnection = URL(address).openConnection() as HttpURLConnection
+            urlConnection.apply { requestMethod = "GET" }.apply { connectTimeout = CONNECTION_TIMEOUT }
+            urlConnection.connect()
+
+            if (urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
+                val dataJsonObj = getJson(urlConnection)
+                val about = if (dataJsonObj.getString("about").isNotEmpty()) dataJsonObj.getString("about") else "Описание отсутствует"
+                val imageURL = dataJsonObj.getString(imageURLTag)
+                return CurrentStreamInfo(about, imageURL)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
     }
 }
