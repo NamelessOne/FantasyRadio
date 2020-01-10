@@ -8,7 +8,6 @@ import ru.sigil.fantasyradio.AbstractListFragment
 import ru.sigil.fantasyradio.dagger.Bootstrap
 import ru.sigil.fantasyradio.utils.RadioStream
 import ru.sigil.bassplayerlib.IPlayer
-import java.util.*
 import javax.inject.Inject
 import android.widget.SeekBar
 import ru.sigil.bassplayerlib.PlayState
@@ -25,6 +24,9 @@ import android.util.Log
 import ru.sigil.bassplayerlib.listeners.IPlayStateChangedListener
 import ru.sigil.bassplayerlib.listeners.IVolumeChangedListener
 import java.io.File
+import java.util.TimerTask
+import java.util.Timer
+import kotlin.collections.HashMap
 
 /**
  * Created by namelessone
@@ -165,18 +167,18 @@ class SavedFragment: AbstractListFragment() {
         val ids = AppWidgetManager.getInstance(activity!!.applicationContext).getAppWidgetIds(
                 ComponentName(activity!!.applicationContext, FantasyRadioWidgetProvider::class.java))
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-        activity!!.applicationContext.sendBroadcast(intent)
+        activity?.applicationContext?.sendBroadcast(intent)
     }
 
     private val playStateChangedListener = object : IPlayStateChangedListener {
         override fun onPlayStateChanged(playState: PlayState) {
-            activity!!.runOnUiThread { adapter?.notifyDataSetChanged() }
+            activity?.runOnUiThread { adapter?.notifyDataSetChanged() }
          }
     }
 
     private val volumeChangedListener = object : IVolumeChangedListener {
         override fun onVolumeChanged(volume: Float) {
-            activity!!.runOnUiThread {
+            activity?.runOnUiThread {
                 if (player.currentMP3Entity != null) {
                     val volumeSeekBar = lv?.findViewWithTag<SeekBar>(player.currentMP3Entity?.directory + "volume")
                     volumeSeekBar?.progress = (volume * 100).toInt()

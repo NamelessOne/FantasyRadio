@@ -11,6 +11,7 @@ import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.net.URI
 import java.net.URL
 
 /**
@@ -37,8 +38,8 @@ class ScheduleParser @Inject constructor() {
             val entryArray = jsObject?.getJSONArray("items") ?: return scheduleEntitiesCollection
             for (i in 0 until entryArray.length()) {
                 try {
-                    val text: String
-                    var imageURL: String? = null
+                    var text: String
+                    var rawImageURL: String? = null
                     val title = entryArray.getJSONObject(i)?.get("summary").toString()
                     //----------------------------------------------
                     val doc = Jsoup.parse(entryArray.getJSONObject(i).get("description").toString().replace("ПОДРОБНЕЕ", ""))
@@ -47,9 +48,10 @@ class ScheduleParser @Inject constructor() {
                     //Если tds = 0, значит там вообще не тэгов, одна голая надпись
                     if (tds.size > 0) {
                         if (imgs.size > 0) {
-                            imageURL = imgs[0].attr("src")
+                            rawImageURL = imgs[0].attr("src")
                         }
                         text = tds[tds.size - 1].text()
+                        if(text.isEmpty()) text = doc.text()
                     } else {
                         text = doc.text()
                     }
@@ -59,8 +61,13 @@ class ScheduleParser @Inject constructor() {
                     startDate = startDate.substring(0, startDate.indexOf("+"))
                     var endDate = entryArray.getJSONObject(i).getJSONObject("end").get("dateTime").toString()
                     endDate = endDate.substring(0, endDate.indexOf("+"))
-
-                    val se = ScheduleEntity(parser2.parseDateTime(startDate), parser2.parseDateTime(endDate), title, imageURL, text)
+                    val se = ScheduleEntity(
+                            parser2.parseDateTime(startDate),
+                            parser2.parseDateTime(endDate),
+                            title,
+                            rawImageURL?.let { url -> URI(url).query?.split("&")?.map { it.split("=") }?.firstOrNull { it[0] == "q" }?.let { it[1] } } ?: rawImageURL,
+                            text
+                    )
                     scheduleEntitiesCollection.add(se)
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -106,14 +113,14 @@ class ScheduleParser @Inject constructor() {
         try {
             json = sb.toString()
         } catch (e: Exception) {
-            Log.e("Buffer Error", "Error converting result " + e.toString())
+            Log.e("Buffer Error", "Error converting result $e")
         }
 
         // try parse the string to a JSON object
         try {
             jObj = JSONObject(json)
         } catch (e: JSONException) {
-            Log.e("JSON Parser", "Error parsing data " + e.toString())
+            Log.e("JSON Parser", "Error parsing data $e")
         }
 
         // return JSON String

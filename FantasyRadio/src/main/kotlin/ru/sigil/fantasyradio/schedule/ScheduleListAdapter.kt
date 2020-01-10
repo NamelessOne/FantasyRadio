@@ -20,16 +20,8 @@ import android.widget.ImageView
  * on 03.12.18.
  */
 class ScheduleListAdapter(private val context: Context, private val entities: ArrayList<ArrayList<ScheduleEntity>>): BaseExpandableListAdapter() {
-    private val item: Array<String>
+    private val item: Array<String> = context.resources?.getStringArray(R.array.week) ?: arrayOf("", "", "", "", "", "", "")
     private val fmt = DateTimeFormat.forPattern("HH':'mm")
-
-    init {
-        val res = context.resources
-        item = if (res != null)
-            res.getStringArray(R.array.week)
-        else
-            arrayOf("", "", "", "", "", "", "")
-    }
 
     override fun getGroupCount(): Int {
         return entities.size
@@ -81,22 +73,20 @@ class ScheduleListAdapter(private val context: Context, private val entities: Ar
             row = inflater.inflate(R.layout.schedule_list_item, parent, false)
         }
         val (startDate, endDate, titleString, imageURLString, messageString) = entities[groupPosition][childPosition]
-        var startTime: TextView? = null
-        if (row != null) {
-            startTime = row.findViewById(R.id.ScheduleItemStartTime)
-        }
-        startTime!!.text = fmt.print(startDate) + " - " + fmt.print(endDate)
+        val startTime: TextView?
+        startTime = row?.findViewById(R.id.ScheduleItemStartTime)
+        startTime?.text = fmt.print(startDate) + " - " + fmt.print(endDate)
         val title = row!!.findViewById<TextView>(R.id.ScheduleItemTitle)
         title.text = titleString
-        row.setOnClickListener { _ ->
+        row.setOnClickListener {
             //Кликнули на элемент списка. Показываем окошко с подробностями
             val alertDialog = Dialog(context)
             alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             alertDialog.setContentView(R.layout.schedule_dialog)
             val ll = alertDialog.findViewById<LinearLayout>(R.id.scheduleDialogLayout)
-            ll.setOnClickListener({ _ -> alertDialog.cancel() })
+            ll.setOnClickListener { alertDialog.cancel() }
             val ll2 = alertDialog.findViewById<LinearLayout>(R.id.scheduleDialogInternalLayout)
-            ll2.setOnClickListener({ _ -> alertDialog.cancel() })
+            ll2.setOnClickListener { alertDialog.cancel() }
             val tv = alertDialog.findViewById<TextView>(R.id.schedule_dialog_text)
             tv.text = messageString
             val im = alertDialog.findViewById<ImageView>(R.id.schedule_dialog_image)

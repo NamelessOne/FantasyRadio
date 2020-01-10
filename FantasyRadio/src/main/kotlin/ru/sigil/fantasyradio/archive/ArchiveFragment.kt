@@ -141,16 +141,15 @@ class ArchiveFragment : AbstractListFragment() {
     }
 
     private fun showErrorMessage() {
-        if (activity != null) {
-            val toast = Toast.makeText(activity!!.baseContext,
-                    "Ошибка при сохранении файла", Toast.LENGTH_LONG)
-            toast.show()
+        activity?.let {
+            Toast.makeText(it.baseContext,
+                    "Ошибка при сохранении файла", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun downloadFinished(mEntity: MP3Entity, url: String) {
-        if (activity != null) {
-            val toast = Toast.makeText(activity!!.baseContext,
+        activity?.let {
+            val toast = Toast.makeText(it.baseContext,
                     getString(R.string.download_finished), Toast.LENGTH_LONG)
             toast.show()
         }
