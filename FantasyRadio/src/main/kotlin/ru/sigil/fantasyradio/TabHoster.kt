@@ -61,18 +61,6 @@ class TabHoster: FragmentActivity() {
         ActivityCompat.requestPermissions(this,
                 arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE),
                 MY_PERMISSIONS_REQUEST)
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                intent.addCategory("android.intent.category.DEFAULT")
-                intent.data = Uri.parse(java.lang.String.format("package:%s", this.packageName))
-                this.startActivityForResult(intent, MY_PERMISSIONS_REQUEST)
-            } catch (e: java.lang.Exception) {
-                val intent = Intent()
-                intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-                this.startActivityForResult(intent, MY_PERMISSIONS_REQUEST)
-            }
-        }
     }
 
 

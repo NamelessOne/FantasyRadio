@@ -99,14 +99,14 @@ class ArchiveFragment : AbstractListFragment() {
         val entity = v.tag as ArchiveEntity
         Log.v("downloadClick", entity.URL)
         val mp3Entity = MP3Entity(entity.Name, entity.Name,
-                Environment.getExternalStorageDirectory().toString() + settings.getSaveDir() + formattedDate + entity.getFileName(),
+                settings.getAbsoluteSaveDir() + formattedDate + entity.getFileName(),
                 entity.Time)
         val toast = Toast.makeText(activity!!.baseContext,
                 getString(R.string.download_started), Toast.LENGTH_LONG)
         toast.show()
         GlobalScope.launch(Dispatchers.Main) {
             val downloadFileJob = GlobalScope.async(Dispatchers.IO) {
-                return@async fileDownloader.downloadFile(entity.URL, Environment.getExternalStorageDirectory().toString() + settings.getSaveDir(),
+                return@async fileDownloader.downloadFile(entity.URL, settings.getAbsoluteSaveDir(),
                         formattedDate + entity.getFileName(), mp3Entity.title, mp3Entity.time)
             }
             val mEntity = downloadFileJob.await()
