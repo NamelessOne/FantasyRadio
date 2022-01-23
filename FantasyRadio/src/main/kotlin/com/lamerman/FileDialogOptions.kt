@@ -139,14 +139,14 @@ class FileDialogOptions() {
     /**
      * Returns the selected filename from the intent.
      */
-    fun readResultFile(intent: Intent): String {
+    fun readResultFile(intent: Intent): String? {
         return intent.getStringExtra(RESULT_FILE)
     }
 
     /**
      * Returns the selected folder from the intent.
      */
-    fun readResultFolder(intent: Intent): String {
+    fun readResultFolder(intent: Intent): String? {
         return intent.getStringExtra(RESULT_FOLDER)
     }
 }

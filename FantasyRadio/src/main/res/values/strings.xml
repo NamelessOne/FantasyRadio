@@ -65,8 +65,8 @@
     <string name="quality">Качество:</string>
     <string name="stream_quality">Качество потока:</string>
     <string name="admob_publisher_id">ca-app-pub-1743291198196470/7976420748</string>
-    <string name="wrong_login_or_password">Неправильный логин/пароль.</string>
-    <string name="archieve_text">Запись эфира за предыдущий день. Качество записи 32 кб/с. Периодически сервис может быть недоступен. Для использования архива необходимо <a href="http://fantasyradio.ru/index.php/registratsiya">зарегистрироваться.</a></string>
+    <string name="archieve_parse_error">Ошибка доступа к архиву</string>
+    <string name="archieve_text">Запись эфира за предыдущий день. Качество записи 32 кб/с. Периодически сервис может быть недоступен</string>
     <string name="stream_url_AAC16">http://fantasyradioru.no-ip.biz:8016</string>
     <string name="stream_url_AAC112">http://fantasyradioru.no-ip.biz:8000</string>
     <string name="stream_url_MP332">http://fantasyradioru.no-ip.biz:8008</string>

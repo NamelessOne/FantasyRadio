@@ -72,7 +72,7 @@ class SettingsActivity: Activity() {
             if (filePath != null) {
                 filePath = filePath.replace(mntSDcard, "")
             }
-            Log.v("folder", filePath)
+            Log.v("folder", filePath ?: "")
             val et = findViewById<EditText>(R.id.settingsMP3SaveFolder)
             et.setText(filePath)
         }

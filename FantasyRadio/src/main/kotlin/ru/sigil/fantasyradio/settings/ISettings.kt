@@ -7,10 +7,6 @@ package ru.sigil.fantasyradio.settings
 interface ISettings {
     fun getSaveDir(): String
     fun setSaveDir(dir: String)
-    fun getLogin(): String
-    fun setLogin(login: String)
-    fun getPassword(): String
-    fun setPassword(password: String)
     fun getGratitude(): Boolean
     fun setGratitude(gratitude: Boolean)
 }

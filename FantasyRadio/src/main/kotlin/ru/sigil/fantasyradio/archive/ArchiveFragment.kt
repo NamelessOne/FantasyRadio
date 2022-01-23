@@ -1,6 +1,5 @@
 package ru.sigil.fantasyradio.archive
 
-import android.app.AlertDialog
 import ru.sigil.fantasyradio.AbstractListFragment
 import javax.inject.Inject
 import ru.sigil.fantasyradio.saved.MP3Collection
@@ -11,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import ru.sigil.fantasyradio.R
 import ru.sigil.fantasyradio.dagger.Bootstrap
-import ru.sigil.fantasyradio.exceptions.WrongLoginOrPasswordException
 import android.app.ProgressDialog
 import android.os.*
 import android.util.Log
@@ -31,7 +29,6 @@ import ru.sigil.fantasyradio.utils.IFileDownloader
  */
 class ArchiveFragment : AbstractListFragment() {
     private var adapter: ArchiveListAdapter? = null
-    private var ad: AlertDialog.Builder? = null
     private var archiveEntityes: List<ArchiveEntity> = ArrayList()
     private var parseArchieveJob: Job? = null
 
@@ -51,7 +48,6 @@ class ArchiveFragment : AbstractListFragment() {
         val tv = archiveActivityView.findViewById<TextView>(R.id.archive_text1)
         tv.movementMethod = LinkMovementMethod.getInstance()
         archiveActivityView.findViewById<View>(R.id.archieve_refresh_button).setOnClickListener({ v -> refreshClick(v) })
-        ad = AlertDialog.Builder(activity)
         lv = archiveActivityView.findViewById(R.id.ArchieveListView)
         adapter = ArchiveListAdapter(activity!!.baseContext,
                 archiveEntityes, downloadClickListener)
@@ -60,50 +56,33 @@ class ArchiveFragment : AbstractListFragment() {
     }
 
     private fun refreshClick(v: View) {
-        //Сначала логинимся
-        ad?.setTitle(getString(R.string.enter))  // заголовок
-        val factory = LayoutInflater.from(activity)
-        val textEntryView = factory.inflate(R.layout.login_dialog, null)
-        ad?.setTitle(R.string.enter)?.setView(textEntryView)
-        ((textEntryView as ViewGroup).getChildAt(0) as TextView).text = settings.getLogin()
-        (textEntryView.getChildAt(1) as TextView).text = settings.getPassword()
-        ad?.setPositiveButton(getString(R.string.enter)) { _, _ ->
-            val login = (textEntryView.getChildAt(0) as TextView).text.toString()
-            val password = (textEntryView.getChildAt(1) as TextView).text.toString()
-            settings.setLogin(login)
-            settings.setPassword(password)
-            parseArchieveJob = GlobalScope.launch(Dispatchers.Main) {
-                val progress = ProgressDialog(activity)
-                try {
-                    adapter?.clear()
-                    progress.setMessage(getString(R.string.load))
-                    progress.setCancelable(false)
-                    progress.show()
-                    GlobalScope.launch(Dispatchers.IO) {
-                        try {
-                            archiveEntityes = archiveGetter.parseArchive(login, password)
-                        } catch (e: WrongLoginOrPasswordException) {
-                            //сообщение о неправильном логине/пароле
-                            GlobalScope.launch(Dispatchers.Main) {
-                                val toast = Toast.makeText(activity!!.baseContext,
-                                        getString(R.string.wrong_login_or_password), Toast.LENGTH_LONG)
-                                toast.show()
-                            }
+        parseArchieveJob = GlobalScope.launch(Dispatchers.Main) {
+            val progress = ProgressDialog(activity)
+            try {
+                adapter?.clear()
+                progress.setMessage(getString(R.string.load))
+                progress.setCancelable(false)
+                progress.show()
+                GlobalScope.launch(Dispatchers.IO) {
+                    try {
+                        archiveEntityes = archiveGetter.parseArchive()
+                    } catch (e: Exception) {
+                        //сообщение о неправильном логине/пароле
+                        GlobalScope.launch(Dispatchers.Main) {
+                            val toast = Toast.makeText(activity!!.baseContext,
+                                    getString(R.string.archieve_parse_error), Toast.LENGTH_LONG)
+                            toast.show()
                         }
-                    }.join()
-                    adapter = ArchiveListAdapter(activity!!.baseContext, archiveEntityes, downloadClickListener)
-                    lv?.adapter = adapter
-                } finally {
-                    if (progress.isShowing) {
-                        progress.dismiss()
                     }
+                }.join()
+                adapter = ArchiveListAdapter(activity!!.baseContext, archiveEntityes, downloadClickListener)
+                lv?.adapter = adapter
+            } finally {
+                if (progress.isShowing) {
+                    progress.dismiss()
                 }
             }
         }
-        ad?.setNegativeButton(getString(R.string.cancel)) { _, _ -> }
-        ad?.setCancelable(true)
-        ad?.create()
-        ad?.show()
     }
 
     override fun onDestroyView() {

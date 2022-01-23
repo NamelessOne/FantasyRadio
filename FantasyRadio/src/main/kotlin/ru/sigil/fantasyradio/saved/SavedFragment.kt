@@ -146,7 +146,7 @@ class SavedFragment: AbstractListFragment() {
                 }
             }
             val f = File(mp3EntityForDelete?.directory)
-            Log.v("dir", mp3EntityForDelete?.directory)
+            Log.v("dir", mp3EntityForDelete?.directory ?: "")
             val b = f.delete()
             Log.v("tf", b.toString())
             dialog.dismiss()

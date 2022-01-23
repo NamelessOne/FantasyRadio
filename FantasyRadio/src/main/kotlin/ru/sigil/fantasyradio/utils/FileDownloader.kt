@@ -70,7 +70,7 @@ class FileDownloader @Inject constructor(private val context: Context) : IFileDo
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
+            myFolder.parentFile.mkdirs()
             myFolder.createNewFile()
             val ucon = url.openConnection()
             val contentLength = ucon.contentLength
